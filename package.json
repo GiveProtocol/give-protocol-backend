@@ -1,0 +1,28 @@
+{
+  "name": "duration-backend-private",
+  "version": "1.0.0",
+  "description": "Private backend infrastructure for Duration Give Protocol - Database, Admin, and API functions",
+  "main": "index.js",
+  "scripts": {
+    "dev": "supabase start",
+    "stop": "supabase stop",
+    "reset": "supabase db reset",
+    "generate-types": "supabase gen types typescript --local > src/types/database.ts",
+    "migrate": "supabase db push",
+    "seed": "supabase db seed"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.7",
+    "@sentry/react": "^9.24.0",
+    "@mailchimp/mailchimp_marketing": "^3.0.80"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "@types/node": "^20.11.24"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/civicmastery/Duration-Backend-Private.git"
+  },
+  "private": true
+}
