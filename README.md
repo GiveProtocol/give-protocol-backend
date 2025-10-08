@@ -1,94 +1,64 @@
-# Duration Backend Private
+# Give Protocol - Backend API
 
-🔒 **PRIVATE REPOSITORY** - Contains sensitive business logic and database schemas for Duration Give Protocol.
+Backend services and API for Give Protocol, including GraphQL endpoints, database management, and blockchain indexing.
 
-## Contents
+## Features
 
-### Database & Migrations
-- **45+ Database Migration Files**: Complete schema evolution and RLS policies
-- **Supabase Configuration**: Database setup and security rules
-- **Performance Optimizations**: Custom indexes and query optimizations
+- 🔌 RESTful API endpoints
+- 📊 GraphQL API (optional)
+- 🗄️ Database management with Supabase
+- 🔗 Blockchain event indexing
+- 📧 Email integrations (MailChimp)
+- 🔐 Authentication & authorization
+- 📈 Analytics and reporting
 
-### Admin Panel (131KB+ of Code)
-- **AdminCharities.tsx**: Charity management and verification
-- **AdminDashboard.tsx**: Main administrative interface
-- **AdminDonations.tsx**: Donation tracking and management
-- **AdminLogs.tsx**: System logs and audit trails
-- **AdminSettings.tsx**: Platform configuration
-- **AdminStats.tsx**: Analytics and reporting
-- **AdminUsers.tsx**: User management and moderation
-- **AdminVerifications.tsx**: Identity and charity verification
-- **AdminWithdrawals.tsx**: Financial transaction management
+## Tech Stack
 
-### Backend Services
-- **Authentication**: User auth, session management, and security
-- **API Layer**: Supabase client, queries, and data access patterns
-- **Monitoring**: Error tracking, performance monitoring with Sentry
-- **Security**: Input validation, CSRF protection, rate limiting
+- **Runtime**: Node.js
+- **Framework**: Express/Next.js API Routes
+- **Database**: Supabase (PostgreSQL)
+- **Blockchain Indexing**: SubQuery / The Graph
+- **Email**: MailChimp API
 
-## Security Notice
+## Setup
 
-⚠️ **KEEP THIS REPOSITORY PRIVATE**
+```bash
+npm install
+```
 
-This repository contains:
-- Complete database architecture and business logic
-- Administrative controls with financial implications
-- User data access patterns and security implementations
-- Proprietary algorithms for donation processing and verification
+## Configuration
 
-## Architecture Revealed
+Copy `.env.example` to `.env`:
 
-The database schema and admin panel expose:
-- **Business Model**: How donations, charities, and users interact
-- **Verification Process**: Multi-step charity and volunteer verification
-- **Financial Flow**: Complete money movement and withdrawal systems
-- **User Management**: Profile data, permissions, and behavioral tracking
-- **Performance Optimizations**: Database indexing and caching strategies
+```env
+DATABASE_URL=
+SUPABASE_URL=
+SUPABASE_SERVICE_KEY=
+MOONBASE_RPC_URL=
+MAILCHIMP_API_KEY=
+```
 
-## Setup Instructions
+## Development
 
-1. **Prerequisites**:
-   ```bash
-   npm install -g @supabase/cli
-   ```
+```bash
+# Start dev server
+npm run dev
 
-2. **Installation**:
-   ```bash
-   npm install
-   ```
+# Run tests
+npm run test
 
-3. **Local Development**:
-   ```bash
-   npm run dev          # Start local Supabase
-   npm run migrate      # Apply migrations
-   npm run generate-types  # Generate TypeScript types
-   ```
+# Database migrations
+npm run migrate
+```
 
-4. **Environment Variables**:
-   Create `.env` file with:
-   ```
-   SUPABASE_URL=your_local_supabase_url
-   SUPABASE_ANON_KEY=your_anon_key
-   SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-   SENTRY_DSN=your_sentry_dsn
-   ```
+## API Documentation
 
-## Access Control
+API documentation is available at `/api/docs` when running in development mode.
 
-**Authorized Personnel Only**:
-- Backend developers
-- Database administrators  
-- Security team
-- Senior leadership
+## Deployment
 
-## Compliance
+Configure your deployment platform with the necessary environment variables and deploy.
 
-This repository contains sensitive business logic subject to:
-- Intellectual property protection
-- Financial compliance requirements
-- Data privacy regulations
-- Security audit requirements
+## License
 
----
-
-**⚠️ DO NOT SHARE ACCESS TO THIS REPOSITORY WITHOUT EXPLICIT AUTHORIZATION**
+UNLICENSED - Private Repository

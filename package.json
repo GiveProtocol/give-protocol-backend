@@ -1,5 +1,5 @@
 {
-  "name": "duration-backend-private",
+  "name": "give-protocol-backend",
   "version": "1.0.0",
   "description": "Private backend infrastructure for Duration Give Protocol - Database, Admin, and API functions",
   "main": "index.js",
