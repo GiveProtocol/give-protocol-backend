@@ -5,6 +5,7 @@ Give Protocol Backend - Private backend infrastructure for Duration Give Protoco
 ## Repository Structure
 
 This is the **backend** repository, one of four Give Protocol repositories:
+
 - **give-protocol-webapp**: React/Vite Progressive Web App
 - **give-protocol-contracts**: Solidity smart contracts and Hardhat infrastructure
 - **give-protocol-docs**: Jekyll documentation site
@@ -37,6 +38,7 @@ npm run seed             # Seed database with test data
 ## Environment Setup
 
 `.env` file required:
+
 - `SUPABASE_URL`: Supabase project URL
 - `SUPABASE_ANON_KEY`: Supabase anonymous key
 - `SUPABASE_SERVICE_ROLE_KEY`: Supabase service role key (never commit!)

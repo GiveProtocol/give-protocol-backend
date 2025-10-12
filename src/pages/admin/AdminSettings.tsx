@@ -1,11 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
-import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { Save, AlertTriangle, RefreshCw, Database, Shield, Server } from 'lucide-react';
-import { Logger } from '@/utils/logger';
+import React, { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import {
+  Save,
+  AlertTriangle,
+  RefreshCw,
+  Database,
+  Shield,
+  Server,
+} from "lucide-react";
+import { Logger } from "@/utils/logger";
 
 interface SystemSettings {
   maxLoginAttempts: number;
@@ -23,9 +30,9 @@ const AdminSettings: React.FC = () => {
     cacheTtlMinutes: 5,
     apiTimeoutMs: 10000,
     enableAnalytics: true,
-    analyticsSampleRate: 0.1
+    analyticsSampleRate: 0.1,
   });
-  
+
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,10 +46,15 @@ const AdminSettings: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-    
-    setSettings(prev => ({
+
+    setSettings((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : type === 'number' ? Number(value) : value
+      [name]:
+        type === "checkbox"
+          ? checked
+          : type === "number"
+            ? Number(value)
+            : value,
     }));
   };
 
@@ -51,20 +63,20 @@ const AdminSettings: React.FC = () => {
       setSaving(true);
       setError(null);
       setSuccess(null);
-      
+
       // In a real implementation, you would save settings to the database
       // For now, we'll just simulate a delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setSuccess('Settings saved successfully');
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      setSuccess("Settings saved successfully");
+
       // Log the settings change
-      Logger.info('Admin settings updated', { settings });
-      
+      Logger.info("Admin settings updated", { settings });
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to save settings';
+      const message =
+        err instanceof Error ? err.message : "Failed to save settings";
       setError(message);
-      Logger.error('Admin settings save error', { error: err });
+      Logger.error("Admin settings save error", { error: err });
     } finally {
       setSaving(false);
     }
@@ -77,10 +89,10 @@ const AdminSettings: React.FC = () => {
       cacheTtlMinutes: 5,
       apiTimeoutMs: 10000,
       enableAnalytics: true,
-      analyticsSampleRate: 0.1
+      analyticsSampleRate: 0.1,
     });
     setError(null);
-    setSuccess('Settings reset to defaults');
+    setSuccess("Settings reset to defaults");
   };
 
   if (loading) {
@@ -110,7 +122,7 @@ const AdminSettings: React.FC = () => {
             className="flex items-center"
           >
             <Save className="h-4 w-4 mr-2" />
-            {saving ? 'Saving...' : 'Save Settings'}
+            {saving ? "Saving..." : "Save Settings"}
           </Button>
         </div>
       </div>
@@ -131,9 +143,11 @@ const AdminSettings: React.FC = () => {
         <Card className="p-6">
           <div className="flex items-center mb-4">
             <Shield className="h-5 w-5 text-indigo-600 mr-2" />
-            <h2 className="text-lg font-semibold text-gray-900">Security Settings</h2>
+            <h2 className="text-lg font-semibold text-gray-900">
+              Security Settings
+            </h2>
           </div>
-          
+
           <div className="space-y-4">
             <Input
               label="Max Login Attempts"
@@ -145,7 +159,7 @@ const AdminSettings: React.FC = () => {
               onChange={handleChange}
               helperText="Number of failed login attempts before account lockout"
             />
-            
+
             <Input
               label="Login Cooldown (minutes)"
               name="loginCooldownMinutes"
@@ -162,9 +176,11 @@ const AdminSettings: React.FC = () => {
         <Card className="p-6">
           <div className="flex items-center mb-4">
             <Database className="h-5 w-5 text-indigo-600 mr-2" />
-            <h2 className="text-lg font-semibold text-gray-900">Cache Settings</h2>
+            <h2 className="text-lg font-semibold text-gray-900">
+              Cache Settings
+            </h2>
           </div>
-          
+
           <div className="space-y-4">
             <Input
               label="Cache TTL (minutes)"
@@ -182,9 +198,11 @@ const AdminSettings: React.FC = () => {
         <Card className="p-6">
           <div className="flex items-center mb-4">
             <Server className="h-5 w-5 text-indigo-600 mr-2" />
-            <h2 className="text-lg font-semibold text-gray-900">API Settings</h2>
+            <h2 className="text-lg font-semibold text-gray-900">
+              API Settings
+            </h2>
           </div>
-          
+
           <div className="space-y-4">
             <Input
               label="API Timeout (ms)"
@@ -202,12 +220,24 @@ const AdminSettings: React.FC = () => {
 
         <Card className="p-6">
           <div className="flex items-center mb-4">
-            <svg className="h-5 w-5 text-indigo-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            <svg
+              className="h-5 w-5 text-indigo-600 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+              />
             </svg>
-            <h2 className="text-lg font-semibold text-gray-900">Analytics Settings</h2>
+            <h2 className="text-lg font-semibold text-gray-900">
+              Analytics Settings
+            </h2>
           </div>
-          
+
           <div className="space-y-4">
             <div className="flex items-center">
               <input
@@ -218,11 +248,14 @@ const AdminSettings: React.FC = () => {
                 onChange={handleChange}
                 className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
               />
-              <label htmlFor="enableAnalytics" className="ml-2 block text-sm text-gray-900">
+              <label
+                htmlFor="enableAnalytics"
+                className="ml-2 block text-sm text-gray-900"
+              >
                 Enable Analytics
               </label>
             </div>
-            
+
             <Input
               label="Analytics Sample Rate"
               name="analyticsSampleRate"
@@ -245,30 +278,29 @@ const AdminSettings: React.FC = () => {
             <AlertTriangle className="h-5 w-5 text-yellow-500 mr-2" />
             <h2 className="text-lg font-semibold text-gray-900">Danger Zone</h2>
           </div>
-          
+
           <div className="space-y-4">
             <div className="border border-red-200 rounded-md p-4">
-              <h3 className="text-md font-medium text-red-800 mb-2">Reset Database</h3>
+              <h3 className="text-md font-medium text-red-800 mb-2">
+                Reset Database
+              </h3>
               <p className="text-sm text-gray-600 mb-4">
-                This will reset all data in the database to its initial state. This action cannot be undone.
+                This will reset all data in the database to its initial state.
+                This action cannot be undone.
               </p>
-              <Button
-                variant="danger"
-                size="sm"
-              >
+              <Button variant="danger" size="sm">
                 Reset Database
               </Button>
             </div>
-            
+
             <div className="border border-red-200 rounded-md p-4">
-              <h3 className="text-md font-medium text-red-800 mb-2">Clear All Logs</h3>
+              <h3 className="text-md font-medium text-red-800 mb-2">
+                Clear All Logs
+              </h3>
               <p className="text-sm text-gray-600 mb-4">
                 This will delete all system logs. This action cannot be undone.
               </p>
-              <Button
-                variant="danger"
-                size="sm"
-              >
+              <Button variant="danger" size="sm">
                 Clear Logs
               </Button>
             </div>

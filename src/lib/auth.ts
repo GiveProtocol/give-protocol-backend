@@ -1,14 +1,14 @@
-import { supabase } from './supabase';
-import { web3Enable, web3Accounts } from '@polkadot/extension-dapp';
-import { Logger } from '../utils/logger';
-import { SecurityMonitor } from '../utils/security';
-import { validateEmail, validatePassword } from '../utils/validation';
+import { supabase } from "./supabase";
+import { web3Enable, web3Accounts } from "@polkadot/extension-dapp";
+import { Logger } from "../utils/logger";
+import { SecurityMonitor } from "../utils/security";
+import { validateEmail, validatePassword } from "../utils/validation";
 
 export interface AuthError {
   code: string;
   message: string;
   details?: Record<string, any>;
-  severity: 'low' | 'medium' | 'high';
+  severity: "low" | "medium" | "high";
 }
 
 export interface AuthResponse {
@@ -20,7 +20,7 @@ export interface AuthResponse {
 export interface SessionData {
   userId: string;
   walletAddress?: string;
-  authMethod: 'wallet' | 'email' | 'metamask';
+  authMethod: "wallet" | "email" | "metamask";
   expiresAt: number;
 }
 
@@ -55,10 +55,10 @@ class AuthService {
         return {
           success: false,
           error: {
-            code: 'RATE_LIMITED',
-            message: 'Too many login attempts. Please try again later.',
-            severity: 'medium'
-          }
+            code: "RATE_LIMITED",
+            message: "Too many login attempts. Please try again later.",
+            severity: "medium",
+          },
         };
       }
 
@@ -67,16 +67,16 @@ class AuthService {
         return {
           success: false,
           error: {
-            code: 'INVALID_INPUT',
-            message: 'Invalid email or password format',
-            severity: 'low'
-          }
+            code: "INVALID_INPUT",
+            message: "Invalid email or password format",
+            severity: "low",
+          },
         };
       }
 
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
-        password
+        password,
       });
 
       if (error) throw error;
@@ -86,26 +86,26 @@ class AuthService {
 
       return {
         success: true,
-        data
+        data,
       };
     } catch (error) {
       this.incrementLoginAttempts(email);
-      Logger.error('Login failed', { error, email });
+      Logger.error("Login failed", { error, email });
       return this.handleAuthError(error);
     }
   }
 
   async loginWithPolkadot(): Promise<AuthResponse> {
     try {
-      const extensions = await web3Enable('Give Protocol');
+      const extensions = await web3Enable("Give Protocol");
       if (extensions.length === 0) {
         return {
           success: false,
           error: {
-            code: 'NO_WALLET',
-            message: 'No Polkadot wallet extension found',
-            severity: 'medium'
-          }
+            code: "NO_WALLET",
+            message: "No Polkadot wallet extension found",
+            severity: "medium",
+          },
         };
       }
 
@@ -114,10 +114,10 @@ class AuthService {
         return {
           success: false,
           error: {
-            code: 'NO_ACCOUNTS',
-            message: 'No accounts found in wallet',
-            severity: 'medium'
-          }
+            code: "NO_ACCOUNTS",
+            message: "No accounts found in wallet",
+            severity: "medium",
+          },
         };
       }
 
@@ -128,11 +128,11 @@ class AuthService {
         success: true,
         data: {
           address: accounts[0].address,
-          type: 'polkadot'
-        }
+          type: "polkadot",
+        },
       };
     } catch (error) {
-      Logger.error('Polkadot login failed', { error });
+      Logger.error("Polkadot login failed", { error });
       return this.handleAuthError(error);
     }
   }
@@ -143,25 +143,25 @@ class AuthService {
         return {
           success: false,
           error: {
-            code: 'NO_METAMASK',
-            message: 'MetaMask not installed',
-            severity: 'medium'
-          }
+            code: "NO_METAMASK",
+            message: "MetaMask not installed",
+            severity: "medium",
+          },
         };
       }
 
       const accounts = await window.ethereum.request({
-        method: 'eth_requestAccounts'
+        method: "eth_requestAccounts",
       });
 
       if (!accounts || accounts.length === 0) {
         return {
           success: false,
           error: {
-            code: 'NO_ACCOUNTS',
-            message: 'No accounts found in MetaMask',
-            severity: 'medium'
-          }
+            code: "NO_ACCOUNTS",
+            message: "No accounts found in MetaMask",
+            severity: "medium",
+          },
         };
       }
 
@@ -172,16 +172,18 @@ class AuthService {
         success: true,
         data: {
           address: accounts[0],
-          type: 'metamask'
-        }
+          type: "metamask",
+        },
       };
     } catch (error) {
-      Logger.error('MetaMask login failed', { error });
+      Logger.error("MetaMask login failed", { error });
       return this.handleAuthError(error);
     }
   }
 
-  async logout(options: LogoutOptions = { clearAll: true, force: false }): Promise<AuthResponse> {
+  async logout(
+    options: LogoutOptions = { clearAll: true, force: false },
+  ): Promise<AuthResponse> {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
@@ -198,7 +200,7 @@ class AuthService {
 
       return { success: true };
     } catch (error) {
-      Logger.error('Logout failed', { error });
+      Logger.error("Logout failed", { error });
       return this.handleAuthError(error);
     }
   }
@@ -209,22 +211,22 @@ class AuthService {
         return {
           success: false,
           error: {
-            code: 'INVALID_EMAIL',
-            message: 'Invalid email format',
-            severity: 'low'
-          }
+            code: "INVALID_EMAIL",
+            message: "Invalid email format",
+            severity: "low",
+          },
         };
       }
 
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`
+        redirectTo: `${window.location.origin}/reset-password`,
       });
 
       if (error) throw error;
 
       return { success: true };
     } catch (error) {
-      Logger.error('Password reset failed', { error });
+      Logger.error("Password reset failed", { error });
       return this.handleAuthError(error);
     }
   }
@@ -235,45 +237,45 @@ class AuthService {
         return {
           success: false,
           error: {
-            code: 'INVALID_PASSWORD',
-            message: 'Password does not meet requirements',
-            severity: 'medium'
-          }
+            code: "INVALID_PASSWORD",
+            message: "Password does not meet requirements",
+            severity: "medium",
+          },
         };
       }
 
       const { error } = await supabase.auth.updateUser({
-        password: newPassword
+        password: newPassword,
       });
 
       if (error) throw error;
 
       return { success: true };
     } catch (error) {
-      Logger.error('Password update failed', { error });
+      Logger.error("Password update failed", { error });
       return this.handleAuthError(error);
     }
   }
 
   private handleAuthError(error: any): AuthResponse {
     const authError: AuthError = {
-      code: error.code || 'UNKNOWN_ERROR',
-      message: error.message || 'An unexpected error occurred',
-      severity: 'medium',
-      details: error
+      code: error.code || "UNKNOWN_ERROR",
+      message: error.message || "An unexpected error occurred",
+      severity: "medium",
+      details: error,
     };
 
     // Log suspicious activities
     if (this.isSuspiciousError(error)) {
       this.securityMonitor.logSuspiciousActivity(authError.code, {
         message: authError.message,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
     }
 
     return {
       success: false,
-      error: authError
+      error: authError,
     };
   }
 
@@ -287,7 +289,10 @@ class AuthService {
     this.rateLimitAttempts.set(identifier, attempts);
 
     if (attempts >= this.MAX_LOGIN_ATTEMPTS) {
-      setTimeout(() => this.resetRateLimiting(identifier), this.LOCKOUT_DURATION);
+      setTimeout(
+        () => this.resetRateLimiting(identifier),
+        this.LOCKOUT_DURATION,
+      );
     }
   }
 
@@ -297,13 +302,14 @@ class AuthService {
 
   private isSuspiciousError(error: any): boolean {
     const suspiciousPatterns = [
-      'invalid_signature',
-      'invalid_nonce',
-      'multiple_attempts',
-      'invalid_token'
+      "invalid_signature",
+      "invalid_nonce",
+      "multiple_attempts",
+      "invalid_token",
     ];
-    return suspiciousPatterns.some(pattern => 
-      error.code?.includes(pattern) || error.message?.includes(pattern)
+    return suspiciousPatterns.some(
+      (pattern) =>
+        error.code?.includes(pattern) || error.message?.includes(pattern),
     );
   }
 }

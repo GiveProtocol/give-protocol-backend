@@ -1,12 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
-import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { Search, AlertTriangle, Eye, Download, Trash, Filter, Calendar } from 'lucide-react';
-import { formatDate } from '@/utils/date';
-import { Logger } from '@/utils/logger';
+import React, { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import {
+  Search,
+  AlertTriangle,
+  Eye,
+  Download,
+  Trash,
+  Filter,
+  Calendar,
+} from "lucide-react";
+import { formatDate } from "@/utils/date";
+import { Logger } from "@/utils/logger";
 
 interface AuditLog {
   id: string;
@@ -28,12 +36,14 @@ const AdminLogs: React.FC = () => {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
-  const [actionFilter, setActionFilter] = useState<string>('all');
-  const [tableFilter, setTableFilter] = useState<string>('all');
+  const [dateFilter, setDateFilter] = useState<
+    "all" | "today" | "week" | "month"
+  >("all");
+  const [actionFilter, setActionFilter] = useState<string>("all");
+  const [tableFilter, setTableFilter] = useState<string>("all");
 
   useEffect(() => {
     fetchLogs();
@@ -45,23 +55,26 @@ const AdminLogs: React.FC = () => {
       setError(null);
 
       const { data, error: fetchError } = await supabase
-        .from('audit_logs')
-        .select(`
+        .from("audit_logs")
+        .select(
+          `
           *,
           user:user_id (
             email
           )
-        `)
-        .order('created_at', { ascending: false })
+        `,
+        )
+        .order("created_at", { ascending: false })
         .limit(100);
 
       if (fetchError) throw fetchError;
 
       setLogs(data || []);
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to fetch audit logs';
+      const message =
+        err instanceof Error ? err.message : "Failed to fetch audit logs";
       setError(message);
-      Logger.error('Admin logs fetch error', { error: err });
+      Logger.error("Admin logs fetch error", { error: err });
     } finally {
       setLoading(false);
     }
@@ -74,14 +87,18 @@ const AdminLogs: React.FC = () => {
   const getDateRange = () => {
     const now = new Date();
     switch (dateFilter) {
-      case 'today':
-        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      case "today":
+        const today = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate(),
+        );
         return { start: today };
-      case 'week':
+      case "week":
         const week = new Date(now);
         week.setDate(now.getDate() - 7);
         return { start: week };
-      case 'month':
+      case "month":
         const month = new Date(now);
         month.setMonth(now.getMonth() - 1);
         return { start: month };
@@ -90,32 +107,34 @@ const AdminLogs: React.FC = () => {
     }
   };
 
-  const filteredLogs = logs.filter(log => {
+  const filteredLogs = logs.filter((log) => {
     // Search filter
-    const searchMatch = 
+    const searchMatch =
       log.action.toLowerCase().includes(searchTerm.toLowerCase()) ||
       log.table_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (log.user?.email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (log.ip_address || '').toLowerCase().includes(searchTerm.toLowerCase());
-    
+      (log.user?.email || "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      (log.ip_address || "").toLowerCase().includes(searchTerm.toLowerCase());
+
     // Date filter
     const dateRange = getDateRange();
-    const dateMatch = dateRange 
+    const dateMatch = dateRange
       ? new Date(log.created_at) >= dateRange.start
       : true;
-    
+
     // Action filter
-    const actionMatch = actionFilter === 'all' || log.action === actionFilter;
-    
+    const actionMatch = actionFilter === "all" || log.action === actionFilter;
+
     // Table filter
-    const tableMatch = tableFilter === 'all' || log.table_name === tableFilter;
-    
+    const tableMatch = tableFilter === "all" || log.table_name === tableFilter;
+
     return searchMatch && dateMatch && actionMatch && tableMatch;
   });
 
   // Get unique actions and tables for filters
-  const uniqueActions = Array.from(new Set(logs.map(log => log.action)));
-  const uniqueTables = Array.from(new Set(logs.map(log => log.table_name)));
+  const uniqueActions = Array.from(new Set(logs.map((log) => log.action)));
+  const uniqueTables = Array.from(new Set(logs.map((log) => log.table_name)));
 
   const handleView = (log: AuditLog) => {
     setSelectedLog(log);
@@ -125,34 +144,48 @@ const AdminLogs: React.FC = () => {
   const handleExport = () => {
     try {
       // Convert logs to CSV
-      const headers = ['ID', 'User', 'Action', 'Table', 'Record ID', 'IP Address', 'Date'];
+      const headers = [
+        "ID",
+        "User",
+        "Action",
+        "Table",
+        "Record ID",
+        "IP Address",
+        "Date",
+      ];
       const csvContent = [
-        headers.join(','),
-        ...filteredLogs.map(log => [
-          log.id,
-          log.user?.email || 'Anonymous',
-          log.action,
-          log.table_name,
-          log.record_id,
-          log.ip_address || 'Unknown',
-          formatDate(log.created_at, true)
-        ].join(','))
-      ].join('\n');
-      
+        headers.join(","),
+        ...filteredLogs.map((log) =>
+          [
+            log.id,
+            log.user?.email || "Anonymous",
+            log.action,
+            log.table_name,
+            log.record_id,
+            log.ip_address || "Unknown",
+            formatDate(log.created_at, true),
+          ].join(","),
+        ),
+      ].join("\n");
+
       // Create download link
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.setAttribute('href', url);
-      link.setAttribute('download', `audit_logs_${new Date().toISOString().split('T')[0]}.csv`);
-      link.style.visibility = 'hidden';
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute(
+        "download",
+        `audit_logs_${new Date().toISOString().split("T")[0]}.csv`,
+      );
+      link.style.visibility = "hidden";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to export logs';
+      const message =
+        err instanceof Error ? err.message : "Failed to export logs";
       setError(message);
-      Logger.error('Admin logs export error', { error: err });
+      Logger.error("Admin logs export error", { error: err });
     }
   };
 
@@ -177,11 +210,8 @@ const AdminLogs: React.FC = () => {
             <Download className="h-4 w-4 mr-2" />
             Export CSV
           </Button>
-          <Button
-            onClick={fetchLogs}
-            disabled={loading}
-          >
-            {loading ? 'Refreshing...' : 'Refresh'}
+          <Button onClick={fetchLogs} disabled={loading}>
+            {loading ? "Refreshing..." : "Refresh"}
           </Button>
         </div>
       </div>
@@ -204,7 +234,7 @@ const AdminLogs: React.FC = () => {
                 className="pl-10"
               />
             </div>
-            
+
             <div className="flex items-center space-x-2">
               <Filter className="h-5 w-5 text-gray-400" />
               <select
@@ -213,12 +243,14 @@ const AdminLogs: React.FC = () => {
                 className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               >
                 <option value="all">All Actions</option>
-                {uniqueActions.map(action => (
-                  <option key={action} value={action}>{action}</option>
+                {uniqueActions.map((action) => (
+                  <option key={action} value={action}>
+                    {action}
+                  </option>
                 ))}
               </select>
             </div>
-            
+
             <div className="flex items-center space-x-2">
               <Filter className="h-5 w-5 text-gray-400" />
               <select
@@ -227,17 +259,23 @@ const AdminLogs: React.FC = () => {
                 className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               >
                 <option value="all">All Tables</option>
-                {uniqueTables.map(table => (
-                  <option key={table} value={table}>{table}</option>
+                {uniqueTables.map((table) => (
+                  <option key={table} value={table}>
+                    {table}
+                  </option>
                 ))}
               </select>
             </div>
-            
+
             <div className="flex items-center space-x-2">
               <Calendar className="h-5 w-5 text-gray-400" />
               <select
                 value={dateFilter}
-                onChange={(e) => setDateFilter(e.target.value as 'all' | 'today' | 'week' | 'month')}
+                onChange={(e) =>
+                  setDateFilter(
+                    e.target.value as "all" | "today" | "week" | "month",
+                  )
+                }
                 className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               >
                 <option value="all">All Time</option>
@@ -255,22 +293,40 @@ const AdminLogs: React.FC = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
                   Date
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
                   User
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
                   Action
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
                   Table
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
                   IP Address
                 </th>
-                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
                   Actions
                 </th>
               </tr>
@@ -279,32 +335,50 @@ const AdminLogs: React.FC = () => {
               {filteredLogs.map((log) => (
                 <tr key={log.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{formatDate(log.created_at)}</div>
-                    <div className="text-xs text-gray-500">{new Date(log.created_at).toLocaleTimeString()}</div>
+                    <div className="text-sm text-gray-900">
+                      {formatDate(log.created_at)}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {new Date(log.created_at).toLocaleTimeString()}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{log.user?.email || 'Anonymous'}</div>
-                    <div className="text-xs text-gray-500 font-mono">{log.user_id ? log.user_id.substring(0, 8) + '...' : 'N/A'}</div>
+                    <div className="text-sm text-gray-900">
+                      {log.user?.email || "Anonymous"}
+                    </div>
+                    <div className="text-xs text-gray-500 font-mono">
+                      {log.user_id
+                        ? log.user_id.substring(0, 8) + "..."
+                        : "N/A"}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      log.action.includes('INSERT') 
-                        ? 'bg-green-100 text-green-800' 
-                        : log.action.includes('UPDATE')
-                        ? 'bg-blue-100 text-blue-800'
-                        : log.action.includes('DELETE')
-                        ? 'bg-red-100 text-red-800'
-                        : 'bg-gray-100 text-gray-800'
-                    }`}>
+                    <span
+                      className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        log.action.includes("INSERT")
+                          ? "bg-green-100 text-green-800"
+                          : log.action.includes("UPDATE")
+                            ? "bg-blue-100 text-blue-800"
+                            : log.action.includes("DELETE")
+                              ? "bg-red-100 text-red-800"
+                              : "bg-gray-100 text-gray-800"
+                      }`}
+                    >
                       {log.action}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{log.table_name}</div>
-                    <div className="text-xs text-gray-500 font-mono">{log.record_id.substring(0, 8)}...</div>
+                    <div className="text-sm text-gray-900">
+                      {log.table_name}
+                    </div>
+                    <div className="text-xs text-gray-500 font-mono">
+                      {log.record_id.substring(0, 8)}...
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{log.ip_address || 'Unknown'}</div>
+                    <div className="text-sm text-gray-900">
+                      {log.ip_address || "Unknown"}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <Button
@@ -329,7 +403,9 @@ const AdminLogs: React.FC = () => {
           <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full">
             <div className="p-6 border-b border-gray-200">
               <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold text-gray-900">Log Details</h2>
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Log Details
+                </h2>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -342,7 +418,9 @@ const AdminLogs: React.FC = () => {
             <div className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Basic Information</h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    Basic Information
+                  </h3>
                   <div className="space-y-3">
                     <div>
                       <p className="text-sm text-gray-500">Log ID</p>
@@ -350,20 +428,28 @@ const AdminLogs: React.FC = () => {
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Timestamp</p>
-                      <p className="font-medium">{formatDate(selectedLog.created_at, true)}</p>
+                      <p className="font-medium">
+                        {formatDate(selectedLog.created_at, true)}
+                      </p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">User</p>
-                      <p className="font-medium">{selectedLog.user?.email || 'Anonymous'}</p>
+                      <p className="font-medium">
+                        {selectedLog.user?.email || "Anonymous"}
+                      </p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">User ID</p>
-                      <p className="font-mono text-sm">{selectedLog.user_id || 'N/A'}</p>
+                      <p className="font-mono text-sm">
+                        {selectedLog.user_id || "N/A"}
+                      </p>
                     </div>
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Action Information</h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    Action Information
+                  </h3>
                   <div className="space-y-3">
                     <div>
                       <p className="text-sm text-gray-500">Action</p>
@@ -375,41 +461,49 @@ const AdminLogs: React.FC = () => {
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Record ID</p>
-                      <p className="font-mono text-sm">{selectedLog.record_id}</p>
+                      <p className="font-mono text-sm">
+                        {selectedLog.record_id}
+                      </p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">IP Address</p>
-                      <p className="font-medium">{selectedLog.ip_address || 'Unknown'}</p>
+                      <p className="font-medium">
+                        {selectedLog.ip_address || "Unknown"}
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Old Data</h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    Old Data
+                  </h3>
                   <div className="bg-gray-50 p-4 rounded-md overflow-auto max-h-60">
                     <pre className="text-xs font-mono text-gray-800">
-                      {selectedLog.old_data ? JSON.stringify(selectedLog.old_data, null, 2) : 'No data'}
+                      {selectedLog.old_data
+                        ? JSON.stringify(selectedLog.old_data, null, 2)
+                        : "No data"}
                     </pre>
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">New Data</h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    New Data
+                  </h3>
                   <div className="bg-gray-50 p-4 rounded-md overflow-auto max-h-60">
                     <pre className="text-xs font-mono text-gray-800">
-                      {selectedLog.new_data ? JSON.stringify(selectedLog.new_data, null, 2) : 'No data'}
+                      {selectedLog.new_data
+                        ? JSON.stringify(selectedLog.new_data, null, 2)
+                        : "No data"}
                     </pre>
                   </div>
                 </div>
               </div>
             </div>
             <div className="p-6 border-t border-gray-200 flex justify-end">
-              <Button
-                onClick={() => setIsViewModalOpen(false)}
-              >
-                Close
-              </Button>
+              <Button onClick={() => setIsViewModalOpen(false)}>Close</Button>
             </div>
           </div>
         </div>

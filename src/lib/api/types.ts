@@ -35,7 +35,7 @@ export interface CauseData {
   targetAmount: number;
   raisedAmount: number;
   deadline: string;
-  status: 'active' | 'completed' | 'expired';
+  status: "active" | "completed" | "expired";
 }
 
 export interface ImpactMetric {
@@ -57,7 +57,7 @@ export interface TransactionData extends ChainData {
   from: string;
   to: string;
   value: string;
-  status: 'pending' | 'confirmed' | 'failed';
+  status: "pending" | "confirmed" | "failed";
 }
 
 // Cache Types
@@ -80,7 +80,7 @@ export interface QueryOptions {
   filters?: Record<string, any>;
   sort?: {
     field: string;
-    direction: 'asc' | 'desc';
+    direction: "asc" | "desc";
   };
 }
 

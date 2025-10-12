@@ -1,7 +1,7 @@
-import { ApiResponse, ApiError, QueryOptions } from './types';
-import { Logger } from '@/utils/logger';
-import { CacheManager } from '@/utils/caching';
-import { ErrorHandler } from '@/utils/errorBoundary';
+import { ApiResponse, ApiError, QueryOptions } from "./types";
+import { Logger } from "@/utils/logger";
+import { CacheManager } from "@/utils/caching";
+import { ErrorHandler } from "@/utils/errorBoundary";
 
 interface ApiClientConfig {
   baseUrl: string;
@@ -19,7 +19,7 @@ export class ApiClient {
   private static instance: ApiClient;
   private cache: CacheManager;
   private baseUrl: string;
-  private readonly retryConfig: Required<ApiClientConfig['retryConfig']>;
+  private readonly retryConfig: Required<ApiClientConfig["retryConfig"]>;
   private abortControllers: Map<string, AbortController>;
 
   private constructor(config: ApiClientConfig) {
@@ -27,7 +27,7 @@ export class ApiClient {
     this.cache = CacheManager.getInstance(config.cacheConfig);
     this.retryConfig = {
       maxRetries: config.retryConfig?.maxRetries ?? 3,
-      retryDelay: config.retryConfig?.retryDelay ?? 1000
+      retryDelay: config.retryConfig?.retryDelay ?? 1000,
     };
     this.abortControllers = new Map();
   }
@@ -41,39 +41,39 @@ export class ApiClient {
 
   async get<T>(
     endpoint: string,
-    options: QueryOptions = {}
+    options: QueryOptions = {},
   ): Promise<ApiResponse<T>> {
-    const cacheKey = this.getCacheKey('GET', endpoint, options);
+    const cacheKey = this.getCacheKey("GET", endpoint, options);
     const cachedResponse = this.cache.get<ApiResponse<T>>(cacheKey);
 
     if (cachedResponse) {
       return cachedResponse;
     }
 
-    return this.request<T>('GET', endpoint, undefined, options);
+    return this.request<T>("GET", endpoint, undefined, options);
   }
 
   async post<T>(
     endpoint: string,
     data: any,
-    options: QueryOptions = {}
+    options: QueryOptions = {},
   ): Promise<ApiResponse<T>> {
-    return this.request<T>('POST', endpoint, data, options);
+    return this.request<T>("POST", endpoint, data, options);
   }
 
   async put<T>(
     endpoint: string,
     data: any,
-    options: QueryOptions = {}
+    options: QueryOptions = {},
   ): Promise<ApiResponse<T>> {
-    return this.request<T>('PUT', endpoint, data, options);
+    return this.request<T>("PUT", endpoint, data, options);
   }
 
   async delete<T>(
     endpoint: string,
-    options: QueryOptions = {}
+    options: QueryOptions = {},
   ): Promise<ApiResponse<T>> {
-    return this.request<T>('DELETE', endpoint, undefined, options);
+    return this.request<T>("DELETE", endpoint, undefined, options);
   }
 
   private async request<T>(
@@ -81,7 +81,7 @@ export class ApiClient {
     endpoint: string,
     data?: any,
     options: QueryOptions = {},
-    retryCount = 0
+    retryCount = 0,
   ): Promise<ApiResponse<T>> {
     const controller = new AbortController();
     this.abortControllers.set(endpoint, controller);
@@ -91,7 +91,7 @@ export class ApiClient {
       const response = await fetch(url, {
         method,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           ...this.getAuthHeaders(),
         },
         body: data ? JSON.stringify(data) : undefined,
@@ -100,7 +100,7 @@ export class ApiClient {
 
       const result = await this.handleResponse<T>(response);
 
-      if (method === 'GET' && result.data) {
+      if (method === "GET" && result.data) {
         const cacheKey = this.getCacheKey(method, endpoint, options);
         this.cache.set(cacheKey, result);
       }
@@ -108,8 +108,11 @@ export class ApiClient {
       return result;
     } catch (error) {
       if (retryCount < this.retryConfig.maxRetries) {
-        await new Promise(resolve => 
-          setTimeout(resolve, this.retryConfig.retryDelay * Math.pow(2, retryCount))
+        await new Promise((resolve) =>
+          setTimeout(
+            resolve,
+            this.retryConfig.retryDelay * Math.pow(2, retryCount),
+          ),
         );
         return this.request<T>(method, endpoint, data, options, retryCount + 1);
       }
@@ -122,7 +125,7 @@ export class ApiClient {
   private async handleResponse<T>(response: Response): Promise<ApiResponse<T>> {
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.message || 'Request failed');
+      throw new Error(error.message || "Request failed");
     }
 
     const data = await response.json();
@@ -135,11 +138,12 @@ export class ApiClient {
 
   private handleError<T>(error: unknown): ApiResponse<T> {
     const apiError: ApiError = {
-      code: 'REQUEST_FAILED',
-      message: error instanceof Error ? error.message : 'Unknown error occurred',
+      code: "REQUEST_FAILED",
+      message:
+        error instanceof Error ? error.message : "Unknown error occurred",
     };
 
-    Logger.error('API request failed', {
+    Logger.error("API request failed", {
       error,
       timestamp: new Date().toISOString(),
     });
@@ -152,12 +156,12 @@ export class ApiClient {
 
   private buildUrl(endpoint: string, options: QueryOptions): string {
     const url = new URL(endpoint, this.baseUrl);
-    
+
     if (options.page) {
-      url.searchParams.append('page', options.page.toString());
+      url.searchParams.append("page", options.page.toString());
     }
     if (options.limit) {
-      url.searchParams.append('limit', options.limit.toString());
+      url.searchParams.append("limit", options.limit.toString());
     }
     if (options.filters) {
       Object.entries(options.filters).forEach(([key, value]) => {
@@ -165,13 +169,20 @@ export class ApiClient {
       });
     }
     if (options.sort) {
-      url.searchParams.append('sort', `${options.sort.field}:${options.sort.direction}`);
+      url.searchParams.append(
+        "sort",
+        `${options.sort.field}:${options.sort.direction}`,
+      );
     }
 
     return url.toString();
   }
 
-  private getCacheKey(method: string, endpoint: string, options: QueryOptions): string {
+  private getCacheKey(
+    method: string,
+    endpoint: string,
+    options: QueryOptions,
+  ): string {
     return `${method}:${endpoint}:${JSON.stringify(options)}`;
   }
 
@@ -181,7 +192,7 @@ export class ApiClient {
   }
 
   private extractMetadata(response: Response): Record<string, any> {
-    const total = response.headers.get('x-total-count');
+    const total = response.headers.get("x-total-count");
     return {
       total: total ? parseInt(total, 10) : undefined,
     };
@@ -201,13 +212,13 @@ export class ApiClient {
 }
 
 export const apiClient = ApiClient.getInstance({
-  baseUrl: import.meta.env.VITE_API_URL || '',
+  baseUrl: import.meta.env.VITE_API_URL || "",
   cacheConfig: {
     ttl: 5 * 60 * 1000, // 5 minutes
-    maxSize: 100
+    maxSize: 100,
   },
   retryConfig: {
     maxRetries: 3,
-    retryDelay: 1000
-  }
+    retryDelay: 1000,
+  },
 });
