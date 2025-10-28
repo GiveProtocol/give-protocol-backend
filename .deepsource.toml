@@ -1,11 +1,8 @@
 version = 1
 
 [[analyzers]]
-name = "slither"
-type = "community"
-
-[[analyzers]]
 name = "javascript"
+enabled = true
 
   [analyzers.meta]
   plugins = ["react"]
@@ -13,6 +10,10 @@ name = "javascript"
     "nodejs",
     "jest"
   ]
+
+[[analyzers]]
+name = "sql"
+enabled = true
 
 [[transformers]]
 name = "prettier"
