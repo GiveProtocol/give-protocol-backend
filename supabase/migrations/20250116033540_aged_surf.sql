@@ -16,6 +16,7 @@
 BEGIN;
 
 -- Clear all data in reverse dependency order
+-- NOSONAR: Intentional full table clears to reset sample data (plsql:DeleteOrUpdateWithoutWhereCheck)
 DELETE FROM impact_metrics;
 DELETE FROM charity_documents;
 DELETE FROM withdrawal_requests;
@@ -25,7 +26,7 @@ DELETE FROM donor_profiles;
 DELETE FROM profiles;
 
 -- Refresh charity categories with clean insert
-DELETE FROM charity_categories;
+DELETE FROM charity_categories; -- NOSONAR: Intentional clear before re-seeding
 INSERT INTO charity_categories (name, description)
 VALUES 
   ('Water & Sanitation', 'Clean water and sanitation projects'),
