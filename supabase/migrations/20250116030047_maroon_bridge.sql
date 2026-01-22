@@ -18,6 +18,7 @@
 */
 
 -- Clear all sample data in reverse order of dependencies
+-- NOSONAR: Intentional full table clears to reset sample data (plsql:DeleteOrUpdateWithoutWhereCheck)
 DELETE FROM impact_metrics;
 DELETE FROM charity_documents;
 DELETE FROM withdrawal_requests;
