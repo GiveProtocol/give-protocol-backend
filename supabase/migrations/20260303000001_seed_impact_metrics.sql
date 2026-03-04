@@ -1,7 +1,7 @@
 -- Seed data for the three existing portfolio funds.
 -- Fund '1' = Environmental, Fund '2' = Poverty Relief, Fund '3' = Education.
 
-INSERT INTO impact_metrics (fund_id, unit_name, unit_cost_usd, unit_icon, description_template, sort_order) VALUES
+INSERT INTO fund_impact_metrics (fund_id, unit_name, unit_cost_usd, unit_icon, description_template, sort_order) VALUES
   -- Environmental Impact Fund
   ('1', 'Acres of Rainforest Protected',  25.0000, 'trees',       'This could protect {{value}} {{unit_name}}',  0),
   ('1', 'Tree Saplings Planted',           5.0000, 'sprout',      'This could plant {{value}} {{unit_name}}',    1),
