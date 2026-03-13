@@ -9,7 +9,8 @@
     "reset": "supabase db reset",
     "generate-types": "supabase gen types typescript --local > src/types/database.ts",
     "migrate": "supabase db push",
-    "seed": "supabase db seed"
+    "seed": "supabase db seed",
+    "import-irs": "node scripts/import-irs-bmf.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.7",
