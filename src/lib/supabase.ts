@@ -55,32 +55,33 @@ supabase.auth.onAuthStateChange((event, session) => {
 });
 
 // Create a helper function for error handling
-export const handleSupabaseError = (error: any) => {
-  if (error?.message?.includes('JWT')) {
-    Logger.warn('JWT token expired or invalid', { error });
+export const handleSupabaseError = (error: unknown) => {
+  const err = error as Record<string, string | undefined> | null;
+  if (err?.message?.includes('JWT')) {
+    Logger.warn('JWT token expired or invalid', { error: err });
     // Handle token expiration
     window.location.href = '/login';
     return;
   }
 
-  if (error?.message?.includes('Failed to fetch')) {
-    Logger.error('Network error occurred', { error });
+  if (err?.message?.includes('Failed to fetch')) {
+    Logger.error('Network error occurred', { error: err });
     // Handle network errors
     return new Error('Network error. Please check your connection and try again.');
   }
 
-  if (error?.message?.includes('AuthRetryableFetchError')) {
-    Logger.warn('Retryable auth error occurred', { error });
+  if (err?.message?.includes('AuthRetryableFetchError')) {
+    Logger.warn('Retryable auth error occurred', { error: err });
     // These errors are automatically retried by Supabase
     return;
   }
 
-  Logger.error('Supabase error occurred', { error });
+  Logger.error('Supabase error occurred', { error: err });
   throw error;
 };
 
 // Create a wrapper function for RPC calls with retry logic
-export const supabaseRpcWithRetry = async (fn: string, params?: any) => {
+export const supabaseRpcWithRetry = async (fn: string, params?: Record<string, unknown>) => {
   const maxRetries = 3;
   const retryDelay = 1000; // 1 second
   

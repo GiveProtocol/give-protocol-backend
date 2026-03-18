@@ -7,13 +7,13 @@ import { validateEmail, validatePassword } from '../utils/validation';
 export interface AuthError {
   code: string;
   message: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
   severity: 'low' | 'medium' | 'high';
 }
 
 export interface AuthResponse {
   success: boolean;
-  data?: any;
+  data?: unknown;
   error?: AuthError;
 }
 
@@ -255,12 +255,13 @@ class AuthService {
     }
   }
 
-  private handleAuthError(error: any): AuthResponse {
+  private handleAuthError(error: unknown): AuthResponse {
+    const err = error as Record<string, unknown> | null;
     const authError: AuthError = {
-      code: error.code || 'UNKNOWN_ERROR',
-      message: error.message || 'An unexpected error occurred',
+      code: (err?.code as string) || 'UNKNOWN_ERROR',
+      message: (err?.message as string) || 'An unexpected error occurred',
       severity: 'medium',
-      details: error
+      details: err ? { code: err.code, message: err.message } : undefined
     };
 
     // Log suspicious activities
@@ -295,15 +296,16 @@ class AuthService {
     this.rateLimitAttempts.delete(identifier);
   }
 
-  private isSuspiciousError(error: any): boolean {
+  private isSuspiciousError(error: unknown): boolean {
+    const err = error as Record<string, string | undefined> | null;
     const suspiciousPatterns = [
       'invalid_signature',
       'invalid_nonce',
       'multiple_attempts',
       'invalid_token'
     ];
-    return suspiciousPatterns.some(pattern => 
-      error.code?.includes(pattern) || error.message?.includes(pattern)
+    return suspiciousPatterns.some(pattern =>
+      err?.code?.includes(pattern) || err?.message?.includes(pattern)
     );
   }
 }

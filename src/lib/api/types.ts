@@ -12,7 +12,7 @@ export interface ApiResponse<T> {
 export interface ApiError {
   code: string;
   message: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
 }
 
 // Charity Types
@@ -77,7 +77,7 @@ export interface CacheEntry<T> {
 export interface QueryOptions {
   page?: number;
   limit?: number;
-  filters?: Record<string, any>;
+  filters?: Record<string, unknown>;
   sort?: {
     field: string;
     direction: 'asc' | 'desc';

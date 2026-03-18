@@ -55,7 +55,7 @@ export class ApiClient {
 
   async post<T>(
     endpoint: string,
-    data: any,
+    data: unknown,
     options: QueryOptions = {}
   ): Promise<ApiResponse<T>> {
     return this.request<T>('POST', endpoint, data, options);
@@ -63,7 +63,7 @@ export class ApiClient {
 
   async put<T>(
     endpoint: string,
-    data: any,
+    data: unknown,
     options: QueryOptions = {}
   ): Promise<ApiResponse<T>> {
     return this.request<T>('PUT', endpoint, data, options);
@@ -79,7 +79,7 @@ export class ApiClient {
   private async request<T>(
     method: string,
     endpoint: string,
-    data?: any,
+    data?: unknown,
     options: QueryOptions = {},
     retryCount = 0
   ): Promise<ApiResponse<T>> {
@@ -180,7 +180,7 @@ export class ApiClient {
     return {};
   }
 
-  private extractMetadata(response: Response): Record<string, any> {
+  private extractMetadata(response: Response): Record<string, unknown> {
     const total = response.headers.get('x-total-count');
     return {
       total: total ? parseInt(total, 10) : undefined,

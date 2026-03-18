@@ -1,6 +1,15 @@
 import { Logger } from '../logger';
 import { PerformanceMetrics } from '../performance/metrics';
 
+interface MetricEntry {
+  type: string;
+  appId: string;
+  environment: string;
+  userAgent: string;
+  url: string;
+  [key: string]: unknown;
+}
+
 interface MonitoringConfig {
   apiKey: string;
   appId: string;
@@ -13,7 +22,7 @@ export class MonitoringService {
   private metrics: PerformanceMetrics;
   private readonly config: MonitoringConfig;
   private readonly MAX_BATCH_SIZE = 100;
-  private metricQueue: any[] = [];
+  private metricQueue: MetricEntry[] = [];
   private batchTimeout: NodeJS.Timeout | null = null;
 
   private constructor(config: MonitoringConfig) {
@@ -136,7 +145,7 @@ export class MonitoringService {
     };
   }
 
-  private queueMetric(type: string, data: any): void {
+  private queueMetric(type: string, data: Record<string, unknown>): void {
     if (!this.config.enabledMonitors.includes(type)) {
       return;
     }
@@ -207,7 +216,7 @@ export class MonitoringService {
     });
   }
 
-  public recordUserAction(action: string, details: Record<string, any> = {}): void {
+  public recordUserAction(action: string, details: Record<string, unknown> = {}): void {
     this.queueMetric('userAction', {
       action,
       details,
@@ -215,7 +224,7 @@ export class MonitoringService {
     });
   }
 
-  public getMetrics(): Record<string, any> {
+  public getMetrics(): Record<string, unknown> {
     return this.metrics.getMetrics();
   }
 }

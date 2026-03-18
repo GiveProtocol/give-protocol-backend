@@ -90,7 +90,7 @@ export function initSentry() {
 // Helper to capture custom events
 export function captureCustomEvent(
   name: string,
-  data?: Record<string, any>,
+  data?: Record<string, unknown>,
   level: Sentry.SeverityLevel = 'info'
 ) {
   if (!import.meta.env.PROD) return;
