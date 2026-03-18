@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { Search, AlertTriangle, Eye, Edit, Trash, XCircle, User, Shield } from 'lucide-react';
+import { Search, AlertTriangle, Eye, Edit, Trash, XCircle, User } from 'lucide-react';
 import { formatDate } from '@/utils/date';
 import { Logger } from '@/utils/logger';
 

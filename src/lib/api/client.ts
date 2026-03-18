@@ -1,8 +1,6 @@
 import { ApiResponse, ApiError, QueryOptions } from './types';
 import { Logger } from '@/utils/logger';
 import { CacheManager } from '@/utils/caching';
-import { ErrorHandler } from '@/utils/errorBoundary';
-
 interface ApiClientConfig {
   baseUrl: string;
   cacheConfig?: {

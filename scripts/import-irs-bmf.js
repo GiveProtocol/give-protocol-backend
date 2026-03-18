@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 /**
  * Import IRS Exempt Organizations Business Master File (BMF) data
  * into the irs_organizations table.

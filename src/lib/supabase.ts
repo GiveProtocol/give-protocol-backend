@@ -39,7 +39,7 @@ export const supabase = createClient<Database>(
 );
 
 // Add error handling and retry logic
-supabase.auth.onAuthStateChange((event, session) => {
+supabase.auth.onAuthStateChange((event, _session) => {
   if (event === 'SIGNED_OUT') {
     // Clear any cached data
     window.localStorage.removeItem('give-protocol-auth');

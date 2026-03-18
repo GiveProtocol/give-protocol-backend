@@ -2,21 +2,19 @@ import React, { useState, useCallback } from 'react';
 import { Navigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/hooks/useProfile';
-import { 
-  Users, 
-  Building, 
-  DollarSign, 
-  Clock, 
-  Shield, 
-  BarChart, 
-  Settings, 
-  Database,
+import {
+  Users,
+  Building,
+  DollarSign,
+  Clock,
+  Shield,
+  BarChart,
+  Settings,
   FileText,
   AlertTriangle,
   Menu,
   X
 } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import AdminCharities from './AdminCharities';
@@ -34,7 +32,6 @@ const AdminDashboard: React.FC = () => {
   const { user } = useAuth();
   const { profile, loading: profileLoading } = useProfile();
   const [activeTab, setActiveTab] = useState<AdminTab>('dashboard');
-  const [error, setError] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const handleTabChange = useCallback((tab: AdminTab) => {
@@ -65,7 +62,7 @@ const AdminDashboard: React.FC = () => {
         <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
           <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-red-700 mb-2">Access Denied</h2>
-          <p className="text-red-600 mb-4">You don't have permission to access the admin panel.</p>
+          <p className="text-red-600 mb-4">You don&apos;t have permission to access the admin panel.</p>
           <Link to="/">
             <Button>Return to Homepage</Button>
           </Link>
@@ -229,12 +226,6 @@ const AdminDashboard: React.FC = () => {
 
       {/* Main Content */}
       <div className="flex-1 p-4 md:p-8 md:ml-0 overflow-auto">
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
-            {error}
-          </div>
-        )}
-        
         {renderTabContent()}
       </div>
     </div>
