@@ -33,10 +33,6 @@ const AdminCharities: React.FC = () => {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  useEffect(() => {
-    fetchCharities();
-  }, []);
-
   const fetchCharities = async () => {
     try {
       setLoading(true);
@@ -65,6 +61,10 @@ const AdminCharities: React.FC = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchCharities();
+  }, []);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);

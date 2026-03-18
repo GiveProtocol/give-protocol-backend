@@ -35,10 +35,6 @@ const AdminLogs: React.FC = () => {
   const [actionFilter, setActionFilter] = useState<string>('all');
   const [tableFilter, setTableFilter] = useState<string>('all');
 
-  useEffect(() => {
-    fetchLogs();
-  }, []);
-
   const fetchLogs = async () => {
     try {
       setLoading(true);
@@ -67,6 +63,10 @@ const AdminLogs: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    fetchLogs();
+  }, []);
+
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
@@ -74,17 +74,20 @@ const AdminLogs: React.FC = () => {
   const getDateRange = () => {
     const now = new Date();
     switch (dateFilter) {
-      case 'today':
+      case 'today': {
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         return { start: today };
-      case 'week':
+      }
+      case 'week': {
         const week = new Date(now);
         week.setDate(now.getDate() - 7);
         return { start: week };
-      case 'month':
+      }
+      case 'month': {
         const month = new Date(now);
         month.setMonth(now.getMonth() - 1);
         return { start: month };
+      }
       default:
         return null;
     }
@@ -284,7 +287,7 @@ const AdminLogs: React.FC = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">{log.user?.email || 'Anonymous'}</div>
-                    <div className="text-xs text-gray-500 font-mono">{log.user_id ? log.user_id.substring(0, 8) + '...' : 'N/A'}</div>
+                    <div className="text-xs text-gray-500 font-mono">{log.user_id ? `${log.user_id.substring(0, 8)}...` : 'N/A'}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${

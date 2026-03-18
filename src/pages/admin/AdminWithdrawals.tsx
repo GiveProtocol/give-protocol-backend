@@ -40,10 +40,6 @@ const AdminWithdrawals: React.FC = () => {
   const [processingTransaction, setProcessingTransaction] = useState(false);
   const { withdraw } = useDonation();
 
-  useEffect(() => {
-    fetchWithdrawals();
-  }, []);
-
   const fetchWithdrawals = async () => {
     try {
       setLoading(true);
@@ -75,6 +71,10 @@ const AdminWithdrawals: React.FC = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchWithdrawals();
+  }, []);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);

@@ -37,7 +37,7 @@ export class ApiClient {
     return this.instance;
   }
 
-  async get<T>(
+  get<T>(
     endpoint: string,
     options: QueryOptions = {}
   ): Promise<ApiResponse<T>> {
@@ -45,13 +45,13 @@ export class ApiClient {
     const cachedResponse = this.cache.get<ApiResponse<T>>(cacheKey);
 
     if (cachedResponse) {
-      return cachedResponse;
+      return Promise.resolve(cachedResponse);
     }
 
     return this.request<T>('GET', endpoint, undefined, options);
   }
 
-  async post<T>(
+  post<T>(
     endpoint: string,
     data: unknown,
     options: QueryOptions = {}
@@ -59,7 +59,7 @@ export class ApiClient {
     return this.request<T>('POST', endpoint, data, options);
   }
 
-  async put<T>(
+  put<T>(
     endpoint: string,
     data: unknown,
     options: QueryOptions = {}
@@ -67,7 +67,7 @@ export class ApiClient {
     return this.request<T>('PUT', endpoint, data, options);
   }
 
-  async delete<T>(
+  delete<T>(
     endpoint: string,
     options: QueryOptions = {}
   ): Promise<ApiResponse<T>> {

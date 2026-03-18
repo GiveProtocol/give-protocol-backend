@@ -37,10 +37,6 @@ const AdminVerifications: React.FC = () => {
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
 
-  useEffect(() => {
-    fetchDocuments();
-  }, []);
-
   const fetchDocuments = async () => {
     try {
       setLoading(true);
@@ -72,6 +68,10 @@ const AdminVerifications: React.FC = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchDocuments();
+  }, []);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);

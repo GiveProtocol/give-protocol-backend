@@ -198,7 +198,7 @@ export class MonitoringService {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to send metrics: ' + response.statusText);
+        throw new Error(`Failed to send metrics: ${response.statusText}`);
       }
     } catch (error) {
       Logger.error('Failed to send metrics batch', { error, metricsCount: metrics.length });

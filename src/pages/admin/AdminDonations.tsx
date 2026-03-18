@@ -38,10 +38,6 @@ const AdminDonations: React.FC = () => {
   const [selectedDonation, setSelectedDonation] = useState<Donation | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
-  useEffect(() => {
-    fetchDonations();
-  }, []);
-
   const fetchDonations = async () => {
     try {
       setLoading(true);
@@ -78,6 +74,10 @@ const AdminDonations: React.FC = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchDonations();
+  }, []);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
