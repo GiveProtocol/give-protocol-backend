@@ -13,6 +13,7 @@ interface ApiClientConfig {
   };
 }
 
+/** Singleton HTTP client with caching, retries, and request cancellation. */
 export class ApiClient {
   private static instance: ApiClient;
   private cache: CacheManager;
@@ -30,6 +31,7 @@ export class ApiClient {
     this.abortControllers = new Map();
   }
 
+  /** Return the singleton instance, creating it from config on first call. */
   static getInstance(config?: ApiClientConfig): ApiClient {
     if (!this.instance && config) {
       this.instance = new ApiClient(config);
@@ -78,6 +80,7 @@ export class ApiClient {
     return this.request<T>('DELETE', endpoint, undefined, options);
   }
 
+  /** Execute an HTTP request with retry and caching logic. */
   private async request<T>(
     method: string,
     endpoint: string,
@@ -100,7 +103,7 @@ export class ApiClient {
         signal: controller.signal,
       });
 
-      const result = await this.handleResponse<T>(response);
+      const result = await ApiClient.handleResponse<T>(response);
 
       if (method === 'GET' && result.data) {
         const cacheKey = ApiClient.getCacheKey(method, endpoint, options);
@@ -121,7 +124,8 @@ export class ApiClient {
     }
   }
 
-  private async handleResponse<T>(response: Response): Promise<ApiResponse<T>> {
+  /** Parse the fetch response, throwing on non-OK status. */
+  private static async handleResponse<T>(response: Response): Promise<ApiResponse<T>> {
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || 'Request failed');
@@ -135,6 +139,7 @@ export class ApiClient {
     };
   }
 
+  /** Wrap an error into a standardised ApiResponse. */
   private static handleError<T>(error: unknown): ApiResponse<T> {
     const apiError: ApiError = {
       code: 'REQUEST_FAILED',
@@ -152,9 +157,10 @@ export class ApiClient {
     };
   }
 
+  /** Build a full URL from the endpoint and query options. */
   private buildUrl(endpoint: string, options: QueryOptions): string {
     const url = new URL(endpoint, this.baseUrl);
-    
+
     if (options.page) {
       url.searchParams.append('page', options.page.toString());
     }
@@ -173,15 +179,18 @@ export class ApiClient {
     return url.toString();
   }
 
+  /** Derive a deterministic cache key from method, endpoint, and options. */
   private static getCacheKey(method: string, endpoint: string, options: QueryOptions): string {
     return `${method}:${endpoint}:${JSON.stringify(options)}`;
   }
 
+  /** Return authorization headers for outgoing requests. */
   private static getAuthHeaders(): Record<string, string> {
     // Add authentication headers if needed
     return {};
   }
 
+  /** Extract pagination metadata from response headers. */
   private static extractMetadata(response: Response): Record<string, unknown> {
     const total = response.headers.get('x-total-count');
     return {
@@ -189,6 +198,7 @@ export class ApiClient {
     };
   }
 
+  /** Abort an in-flight request by endpoint. */
   cancelRequest(endpoint: string): void {
     const controller = this.abortControllers.get(endpoint);
     if (controller) {
@@ -197,6 +207,7 @@ export class ApiClient {
     }
   }
 
+  /** Clear the response cache. */
   clearCache(): void {
     this.cache.clear();
   }
