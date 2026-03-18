@@ -37,11 +37,12 @@ export class ApiClient {
     return this.instance;
   }
 
+  /** Send a GET request, returning a cached response if available. */
   get<T>(
     endpoint: string,
     options: QueryOptions = {}
   ): Promise<ApiResponse<T>> {
-    const cacheKey = this.getCacheKey('GET', endpoint, options);
+    const cacheKey = ApiClient.getCacheKey('GET', endpoint, options);
     const cachedResponse = this.cache.get<ApiResponse<T>>(cacheKey);
 
     if (cachedResponse) {
@@ -51,6 +52,7 @@ export class ApiClient {
     return this.request<T>('GET', endpoint, undefined, options);
   }
 
+  /** Send a POST request with the given data. */
   post<T>(
     endpoint: string,
     data: unknown,
@@ -59,6 +61,7 @@ export class ApiClient {
     return this.request<T>('POST', endpoint, data, options);
   }
 
+  /** Send a PUT request with the given data. */
   put<T>(
     endpoint: string,
     data: unknown,
@@ -67,6 +70,7 @@ export class ApiClient {
     return this.request<T>('PUT', endpoint, data, options);
   }
 
+  /** Send a DELETE request. */
   delete<T>(
     endpoint: string,
     options: QueryOptions = {}
@@ -90,7 +94,7 @@ export class ApiClient {
         method,
         headers: {
           'Content-Type': 'application/json',
-          ...this.getAuthHeaders(),
+          ...ApiClient.getAuthHeaders(),
         },
         body: data ? JSON.stringify(data) : undefined,
         signal: controller.signal,
@@ -99,19 +103,19 @@ export class ApiClient {
       const result = await this.handleResponse<T>(response);
 
       if (method === 'GET' && result.data) {
-        const cacheKey = this.getCacheKey(method, endpoint, options);
+        const cacheKey = ApiClient.getCacheKey(method, endpoint, options);
         this.cache.set(cacheKey, result);
       }
 
       return result;
     } catch (error) {
       if (retryCount < this.retryConfig.maxRetries) {
-        await new Promise(resolve => 
+        await new Promise(resolve =>
           setTimeout(resolve, this.retryConfig.retryDelay * Math.pow(2, retryCount))
         );
         return this.request<T>(method, endpoint, data, options, retryCount + 1);
       }
-      return this.handleError<T>(error);
+      return ApiClient.handleError<T>(error);
     } finally {
       this.abortControllers.delete(endpoint);
     }
@@ -127,11 +131,11 @@ export class ApiClient {
     return {
       data,
       error: null,
-      metadata: this.extractMetadata(response),
+      metadata: ApiClient.extractMetadata(response),
     };
   }
 
-  private handleError<T>(error: unknown): ApiResponse<T> {
+  private static handleError<T>(error: unknown): ApiResponse<T> {
     const apiError: ApiError = {
       code: 'REQUEST_FAILED',
       message: error instanceof Error ? error.message : 'Unknown error occurred',
@@ -169,16 +173,16 @@ export class ApiClient {
     return url.toString();
   }
 
-  private getCacheKey(method: string, endpoint: string, options: QueryOptions): string {
+  private static getCacheKey(method: string, endpoint: string, options: QueryOptions): string {
     return `${method}:${endpoint}:${JSON.stringify(options)}`;
   }
 
-  private getAuthHeaders(): Record<string, string> {
+  private static getAuthHeaders(): Record<string, string> {
     // Add authentication headers if needed
     return {};
   }
 
-  private extractMetadata(response: Response): Record<string, unknown> {
+  private static extractMetadata(response: Response): Record<string, unknown> {
     const total = response.headers.get('x-total-count');
     return {
       total: total ? parseInt(total, 10) : undefined,

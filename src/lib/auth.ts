@@ -265,7 +265,7 @@ class AuthService {
     };
 
     // Log suspicious activities
-    if (this.isSuspiciousError(error)) {
+    if (AuthService.isSuspiciousError(error)) {
       this.securityMonitor.logSuspiciousActivity(authError.code, {
         message: authError.message,
         timestamp: new Date().toISOString()
@@ -296,7 +296,7 @@ class AuthService {
     this.rateLimitAttempts.delete(identifier);
   }
 
-  private isSuspiciousError(error: unknown): boolean {
+  private static isSuspiciousError(error: unknown): boolean {
     const err = error as Record<string, string | undefined> | null;
     const suspiciousPatterns = [
       'invalid_signature',

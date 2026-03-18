@@ -65,9 +65,8 @@ export const handleSupabaseError = (error: unknown) => {
   }
 
   if (err?.message?.includes('Failed to fetch')) {
-    Logger.error('Network error occurred', { error: err });
-    // Handle network errors
-    return new Error('Network error. Please check your connection and try again.');
+    Logger.error('Network error. Please check your connection and try again.', { error: err });
+    return;
   }
 
   if (err?.message?.includes('AuthRetryableFetchError')) {

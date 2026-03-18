@@ -140,7 +140,7 @@ export function trackTransaction(
     error?: string;
   }
 ) {
-  if (!import.meta.env.PROD) return { finish: () => {} };
+  if (!import.meta.env.PROD) return { finish: () => { /* no-op in non-prod */ } };
   
   // Sentry v9 doesn't expose startTransaction directly
   // Use spans or performance monitoring instead

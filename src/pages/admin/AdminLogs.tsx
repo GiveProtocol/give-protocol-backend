@@ -125,6 +125,7 @@ const AdminLogs: React.FC = () => {
     setIsViewModalOpen(true);
   };
 
+  /** Export filtered audit logs as a CSV file download. */
   const handleExport = () => {
     try {
       // Convert logs to CSV
