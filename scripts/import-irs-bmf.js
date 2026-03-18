@@ -34,7 +34,6 @@ const IRS_REGIONAL_FILES = [
 ];
 
 const BATCH_SIZE = 200; // rows per upsert call
-const SUBSECTION_501C3 = '03';
 const TEMP_DIR = path.join(__dirname, '..', '.irs-temp');
 
 // CSV column indexes (0-based) — matches IRS BMF header order
@@ -81,12 +80,14 @@ function loadEnv() {
   }
 }
 
+/**
+ * Create and return a Supabase client using environment credentials.
+ */
 function getSupabaseClient() {
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_KEY;
   if (!url || !key) {
-    console.error('Missing SUPABASE_URL or SUPABASE_SERVICE_KEY');
-    process.exit(1);
+    throw new Error('Missing SUPABASE_URL or SUPABASE_SERVICE_KEY');
   }
   return createClient(url, key, {
     db: { schema: 'public' },
@@ -141,6 +142,40 @@ function parseCSVLine(line) {
 }
 
 /**
+ * Map parsed CSV columns to a row object for the irs_organizations table.
+ * Returns null if the row should be skipped (not 501(c)(3) or missing EIN).
+ */
+function mapColumnsToRow(cols) {
+  const subsection = (cols[COL.SUBSECTION] || '').replace(/^0*/, '');
+  if (subsection !== '3') return null;
+
+  const ein = (cols[COL.EIN] || '').trim();
+  if (!ein) return null;
+
+  return {
+    ein,
+    name: cols[COL.NAME] || '',
+    ico: cols[COL.ICO] || null,
+    street: cols[COL.STREET] || null,
+    city: cols[COL.CITY] || null,
+    state: cols[COL.STATE] || null,
+    zip: cols[COL.ZIP] || null,
+    group_exemption: cols[COL.GROUP] || null,
+    subsection: cols[COL.SUBSECTION] || null,
+    affiliation: cols[COL.AFFILIATION] || null,
+    classification: cols[COL.CLASSIFICATION] || null,
+    ruling: cols[COL.RULING] || null,
+    deductibility: cols[COL.DEDUCTIBILITY] || null,
+    foundation: cols[COL.FOUNDATION] || null,
+    activity: cols[COL.ACTIVITY] || null,
+    organization: cols[COL.ORGANIZATION] || null,
+    status: cols[COL.STATUS] || null,
+    ntee_cd: cols[COL.NTEE_CD] || null,
+    sort_name: cols[COL.SORT_NAME] || null,
+  };
+}
+
+/**
  * Stream-parse a CSV file, filter for 501(c)(3), and yield row objects.
  */
 async function* parse501c3Rows(filePath) {
@@ -157,36 +192,8 @@ async function* parse501c3Rows(filePath) {
     }
     if (!line.trim()) continue;
 
-    const cols = parseCSVLine(line);
-    const subsection = (cols[COL.SUBSECTION] || '').replace(/^0*/, '');
-
-    // Filter: only 501(c)(3)
-    if (subsection !== '3') continue;
-
-    const ein = (cols[COL.EIN] || '').trim();
-    if (!ein) continue;
-
-    yield {
-      ein,
-      name: cols[COL.NAME] || '',
-      ico: cols[COL.ICO] || null,
-      street: cols[COL.STREET] || null,
-      city: cols[COL.CITY] || null,
-      state: cols[COL.STATE] || null,
-      zip: cols[COL.ZIP] || null,
-      group_exemption: cols[COL.GROUP] || null,
-      subsection: cols[COL.SUBSECTION] || null,
-      affiliation: cols[COL.AFFILIATION] || null,
-      classification: cols[COL.CLASSIFICATION] || null,
-      ruling: cols[COL.RULING] || null,
-      deductibility: cols[COL.DEDUCTIBILITY] || null,
-      foundation: cols[COL.FOUNDATION] || null,
-      activity: cols[COL.ACTIVITY] || null,
-      organization: cols[COL.ORGANIZATION] || null,
-      status: cols[COL.STATUS] || null,
-      ntee_cd: cols[COL.NTEE_CD] || null,
-      sort_name: cols[COL.SORT_NAME] || null,
-    };
+    const row = mapColumnsToRow(parseCSVLine(line));
+    if (row) yield row;
   }
 }
 
@@ -228,7 +235,6 @@ async function main() {
   console.log('========================\n');
 
   let totalInserted = 0;
-  let totalSkipped = 0;
 
   for (const url of IRS_REGIONAL_FILES) {
     const filename = path.basename(url);
@@ -237,7 +243,7 @@ async function main() {
     // Download
     console.log(`Downloading ${filename}...`);
     await downloadFile(url, localPath);
-    console.log(`  Downloaded.`);
+    console.log('  Downloaded.');
 
     // Parse and upsert in batches
     let batch = [];
@@ -264,19 +270,18 @@ async function main() {
     console.log(`  ${filename}: ${fileCount.toLocaleString()} 501(c)(3) orgs upserted`);
 
     // Clean up temp file
-    try { unlinkSync(localPath); } catch {}
+    try { unlinkSync(localPath); } catch (_) { /* temp file cleanup is best-effort */ }
   }
 
   // Clean up temp dir
   try {
     const { rmdirSync } = require('fs');
     rmdirSync(TEMP_DIR);
-  } catch {}
+  } catch (_) { /* temp dir cleanup is best-effort */ }
 
   console.log(`\nDone. ${totalInserted.toLocaleString()} total 501(c)(3) organizations upserted.`);
 }
 
 main().catch((err) => {
-  console.error('Import failed:', err);
-  process.exit(1);
+  throw new Error(`Import failed: ${err.message || err}`);
 });
