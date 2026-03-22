@@ -44,6 +44,7 @@ const PageHeader: React.FC<{ loading: boolean; onRefresh: () => void }> = ({
   </div>
 );
 
+/** Search input card for filtering donations. */
 const SearchCard: React.FC<{
   searchTerm: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -61,6 +62,7 @@ const SearchCard: React.FC<{
   </Card>
 );
 
+/** Table row displaying a single donation record. */
 const DonationRow: React.FC<{
   donation: Donation;
   onView: (d: Donation) => void;
@@ -93,6 +95,7 @@ const DonationRow: React.FC<{
   </tr>
 );
 
+/** Column displaying transaction details: ID, date, and amount. */
 const TransactionInfo: React.FC<{ donation: Donation }> = ({ donation }) => (
   <div>
     <h3 className="text-lg font-medium text-gray-900 mb-2">

@@ -31,6 +31,329 @@ interface CharityDetails {
   };
 }
 
+const PageHeader: React.FC = () => (
+  <div className="flex justify-between items-center mb-6">
+    <h1 className="text-2xl font-bold text-gray-900">Manage Charities</h1>
+    <Button>Add New Charity</Button>
+  </div>
+);
+
+const SearchCard: React.FC<{
+  searchTerm: string;
+  onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}> = ({ searchTerm, onSearch }) => (
+  <Card className="mb-6">
+    <div className="p-4 relative">
+      <Search className="absolute left-7 top-1/2 transform -translate-y-1/2 text-gray-400" />
+      <Input
+        placeholder="Search charities..."
+        value={searchTerm}
+        onChange={onSearch}
+        className="pl-10"
+      />
+    </div>
+  </Card>
+);
+
+const CharityAvatar: React.FC<{ imageUrl: string | null; name: string }> = ({
+  imageUrl,
+  name,
+}) => {
+  if (imageUrl) {
+    return (
+      <img
+        className="flex-shrink-0 h-10 w-10 rounded-full object-cover"
+        src={imageUrl}
+        alt={name}
+      />
+    );
+  }
+  return (
+    <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+      <Building className="h-6 w-6 text-gray-500" />
+    </div>
+  );
+};
+
+const CharityRow: React.FC<{
+  charity: CharityDetails;
+  onView: (c: CharityDetails) => void;
+  onEdit: (c: CharityDetails) => void;
+  onDelete: (c: CharityDetails) => void;
+}> = ({ charity, onView, onEdit, onDelete }) => (
+  <tr>
+    <td className="px-6 py-4 whitespace-nowrap">
+      <div className="flex items-center">
+        <CharityAvatar imageUrl={charity.image_url} name={charity.name} />
+        <div className="ml-4">
+          <div className="text-sm font-medium text-gray-900">
+            {charity.name}
+          </div>
+          <div className="text-sm text-gray-500">
+            {charity.profile?.created_at
+              ? new Date(charity.profile.created_at).toLocaleDateString()
+              : "Unknown"}
+          </div>
+        </div>
+      </div>
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap">
+      <div className="text-sm text-gray-900">{charity.category}</div>
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap">
+      <div className="text-sm text-gray-900">
+        ${charity.total_received.toLocaleString()}
+      </div>
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap">
+      <div className="text-sm text-gray-900">
+        ${charity.available_balance.toLocaleString()}
+      </div>
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap">
+      <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+        Active
+      </span>
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+      <div className="flex justify-end space-x-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onView(charity)}
+          className="text-indigo-600 hover:text-indigo-900"
+        >
+          <Eye className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onEdit(charity)}
+          className="text-blue-600 hover:text-blue-900"
+        >
+          <Edit className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onDelete(charity)}
+          className="text-red-600 hover:text-red-900"
+        >
+          <Trash className="h-4 w-4" />
+        </Button>
+      </div>
+    </td>
+  </tr>
+);
+
+const BasicInfoColumn: React.FC<{ charity: CharityDetails }> = ({
+  charity,
+}) => (
+  <div>
+    <h3 className="text-lg font-medium text-gray-900 mb-2">
+      Basic Information
+    </h3>
+    <div className="space-y-3">
+      <div>
+        <p className="text-sm text-gray-500">Name</p>
+        <p className="font-medium">{charity.name}</p>
+      </div>
+      <div>
+        <p className="text-sm text-gray-500">Category</p>
+        <p className="font-medium">{charity.category}</p>
+      </div>
+      <div>
+        <p className="text-sm text-gray-500">Description</p>
+        <p className="text-sm">{charity.description}</p>
+      </div>
+    </div>
+  </div>
+);
+
+const FinancialInfoColumn: React.FC<{ charity: CharityDetails }> = ({
+  charity,
+}) => (
+  <div>
+    <h3 className="text-lg font-medium text-gray-900 mb-2">
+      Financial Information
+    </h3>
+    <div className="space-y-3">
+      <div>
+        <p className="text-sm text-gray-500">Total Received</p>
+        <p className="font-medium">
+          ${charity.total_received.toLocaleString()}
+        </p>
+      </div>
+      <div>
+        <p className="text-sm text-gray-500">Available Balance</p>
+        <p className="font-medium">
+          ${charity.available_balance.toLocaleString()}
+        </p>
+      </div>
+    </div>
+  </div>
+);
+
+const ProfileInfoSection: React.FC<{ charity: CharityDetails }> = ({
+  charity,
+}) => (
+  <div className="mt-6">
+    <h3 className="text-lg font-medium text-gray-900 mb-2">
+      Profile Information
+    </h3>
+    <div className="space-y-3">
+      <div>
+        <p className="text-sm text-gray-500">Profile ID</p>
+        <p className="font-mono text-sm">{charity.profile_id}</p>
+      </div>
+      <div>
+        <p className="text-sm text-gray-500">User ID</p>
+        <p className="font-mono text-sm">{charity.profile?.user_id}</p>
+      </div>
+      <div>
+        <p className="text-sm text-gray-500">Created At</p>
+        <p className="font-medium">
+          {charity.profile?.created_at
+            ? new Date(charity.profile.created_at).toLocaleString()
+            : "Unknown"}
+        </p>
+      </div>
+    </div>
+  </div>
+);
+
+const CharityViewModal: React.FC<{
+  charity: CharityDetails;
+  onClose: () => void;
+}> = ({ charity, onClose }) => (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full">
+      <div className="p-6 border-b border-gray-200 flex justify-between items-center">
+        <h2 className="text-xl font-semibold text-gray-900">
+          Charity Details
+        </h2>
+        <Button variant="ghost" size="sm" onClick={onClose}>
+          <XCircle className="h-5 w-5" />
+        </Button>
+      </div>
+      <div className="p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <BasicInfoColumn charity={charity} />
+          <FinancialInfoColumn charity={charity} />
+        </div>
+        <ProfileInfoSection charity={charity} />
+      </div>
+      <div className="p-6 border-t border-gray-200 flex justify-end">
+        <Button onClick={onClose}>Close</Button>
+      </div>
+    </div>
+  </div>
+);
+
+const CharityEditModalBody: React.FC<{
+  charity: CharityDetails;
+  onInputChange: (field: keyof CharityDetails, value: string) => void;
+}> = ({ charity, onInputChange }) => (
+  <form className="space-y-4">
+    <Input
+      label="Name"
+      value={charity.name}
+      onChange={(e) => onInputChange("name", e.target.value)}
+    />
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        Description
+      </label>
+      <textarea
+        value={charity.description}
+        onChange={(e) => onInputChange("description", e.target.value)}
+        rows={4}
+        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+      />
+    </div>
+    <Input
+      label="Category"
+      value={charity.category}
+      onChange={(e) => onInputChange("category", e.target.value)}
+    />
+    <Input
+      label="Image URL"
+      value={charity.image_url || ""}
+      onChange={(e) => onInputChange("image_url", e.target.value)}
+    />
+  </form>
+);
+
+const CharityEditModal: React.FC<{
+  charity: CharityDetails;
+  loading: boolean;
+  onClose: () => void;
+  onSave: (c: Partial<CharityDetails>) => void;
+  onInputChange: (field: keyof CharityDetails, value: string) => void;
+}> = ({ charity, loading, onClose, onSave, onInputChange }) => (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full">
+      <div className="p-6 border-b border-gray-200 flex justify-between items-center">
+        <h2 className="text-xl font-semibold text-gray-900">Edit Charity</h2>
+        <Button variant="ghost" size="sm" onClick={onClose}>
+          <XCircle className="h-5 w-5" />
+        </Button>
+      </div>
+      <div className="p-6">
+        <CharityEditModalBody
+          charity={charity}
+          onInputChange={onInputChange}
+        />
+      </div>
+      <div className="p-6 border-t border-gray-200 flex justify-end space-x-3">
+        <Button variant="secondary" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button onClick={() => onSave(charity)} disabled={loading}>
+          {loading ? "Saving..." : "Save Changes"}
+        </Button>
+      </div>
+    </div>
+  </div>
+);
+
+const DeleteConfirmContent: React.FC<{ charityName: string }> = ({
+  charityName,
+}) => (
+  <>
+    <AlertTriangle className="mx-auto mb-4 h-6 w-6 text-red-600 bg-red-100 rounded-full p-3 box-content" />
+    <h3 className="text-lg font-medium text-gray-900 text-center mb-2">
+      Confirm Deletion
+    </h3>
+    <p className="text-sm text-gray-500 text-center mb-6">
+      Are you sure you want to delete{" "}
+      <span className="font-semibold">{charityName}</span>? This action cannot
+      be undone.
+    </p>
+  </>
+);
+
+const DeleteConfirmModal: React.FC<{
+  charity: CharityDetails;
+  loading: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+}> = ({ charity, loading, onClose, onConfirm }) => (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+      <DeleteConfirmContent charityName={charity.name} />
+      <div className="flex justify-center space-x-3">
+        <Button variant="secondary" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button variant="danger" onClick={onConfirm} disabled={loading}>
+          {loading ? "Deleting..." : "Delete Charity"}
+        </Button>
+      </div>
+    </div>
+  </div>
+);
+
 /**
  * AdminCharities component retrieves and displays a list of charities for administrative actions such as view, edit, and delete.
  *
@@ -225,10 +548,7 @@ const AdminCharities: React.FC = () => {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Manage Charities</h1>
-        <Button>Add New Charity</Button>
-      </div>
+      <PageHeader />
 
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
@@ -236,19 +556,7 @@ const AdminCharities: React.FC = () => {
         </div>
       )}
 
-      <Card className="mb-6">
-        <div className="p-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <Input
-              placeholder="Search charities..."
-              value={searchTerm}
-              onChange={handleSearch}
-              className="pl-10"
-            />
-          </div>
-        </div>
-      </Card>
+      <SearchCard searchTerm={searchTerm} onSearch={handleSearch} />
 
       <Card>
         <div className="overflow-x-auto">
@@ -295,281 +603,43 @@ const AdminCharities: React.FC = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredCharities.map((charity) => (
-                <tr key={charity.id}>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10">
-                        {charity.image_url ? (
-                          <img
-                            className="h-10 w-10 rounded-full object-cover"
-                            src={charity.image_url}
-                            alt={charity.name}
-                          />
-                        ) : (
-                          <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                            <Building className="h-6 w-6 text-gray-500" />
-                          </div>
-                        )}
-                      </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">
-                          {charity.name}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {charity.profile?.created_at
-                            ? new Date(
-                                charity.profile.created_at,
-                              ).toLocaleDateString()
-                            : "Unknown"}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      {charity.category}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      ${charity.total_received.toLocaleString()}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      ${charity.available_balance.toLocaleString()}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                      Active
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div className="flex justify-end space-x-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleView(charity)}
-                        className="text-indigo-600 hover:text-indigo-900"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEdit(charity)}
-                        className="text-blue-600 hover:text-blue-900"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDelete(charity)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        <Trash className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
+                <CharityRow
+                  key={charity.id}
+                  charity={charity}
+                  onView={handleView}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                />
               ))}
             </tbody>
           </table>
         </div>
       </Card>
 
-      {/* View Modal */}
       {isViewModalOpen && selectedCharity && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold text-gray-900">
-                  Charity Details
-                </h2>
-                <Button variant="ghost" size="sm" onClick={closeViewModal}>
-                  <XCircle className="h-5 w-5" />
-                </Button>
-              </div>
-            </div>
-            <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    Basic Information
-                  </h3>
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-sm text-gray-500">Name</p>
-                      <p className="font-medium">{selectedCharity.name}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Category</p>
-                      <p className="font-medium">{selectedCharity.category}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Description</p>
-                      <p className="text-sm">{selectedCharity.description}</p>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    Financial Information
-                  </h3>
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-sm text-gray-500">Total Received</p>
-                      <p className="font-medium">
-                        ${selectedCharity.total_received.toLocaleString()}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Available Balance</p>
-                      <p className="font-medium">
-                        ${selectedCharity.available_balance.toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="mt-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  Profile Information
-                </h3>
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-sm text-gray-500">Profile ID</p>
-                    <p className="font-mono text-sm">
-                      {selectedCharity.profile_id}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">User ID</p>
-                    <p className="font-mono text-sm">
-                      {selectedCharity.profile?.user_id}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Created At</p>
-                    <p className="font-medium">
-                      {selectedCharity.profile?.created_at
-                        ? new Date(
-                            selectedCharity.profile.created_at,
-                          ).toLocaleString()
-                        : "Unknown"}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="p-6 border-t border-gray-200 flex justify-end">
-              <Button onClick={closeViewModal}>Close</Button>
-            </div>
-          </div>
-        </div>
+        <CharityViewModal
+          charity={selectedCharity}
+          onClose={closeViewModal}
+        />
       )}
 
-      {/* Edit Modal */}
       {isEditModalOpen && selectedCharity && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold text-gray-900">
-                  Edit Charity
-                </h2>
-                <Button variant="ghost" size="sm" onClick={closeEditModal}>
-                  <XCircle className="h-5 w-5" />
-                </Button>
-              </div>
-            </div>
-            <div className="p-6">
-              <form className="space-y-4">
-                <Input
-                  label="Name"
-                  value={selectedCharity.name}
-                  onChange={(e) =>
-                    handleCharityInputChange("name", e.target.value)
-                  }
-                />
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Description
-                  </label>
-                  <textarea
-                    value={selectedCharity.description}
-                    onChange={(e) =>
-                      handleCharityInputChange("description", e.target.value)
-                    }
-                    rows={4}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                  />
-                </div>
-                <Input
-                  label="Category"
-                  value={selectedCharity.category}
-                  onChange={(e) =>
-                    handleCharityInputChange("category", e.target.value)
-                  }
-                />
-                <Input
-                  label="Image URL"
-                  value={selectedCharity.image_url || ""}
-                  onChange={(e) =>
-                    handleCharityInputChange("image_url", e.target.value)
-                  }
-                />
-              </form>
-            </div>
-            <div className="p-6 border-t border-gray-200 flex justify-end space-x-3">
-              <Button variant="secondary" onClick={closeEditModal}>
-                Cancel
-              </Button>
-              <Button
-                onClick={() => handleSaveEdit(selectedCharity)}
-                disabled={loading}
-              >
-                {loading ? "Saving..." : "Save Changes"}
-              </Button>
-            </div>
-          </div>
-        </div>
+        <CharityEditModal
+          charity={selectedCharity}
+          loading={loading}
+          onClose={closeEditModal}
+          onSave={handleSaveEdit}
+          onInputChange={handleCharityInputChange}
+        />
       )}
 
-      {/* Delete Confirmation Modal */}
       {isDeleteModalOpen && selectedCharity && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
-            <div className="p-6">
-              <div className="mx-auto mb-4 w-fit bg-red-100 rounded-full p-3">
-                <AlertTriangle className="h-6 w-6 text-red-600" />
-              </div>
-              <h3 className="text-lg font-medium text-gray-900 text-center mb-2">
-                Confirm Deletion
-              </h3>
-              <p className="text-sm text-gray-500 text-center mb-6">
-                Are you sure you want to delete{" "}
-                <span className="font-semibold">{selectedCharity.name}</span>?
-                This action cannot be undone.
-              </p>
-              <div className="flex justify-center space-x-3">
-                <Button variant="secondary" onClick={closeDeleteModal}>
-                  Cancel
-                </Button>
-                <Button
-                  variant="danger"
-                  onClick={confirmDelete}
-                  disabled={loading}
-                >
-                  {loading ? "Deleting..." : "Delete Charity"}
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <DeleteConfirmModal
+          charity={selectedCharity}
+          loading={loading}
+          onClose={closeDeleteModal}
+          onConfirm={confirmDelete}
+        />
       )}
     </div>
   );
