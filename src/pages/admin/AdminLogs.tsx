@@ -24,6 +24,318 @@ interface AuditLog {
   };
 }
 
+/** Displays a labeled field with a label and value. */
+const LabeledField: React.FC<{
+  label: string;
+  children: React.ReactNode;
+}> = ({ label, children }) => (
+  <div>
+    <p className="text-sm text-gray-500">{label}</p>
+    {children}
+  </div>
+);
+
+/** Modal header with title and close button. */
+const ModalHeader: React.FC<{ onClose: () => void }> = ({ onClose }) => (
+  <div className="p-6 border-b border-gray-200 flex justify-between items-center">
+    <h2 className="text-xl font-semibold text-gray-900">Log Details</h2>
+    <Button variant="ghost" size="sm" onClick={onClose}>
+      <XCircle className="h-5 w-5" />
+    </Button>
+  </div>
+);
+
+/** Basic and action information sections of the modal body. */
+const ModalInfoGrid: React.FC<{ log: AuditLog }> = ({ log }) => (
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <div>
+      <h3 className="text-lg font-medium text-gray-900 mb-2">
+        Basic Information
+      </h3>
+      <div className="space-y-3">
+        <LabeledField label="Log ID">
+          <p className="font-mono text-sm">{log.id}</p>
+        </LabeledField>
+        <LabeledField label="Timestamp">
+          <p className="font-medium">{formatDate(log.created_at, true)}</p>
+        </LabeledField>
+        <LabeledField label="User">
+          <p className="font-medium">{log.user?.email || "Anonymous"}</p>
+        </LabeledField>
+        <LabeledField label="User ID">
+          <p className="font-mono text-sm">{log.user_id || "N/A"}</p>
+        </LabeledField>
+      </div>
+    </div>
+    <div>
+      <h3 className="text-lg font-medium text-gray-900 mb-2">
+        Action Information
+      </h3>
+      <div className="space-y-3">
+        <LabeledField label="Action">
+          <p className="font-medium">{log.action}</p>
+        </LabeledField>
+        <LabeledField label="Table">
+          <p className="font-medium">{log.table_name}</p>
+        </LabeledField>
+        <LabeledField label="Record ID">
+          <p className="font-mono text-sm">{log.record_id}</p>
+        </LabeledField>
+        <LabeledField label="IP Address">
+          <p className="font-medium">{log.ip_address || "Unknown"}</p>
+        </LabeledField>
+      </div>
+    </div>
+  </div>
+);
+
+/** Old/new data diff section of the modal body. */
+const ModalDataGrid: React.FC<{ log: AuditLog }> = ({ log }) => (
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <h3 className="text-lg font-medium text-gray-900 mb-2">Old Data</h3>
+      <div className="bg-gray-50 p-4 rounded-md overflow-auto max-h-60">
+        <pre className="text-xs font-mono text-gray-800">
+          {log.old_data
+            ? JSON.stringify(log.old_data, null, 2)
+            : "No data"}
+        </pre>
+      </div>
+    </div>
+    <div>
+      <h3 className="text-lg font-medium text-gray-900 mb-2">New Data</h3>
+      <div className="bg-gray-50 p-4 rounded-md overflow-auto max-h-60">
+        <pre className="text-xs font-mono text-gray-800">
+          {log.new_data
+            ? JSON.stringify(log.new_data, null, 2)
+            : "No data"}
+        </pre>
+      </div>
+    </div>
+  </div>
+);
+
+/** Full-screen modal to view details of a single audit log entry. */
+const LogViewModal: React.FC<{
+  log: AuditLog;
+  onClose: () => void;
+}> = ({ log, onClose }) => (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full">
+      <ModalHeader onClose={onClose} />
+      <div className="p-6">
+        <ModalInfoGrid log={log} />
+        <ModalDataGrid log={log} />
+      </div>
+      <div className="p-6 border-t border-gray-200 flex justify-end">
+        <Button onClick={onClose}>Close</Button>
+      </div>
+    </div>
+  </div>
+);
+
+/** Page header with title, export, and refresh buttons. */
+const PageHeader: React.FC<{
+  onExport: () => void;
+  onRefresh: () => void;
+  loading: boolean;
+}> = ({ onExport, onRefresh, loading }) => (
+  <div className="flex justify-between items-center mb-6">
+    <h1 className="text-2xl font-bold text-gray-900">Audit Logs</h1>
+    <div className="flex space-x-3">
+      <Button
+        variant="secondary"
+        onClick={onExport}
+        className="flex items-center"
+      >
+        <Download className="h-4 w-4 mr-2" />
+        Export CSV
+      </Button>
+      <Button onClick={onRefresh} disabled={loading}>
+        {loading ? "Refreshing..." : "Refresh"}
+      </Button>
+    </div>
+  </div>
+);
+
+/** Search input and filter dropdowns for the logs list. */
+const FilterControls: React.FC<{
+  searchTerm: string;
+  onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  actionFilter: string;
+  onActionFilterChange: (value: string) => void;
+  uniqueActions: string[];
+  tableFilter: string;
+  onTableFilterChange: (value: string) => void;
+  uniqueTables: string[];
+  dateFilter: "all" | "today" | "week" | "month";
+  onDateFilterChange: (value: "all" | "today" | "week" | "month") => void;
+}> = ({
+  searchTerm,
+  onSearch,
+  actionFilter,
+  onActionFilterChange,
+  uniqueActions,
+  tableFilter,
+  onTableFilterChange,
+  uniqueTables,
+  dateFilter,
+  onDateFilterChange,
+}) => (
+  <Card className="mb-6 p-4">
+    <div className="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-4">
+      <div className="relative flex-grow">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+        <Input
+          placeholder="Search logs..."
+          value={searchTerm}
+          onChange={onSearch}
+          className="pl-10"
+        />
+      </div>
+
+      <div className="flex items-center space-x-2">
+        <Filter className="h-5 w-5 text-gray-400" />
+        <select
+          value={actionFilter}
+          onChange={(e) => onActionFilterChange(e.target.value)}
+          className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+        >
+          <option value="all">All Actions</option>
+          {uniqueActions.map((action) => (
+            <option key={action} value={action}>
+              {action}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="flex items-center space-x-2">
+        <Filter className="h-5 w-5 text-gray-400" />
+        <select
+          value={tableFilter}
+          onChange={(e) => onTableFilterChange(e.target.value)}
+          className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+        >
+          <option value="all">All Tables</option>
+          {uniqueTables.map((table) => (
+            <option key={table} value={table}>
+              {table}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="flex items-center space-x-2">
+        <Calendar className="h-5 w-5 text-gray-400" />
+        <select
+          value={dateFilter}
+          onChange={(e) =>
+            onDateFilterChange(
+              e.target.value as "all" | "today" | "week" | "month",
+            )
+          }
+          className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+        >
+          <option value="all">All Time</option>
+          <option value="today">Today</option>
+          <option value="week">Last 7 Days</option>
+          <option value="month">Last 30 Days</option>
+        </select>
+      </div>
+    </div>
+  </Card>
+);
+
+/** Returns the CSS classes for an action badge based on the action type. */
+const getActionBadgeClass = (action: string): string => {
+  if (action.includes("INSERT")) return "bg-green-100 text-green-800";
+  if (action.includes("UPDATE")) return "bg-blue-100 text-blue-800";
+  if (action.includes("DELETE")) return "bg-red-100 text-red-800";
+  return "bg-gray-100 text-gray-800";
+};
+
+/** A single row in the logs table. */
+const LogTableRow: React.FC<{
+  log: AuditLog;
+  onView: (log: AuditLog) => void;
+}> = ({ log, onView }) => (
+  <tr>
+    <td className="px-6 py-4 whitespace-nowrap">
+      <div className="text-sm text-gray-900">{formatDate(log.created_at)}</div>
+      <div className="text-xs text-gray-500">
+        {new Date(log.created_at).toLocaleTimeString()}
+      </div>
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap">
+      <div className="text-sm text-gray-900">
+        {log.user?.email || "Anonymous"}
+      </div>
+      <div className="text-xs text-gray-500 font-mono">
+        {log.user_id ? `${log.user_id.substring(0, 8)}...` : "N/A"}
+      </div>
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap">
+      <span
+        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getActionBadgeClass(log.action)}`}
+      >
+        {log.action}
+      </span>
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap">
+      <div className="text-sm text-gray-900">{log.table_name}</div>
+      <div className="text-xs text-gray-500 font-mono">
+        {log.record_id.substring(0, 8)}...
+      </div>
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap">
+      <div className="text-sm text-gray-900">
+        {log.ip_address || "Unknown"}
+      </div>
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => onView(log)}
+        className="text-indigo-600 hover:text-indigo-900"
+      >
+        <Eye className="h-4 w-4" />
+      </Button>
+    </td>
+  </tr>
+);
+
+/** Header row for the logs table. */
+const thClass =
+  "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider";
+
+/** Table displaying filtered audit log entries. */
+const LogsTable: React.FC<{
+  logs: AuditLog[];
+  onView: (log: AuditLog) => void;
+}> = ({ logs, onView }) => (
+  <Card className="overflow-x-auto">
+    <table className="min-w-full divide-y divide-gray-200">
+      <thead className="bg-gray-50">
+        <tr>
+          <th scope="col" className={thClass}>Date</th>
+          <th scope="col" className={thClass}>User</th>
+          <th scope="col" className={thClass}>Action</th>
+          <th scope="col" className={thClass}>Table</th>
+          <th scope="col" className={thClass}>IP Address</th>
+          <th scope="col" className={`${thClass} text-right`}>Actions</th>
+        </tr>
+      </thead>
+      <tbody className="bg-white divide-y divide-gray-200">
+        {logs.map((log) => (
+          <LogTableRow key={log.id} log={log} onView={onView} />
+        ))}
+      </tbody>
+    </table>
+  </Card>
+);
+
 /**
  * AdminLogs component fetches and displays audit logs with search and filter functionality.
  * @returns JSX.Element - The admin logs interface.
@@ -213,24 +525,15 @@ const AdminLogs: React.FC = () => {
     );
   }
 
+  const closeModal = () => setIsViewModalOpen(false);
+
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Audit Logs</h1>
-        <div className="flex space-x-3">
-          <Button
-            variant="secondary"
-            onClick={handleExport}
-            className="flex items-center"
-          >
-            <Download className="h-4 w-4 mr-2" />
-            Export CSV
-          </Button>
-          <Button onClick={fetchLogs} disabled={loading}>
-            {loading ? "Refreshing..." : "Refresh"}
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        onExport={handleExport}
+        onRefresh={fetchLogs}
+        loading={loading}
+      />
 
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
@@ -238,291 +541,23 @@ const AdminLogs: React.FC = () => {
         </div>
       )}
 
-      <Card className="mb-6">
-        <div className="p-4">
-          <div className="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-4">
-            <div className="relative flex-grow">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <Input
-                placeholder="Search logs..."
-                value={searchTerm}
-                onChange={handleSearch}
-                className="pl-10"
-              />
-            </div>
+      <FilterControls
+        searchTerm={searchTerm}
+        onSearch={handleSearch}
+        actionFilter={actionFilter}
+        onActionFilterChange={setActionFilter}
+        uniqueActions={uniqueActions}
+        tableFilter={tableFilter}
+        onTableFilterChange={setTableFilter}
+        uniqueTables={uniqueTables}
+        dateFilter={dateFilter}
+        onDateFilterChange={setDateFilter}
+      />
 
-            <div className="flex items-center space-x-2">
-              <Filter className="h-5 w-5 text-gray-400" />
-              <select
-                value={actionFilter}
-                onChange={(e) => setActionFilter(e.target.value)}
-                className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-              >
-                <option value="all">All Actions</option>
-                {uniqueActions.map((action) => (
-                  <option key={action} value={action}>
-                    {action}
-                  </option>
-                ))}
-              </select>
-            </div>
+      <LogsTable logs={filteredLogs} onView={handleView} />
 
-            <div className="flex items-center space-x-2">
-              <Filter className="h-5 w-5 text-gray-400" />
-              <select
-                value={tableFilter}
-                onChange={(e) => setTableFilter(e.target.value)}
-                className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-              >
-                <option value="all">All Tables</option>
-                {uniqueTables.map((table) => (
-                  <option key={table} value={table}>
-                    {table}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Calendar className="h-5 w-5 text-gray-400" />
-              <select
-                value={dateFilter}
-                onChange={(e) =>
-                  setDateFilter(
-                    e.target.value as "all" | "today" | "week" | "month",
-                  )
-                }
-                className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-              >
-                <option value="all">All Time</option>
-                <option value="today">Today</option>
-                <option value="week">Last 7 Days</option>
-                <option value="month">Last 30 Days</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </Card>
-
-      <Card>
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Date
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  User
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Action
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Table
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  IP Address
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredLogs.map((log) => (
-                <tr key={log.id}>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      {formatDate(log.created_at)}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {new Date(log.created_at).toLocaleTimeString()}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      {log.user?.email || "Anonymous"}
-                    </div>
-                    <div className="text-xs text-gray-500 font-mono">
-                      {log.user_id
-                        ? `${log.user_id.substring(0, 8)}...`
-                        : "N/A"}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        log.action.includes("INSERT")
-                          ? "bg-green-100 text-green-800"
-                          : log.action.includes("UPDATE")
-                            ? "bg-blue-100 text-blue-800"
-                            : log.action.includes("DELETE")
-                              ? "bg-red-100 text-red-800"
-                              : "bg-gray-100 text-gray-800"
-                      }`}
-                    >
-                      {log.action}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      {log.table_name}
-                    </div>
-                    <div className="text-xs text-gray-500 font-mono">
-                      {log.record_id.substring(0, 8)}...
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      {log.ip_address || "Unknown"}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleView(log)}
-                      className="text-indigo-600 hover:text-indigo-900"
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Card>
-
-      {/* View Modal */}
       {isViewModalOpen && selectedLog && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold text-gray-900">
-                  Log Details
-                </h2>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsViewModalOpen(false)}
-                >
-                  <XCircle className="h-5 w-5" />
-                </Button>
-              </div>
-            </div>
-            <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    Basic Information
-                  </h3>
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-sm text-gray-500">Log ID</p>
-                      <p className="font-mono text-sm">{selectedLog.id}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Timestamp</p>
-                      <p className="font-medium">
-                        {formatDate(selectedLog.created_at, true)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">User</p>
-                      <p className="font-medium">
-                        {selectedLog.user?.email || "Anonymous"}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">User ID</p>
-                      <p className="font-mono text-sm">
-                        {selectedLog.user_id || "N/A"}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    Action Information
-                  </h3>
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-sm text-gray-500">Action</p>
-                      <p className="font-medium">{selectedLog.action}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Table</p>
-                      <p className="font-medium">{selectedLog.table_name}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Record ID</p>
-                      <p className="font-mono text-sm">
-                        {selectedLog.record_id}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">IP Address</p>
-                      <p className="font-medium">
-                        {selectedLog.ip_address || "Unknown"}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    Old Data
-                  </h3>
-                  <div className="bg-gray-50 p-4 rounded-md overflow-auto max-h-60">
-                    <pre className="text-xs font-mono text-gray-800">
-                      {selectedLog.old_data
-                        ? JSON.stringify(selectedLog.old_data, null, 2)
-                        : "No data"}
-                    </pre>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    New Data
-                  </h3>
-                  <div className="bg-gray-50 p-4 rounded-md overflow-auto max-h-60">
-                    <pre className="text-xs font-mono text-gray-800">
-                      {selectedLog.new_data
-                        ? JSON.stringify(selectedLog.new_data, null, 2)
-                        : "No data"}
-                    </pre>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="p-6 border-t border-gray-200 flex justify-end">
-              <Button onClick={() => setIsViewModalOpen(false)}>Close</Button>
-            </div>
-          </div>
-        </div>
+        <LogViewModal log={selectedLog} onClose={closeModal} />
       )}
     </div>
   );

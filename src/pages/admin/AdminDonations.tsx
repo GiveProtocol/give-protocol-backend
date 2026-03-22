@@ -30,6 +30,156 @@ interface Donation {
   };
 }
 
+/* ── Sub-components ─────────────────────────────────────────────── */
+
+const PageHeader: React.FC<{ loading: boolean; onRefresh: () => void }> = ({
+  loading,
+  onRefresh,
+}) => (
+  <div className="flex justify-between items-center mb-6">
+    <h1 className="text-2xl font-bold text-gray-900">Donation Records</h1>
+    <Button onClick={onRefresh} disabled={loading}>
+      {loading ? "Refreshing..." : "Refresh"}
+    </Button>
+  </div>
+);
+
+const SearchCard: React.FC<{
+  searchTerm: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}> = ({ searchTerm, onChange }) => (
+  <Card className="mb-6">
+    <div className="p-4 relative">
+      <Search className="absolute left-7 top-1/2 transform -translate-y-1/2 text-gray-400" />
+      <Input
+        placeholder="Search donations..."
+        value={searchTerm}
+        onChange={onChange}
+        className="pl-10"
+      />
+    </div>
+  </Card>
+);
+
+const DonationRow: React.FC<{
+  donation: Donation;
+  onView: (d: Donation) => void;
+}> = ({ donation, onView }) => (
+  <tr>
+    <td className="px-6 py-4 whitespace-nowrap">
+      <span className="text-sm font-mono text-gray-900">
+        {donation.id.substring(0, 8)}...
+      </span>
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+      {formatDate(donation.created_at)}
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+      {donation.charity?.charity_details?.name || "Unknown Charity"}
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+      {formatCurrency(donation.amount)}
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => onView(donation)}
+        className="text-indigo-600 hover:text-indigo-900"
+      >
+        <Eye className="h-4 w-4" />
+      </Button>
+    </td>
+  </tr>
+);
+
+const TransactionInfo: React.FC<{ donation: Donation }> = ({ donation }) => (
+  <div>
+    <h3 className="text-lg font-medium text-gray-900 mb-2">
+      Transaction Information
+    </h3>
+    <div className="space-y-3">
+      <div>
+        <p className="text-sm text-gray-500">Transaction ID</p>
+        <p className="font-mono text-sm">{donation.id}</p>
+      </div>
+      <div>
+        <p className="text-sm text-gray-500">Date</p>
+        <p className="font-medium">{formatDate(donation.created_at, true)}</p>
+      </div>
+      <div>
+        <p className="text-sm text-gray-500">Amount</p>
+        <p className="font-medium">{formatCurrency(donation.amount)}</p>
+      </div>
+    </div>
+  </div>
+);
+
+const PartiesInfo: React.FC<{ donation: Donation }> = ({ donation }) => (
+  <div>
+    <h3 className="text-lg font-medium text-gray-900 mb-2">Parties</h3>
+    <div className="space-y-3">
+      <div>
+        <p className="text-sm text-gray-500">Donor ID</p>
+        <p className="font-mono text-sm">
+          {donation.donor_id}
+          <a
+            href={`https://app.supabase.com/project/etqbojasfmpieigeefdj/editor/table/profiles/row/${donation.donor_id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-indigo-600 hover:text-indigo-900 ml-2 inline-block align-middle"
+          >
+            <ExternalLink className="h-3 w-3" />
+          </a>
+        </p>
+      </div>
+      <div>
+        <p className="text-sm text-gray-500">Charity</p>
+        <p className="font-medium">
+          {donation.charity?.charity_details?.name || "Unknown Charity"}
+          <a
+            href={`https://app.supabase.com/project/etqbojasfmpieigeefdj/editor/table/charity_details/row/${donation.charity_id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-indigo-600 hover:text-indigo-900 ml-2 inline-block align-middle"
+          >
+            <ExternalLink className="h-3 w-3" />
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+);
+
+const ModalHeader: React.FC<{ onClose: () => void }> = ({ onClose }) => (
+  <div className="p-6 border-b border-gray-200 flex justify-between items-center">
+    <h2 className="text-xl font-semibold text-gray-900">Donation Details</h2>
+    <Button variant="ghost" size="sm" onClick={onClose}>
+      <XCircle className="h-5 w-5" />
+    </Button>
+  </div>
+);
+
+const DonationViewModal: React.FC<{
+  donation: Donation;
+  onClose: () => void;
+}> = ({ donation, onClose }) => (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full">
+      <ModalHeader onClose={onClose} />
+      <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <TransactionInfo donation={donation} />
+        <PartiesInfo donation={donation} />
+      </div>
+      <div className="p-6 border-t border-gray-200 flex justify-end">
+        <Button onClick={onClose}>Close</Button>
+      </div>
+    </div>
+  </div>
+);
+
+/* ── Main component ─────────────────────────────────────────────── */
+
 /**
  * AdminDonations component displays and manages donation records for administrators.
  * @returns JSX.Element - The rendered component.
@@ -136,12 +286,7 @@ const AdminDonations: React.FC = () => {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Donation Records</h1>
-        <Button onClick={fetchDonations} disabled={loading}>
-          {loading ? "Refreshing..." : "Refresh"}
-        </Button>
-      </div>
+      <PageHeader loading={loading} onRefresh={fetchDonations} />
 
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
@@ -149,19 +294,7 @@ const AdminDonations: React.FC = () => {
         </div>
       )}
 
-      <Card className="mb-6">
-        <div className="p-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <Input
-              placeholder="Search donations..."
-              value={searchTerm}
-              onChange={handleSearch}
-              className="pl-10"
-            />
-          </div>
-        </div>
-      </Card>
+      <SearchCard searchTerm={searchTerm} onChange={handleSearch} />
 
       <Card>
         <div className="overflow-x-auto">
@@ -202,135 +335,22 @@ const AdminDonations: React.FC = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredDonations.map((donation) => (
-                <tr key={donation.id}>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-mono text-gray-900">
-                      {donation.id.substring(0, 8)}...
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      {formatDate(donation.created_at)}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      {donation.charity?.charity_details?.name ||
-                        "Unknown Charity"}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      {formatCurrency(donation.amount)}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleView(donation)}
-                      className="text-indigo-600 hover:text-indigo-900"
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                  </td>
-                </tr>
+                <DonationRow
+                  key={donation.id}
+                  donation={donation}
+                  onView={handleView}
+                />
               ))}
             </tbody>
           </table>
         </div>
       </Card>
 
-      {/* View Modal */}
       {isViewModalOpen && selectedDonation && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold text-gray-900">
-                  Donation Details
-                </h2>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsViewModalOpen(false)}
-                >
-                  <XCircle className="h-5 w-5" />
-                </Button>
-              </div>
-            </div>
-            <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    Transaction Information
-                  </h3>
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-sm text-gray-500">Transaction ID</p>
-                      <p className="font-mono text-sm">{selectedDonation.id}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Date</p>
-                      <p className="font-medium">
-                        {formatDate(selectedDonation.created_at, true)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Amount</p>
-                      <p className="font-medium">
-                        {formatCurrency(selectedDonation.amount)}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    Parties
-                  </h3>
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-sm text-gray-500">Donor ID</p>
-                      <div className="flex items-center">
-                        <p className="font-mono text-sm mr-2">
-                          {selectedDonation.donor_id}
-                        </p>
-                        <a
-                          href={`https://app.supabase.com/project/etqbojasfmpieigeefdj/editor/table/profiles/row/${selectedDonation.donor_id}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-indigo-600 hover:text-indigo-900"
-                        >
-                          <ExternalLink className="h-3 w-3" />
-                        </a>
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Charity</p>
-                      <div className="flex items-center">
-                        <p className="font-medium mr-2">
-                          {selectedDonation.charity?.charity_details?.name ||
-                            "Unknown Charity"}
-                        </p>
-                        <a
-                          href={`https://app.supabase.com/project/etqbojasfmpieigeefdj/editor/table/charity_details/row/${selectedDonation.charity_id}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-indigo-600 hover:text-indigo-900"
-                        >
-                          <ExternalLink className="h-3 w-3" />
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="p-6 border-t border-gray-200 flex justify-end">
-              <Button onClick={() => setIsViewModalOpen(false)}>Close</Button>
-            </div>
-          </div>
-        </div>
+        <DonationViewModal
+          donation={selectedDonation}
+          onClose={() => setIsViewModalOpen(false)}
+        />
       )}
     </div>
   );
