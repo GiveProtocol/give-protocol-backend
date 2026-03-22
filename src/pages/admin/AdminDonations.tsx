@@ -214,11 +214,36 @@ const DonationViewModal: React.FC<{
 const DonationsTableHead: React.FC = () => (
   <thead className="bg-gray-50">
     <tr>
-      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Charity</th>
-      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-      <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+      <th
+        scope="col"
+        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+      >
+        ID
+      </th>
+      <th
+        scope="col"
+        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+      >
+        Date
+      </th>
+      <th
+        scope="col"
+        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+      >
+        Charity
+      </th>
+      <th
+        scope="col"
+        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+      >
+        Amount
+      </th>
+      <th
+        scope="col"
+        className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+      >
+        Actions
+      </th>
     </tr>
   </thead>
 );
@@ -366,10 +391,7 @@ const AdminDonations: React.FC = () => {
 
       <SearchCard searchTerm={searchTerm} onChange={handleSearch} />
 
-      <DonationsTableCard
-        donations={filteredDonations}
-        onView={handleView}
-      />
+      <DonationsTableCard donations={filteredDonations} onView={handleView} />
 
       {isViewModalOpen && selectedDonation && (
         <DonationViewModal
