@@ -1,7 +1,7 @@
-import React, { useState, useCallback } from 'react';
-import { Navigate, Link } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import { useProfile } from '@/hooks/useProfile';
+import React, { useState, useCallback } from "react";
+import { Navigate, Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useProfile } from "@/hooks/useProfile";
 import {
   Users,
   Building,
@@ -13,25 +13,38 @@ import {
   FileText,
   AlertTriangle,
   Menu,
-  X
-} from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import AdminCharities from './AdminCharities';
-import AdminDonations from './AdminDonations';
-import AdminUsers from './AdminUsers';
-import AdminWithdrawals from './AdminWithdrawals';
-import AdminVerifications from './AdminVerifications';
-import AdminSettings from './AdminSettings';
-import AdminStats from './AdminStats';
-import AdminLogs from './AdminLogs';
+  X,
+} from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import AdminCharities from "./AdminCharities";
+import AdminDonations from "./AdminDonations";
+import AdminUsers from "./AdminUsers";
+import AdminWithdrawals from "./AdminWithdrawals";
+import AdminVerifications from "./AdminVerifications";
+import AdminSettings from "./AdminSettings";
+import AdminStats from "./AdminStats";
+import AdminLogs from "./AdminLogs";
 
-type AdminTab = 'dashboard' | 'charities' | 'donations' | 'users' | 'withdrawals' | 'verifications' | 'settings' | 'logs';
+type AdminTab =
+  | "dashboard"
+  | "charities"
+  | "donations"
+  | "users"
+  | "withdrawals"
+  | "verifications"
+  | "settings"
+  | "logs";
 
+/**
+ * AdminDashboard component for rendering the admin panel UI and navigation.
+ *
+ * @returns JSX.Element representing the admin dashboard layout.
+ */
 const AdminDashboard: React.FC = () => {
   const { user } = useAuth();
   const { profile, loading: profileLoading } = useProfile();
-  const [activeTab, setActiveTab] = useState<AdminTab>('dashboard');
+  const [activeTab, setActiveTab] = useState<AdminTab>("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const handleTabChange = useCallback((tab: AdminTab) => {
@@ -56,13 +69,17 @@ const AdminDashboard: React.FC = () => {
   }
 
   // Check if user is admin
-  if (profile?.type !== 'admin') {
+  if (profile?.type !== "admin") {
     return (
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
           <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-red-700 mb-2">Access Denied</h2>
-          <p className="text-red-600 mb-4">You don&apos;t have permission to access the admin panel.</p>
+          <h2 className="text-2xl font-bold text-red-700 mb-2">
+            Access Denied
+          </h2>
+          <p className="text-red-600 mb-4">
+            You don&apos;t have permission to access the admin panel.
+          </p>
           <Link to="/">
             <Button>Return to Homepage</Button>
           </Link>
@@ -71,23 +88,28 @@ const AdminDashboard: React.FC = () => {
     );
   }
 
+  /**
+   * Renders the content for the active admin tab.
+   *
+   * @returns JSX.Element corresponding to the selected admin tab content.
+   */
   const renderTabContent = () => {
     switch (activeTab) {
-      case 'dashboard':
+      case "dashboard":
         return <AdminStats />;
-      case 'charities':
+      case "charities":
         return <AdminCharities />;
-      case 'donations':
+      case "donations":
         return <AdminDonations />;
-      case 'users':
+      case "users":
         return <AdminUsers />;
-      case 'withdrawals':
+      case "withdrawals":
         return <AdminWithdrawals />;
-      case 'verifications':
+      case "verifications":
         return <AdminVerifications />;
-      case 'settings':
+      case "settings":
         return <AdminSettings />;
-      case 'logs':
+      case "logs":
         return <AdminLogs />;
       default:
         return <AdminStats />;
@@ -104,12 +126,18 @@ const AdminDashboard: React.FC = () => {
           onClick={toggleSidebar}
           className="rounded-full p-2 shadow-md"
         >
-          {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          {sidebarOpen ? (
+            <X className="h-5 w-5" />
+          ) : (
+            <Menu className="h-5 w-5" />
+          )}
         </Button>
       </div>
 
       {/* Sidebar */}
-      <div className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 fixed md:static z-10 w-64 bg-white shadow-md h-full transition-transform duration-300 ease-in-out`}>
+      <div
+        className={`${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 fixed md:static z-10 w-64 bg-white shadow-md h-full transition-transform duration-300 ease-in-out`}
+      >
         <div className="p-6 border-b border-gray-200">
           <h1 className="text-xl font-semibold text-gray-900">Admin Panel</h1>
           <p className="text-sm text-gray-500">Dev3 Back-End</p>
@@ -118,11 +146,11 @@ const AdminDashboard: React.FC = () => {
           <ul className="space-y-2 px-4">
             <li>
               <button
-                onClick={() => handleTabChange('dashboard')}
+                onClick={() => handleTabChange("dashboard")}
                 className={`flex items-center w-full px-4 py-2 text-sm font-medium rounded-md ${
-                  activeTab === 'dashboard'
-                    ? 'bg-indigo-50 text-indigo-700'
-                    : 'text-gray-600 hover:bg-gray-50'
+                  activeTab === "dashboard"
+                    ? "bg-indigo-50 text-indigo-700"
+                    : "text-gray-600 hover:bg-gray-50"
                 }`}
               >
                 <BarChart className="h-5 w-5 mr-3" />
@@ -131,11 +159,11 @@ const AdminDashboard: React.FC = () => {
             </li>
             <li>
               <button
-                onClick={() => handleTabChange('charities')}
+                onClick={() => handleTabChange("charities")}
                 className={`flex items-center w-full px-4 py-2 text-sm font-medium rounded-md ${
-                  activeTab === 'charities'
-                    ? 'bg-indigo-50 text-indigo-700'
-                    : 'text-gray-600 hover:bg-gray-50'
+                  activeTab === "charities"
+                    ? "bg-indigo-50 text-indigo-700"
+                    : "text-gray-600 hover:bg-gray-50"
                 }`}
               >
                 <Building className="h-5 w-5 mr-3" />
@@ -144,11 +172,11 @@ const AdminDashboard: React.FC = () => {
             </li>
             <li>
               <button
-                onClick={() => handleTabChange('donations')}
+                onClick={() => handleTabChange("donations")}
                 className={`flex items-center w-full px-4 py-2 text-sm font-medium rounded-md ${
-                  activeTab === 'donations'
-                    ? 'bg-indigo-50 text-indigo-700'
-                    : 'text-gray-600 hover:bg-gray-50'
+                  activeTab === "donations"
+                    ? "bg-indigo-50 text-indigo-700"
+                    : "text-gray-600 hover:bg-gray-50"
                 }`}
               >
                 <DollarSign className="h-5 w-5 mr-3" />
@@ -157,11 +185,11 @@ const AdminDashboard: React.FC = () => {
             </li>
             <li>
               <button
-                onClick={() => handleTabChange('users')}
+                onClick={() => handleTabChange("users")}
                 className={`flex items-center w-full px-4 py-2 text-sm font-medium rounded-md ${
-                  activeTab === 'users'
-                    ? 'bg-indigo-50 text-indigo-700'
-                    : 'text-gray-600 hover:bg-gray-50'
+                  activeTab === "users"
+                    ? "bg-indigo-50 text-indigo-700"
+                    : "text-gray-600 hover:bg-gray-50"
                 }`}
               >
                 <Users className="h-5 w-5 mr-3" />
@@ -170,11 +198,11 @@ const AdminDashboard: React.FC = () => {
             </li>
             <li>
               <button
-                onClick={() => handleTabChange('withdrawals')}
+                onClick={() => handleTabChange("withdrawals")}
                 className={`flex items-center w-full px-4 py-2 text-sm font-medium rounded-md ${
-                  activeTab === 'withdrawals'
-                    ? 'bg-indigo-50 text-indigo-700'
-                    : 'text-gray-600 hover:bg-gray-50'
+                  activeTab === "withdrawals"
+                    ? "bg-indigo-50 text-indigo-700"
+                    : "text-gray-600 hover:bg-gray-50"
                 }`}
               >
                 <Clock className="h-5 w-5 mr-3" />
@@ -183,11 +211,11 @@ const AdminDashboard: React.FC = () => {
             </li>
             <li>
               <button
-                onClick={() => handleTabChange('verifications')}
+                onClick={() => handleTabChange("verifications")}
                 className={`flex items-center w-full px-4 py-2 text-sm font-medium rounded-md ${
-                  activeTab === 'verifications'
-                    ? 'bg-indigo-50 text-indigo-700'
-                    : 'text-gray-600 hover:bg-gray-50'
+                  activeTab === "verifications"
+                    ? "bg-indigo-50 text-indigo-700"
+                    : "text-gray-600 hover:bg-gray-50"
                 }`}
               >
                 <Shield className="h-5 w-5 mr-3" />
@@ -196,11 +224,11 @@ const AdminDashboard: React.FC = () => {
             </li>
             <li>
               <button
-                onClick={() => handleTabChange('logs')}
+                onClick={() => handleTabChange("logs")}
                 className={`flex items-center w-full px-4 py-2 text-sm font-medium rounded-md ${
-                  activeTab === 'logs'
-                    ? 'bg-indigo-50 text-indigo-700'
-                    : 'text-gray-600 hover:bg-gray-50'
+                  activeTab === "logs"
+                    ? "bg-indigo-50 text-indigo-700"
+                    : "text-gray-600 hover:bg-gray-50"
                 }`}
               >
                 <FileText className="h-5 w-5 mr-3" />
@@ -209,11 +237,11 @@ const AdminDashboard: React.FC = () => {
             </li>
             <li>
               <button
-                onClick={() => handleTabChange('settings')}
+                onClick={() => handleTabChange("settings")}
                 className={`flex items-center w-full px-4 py-2 text-sm font-medium rounded-md ${
-                  activeTab === 'settings'
-                    ? 'bg-indigo-50 text-indigo-700'
-                    : 'text-gray-600 hover:bg-gray-50'
+                  activeTab === "settings"
+                    ? "bg-indigo-50 text-indigo-700"
+                    : "text-gray-600 hover:bg-gray-50"
                 }`}
               >
                 <Settings className="h-5 w-5 mr-3" />

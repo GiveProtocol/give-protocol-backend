@@ -30,6 +30,11 @@ export interface LogoutOptions {
   keepWalletConnection?: boolean;
 }
 
+/**
+ * AuthService is a singleton service responsible for user authentication, 
+ * managing login processes including email/password authentication, 
+ * rate limiting, and security monitoring.
+ */
 class AuthService {
   private static instance: AuthService;
   private securityMonitor: SecurityMonitor;
@@ -41,6 +46,10 @@ class AuthService {
     this.securityMonitor = SecurityMonitor.getInstance();
   }
 
+  /**
+   * Gets the singleton instance of AuthService.
+   * @returns {AuthService} The AuthService singleton instance.
+   */
   static getInstance(): AuthService {
     if (!this.instance) {
       this.instance = new AuthService();
@@ -48,6 +57,12 @@ class AuthService {
     return this.instance;
   }
 
+  /**
+   * Logs in a user using email and password, with rate limiting and security monitoring.
+   * @param {string} email - The user's email address.
+   * @param {string} password - The user's password.
+   * @returns {Promise<AuthResponse>} The authentication response indicating success or failure and relevant data or error.
+   */
   async loginWithEmail(email: string, password: string): Promise<AuthResponse> {
     try {
       // Rate limiting check
@@ -94,8 +109,14 @@ class AuthService {
       return this.handleAuthError(error);
     }
   }
+}
 
-  async loginWithPolkadot(): Promise<AuthResponse> {
+  /**
+   * Logs in the user using a Polkadot wallet extension. Enables the extension, retrieves available accounts,
+   * and returns an AuthResponse indicating success or failure.
+   * @returns {Promise<AuthResponse>} The authentication response object with success status, data or error details.
+   */
+  async loginWithPolkadot(): Promise<AuthResponse> => {
     try {
       const extensions = await web3Enable('Give Protocol');
       if (extensions.length === 0) {
@@ -137,6 +158,10 @@ class AuthService {
     }
   }
 
+  /**
+   * Logs in the user with MetaMask by requesting account access from the browser wallet.
+   * @returns {Promise<AuthResponse>} The authentication response, containing success status and data or error details.
+   */
   async loginWithMetaMask(): Promise<AuthResponse> {
     try {
       if (!window.ethereum) {
@@ -181,6 +206,15 @@ class AuthService {
     }
   }
 
+  /**
+   * Logs out the current user through Supabase authentication.
+   *
+   * @param {LogoutOptions} options - Options for logout behavior.
+   * @param {boolean} options.clearAll - Whether to clear localStorage and sessionStorage. Defaults to true.
+   * @param {boolean} options.force - Whether to force logout. Defaults to false.
+   * @param {boolean} [options.keepWalletConnection] - Whether to keep the wallet connection alive.
+   * @returns {Promise<AuthResponse>} A promise resolving to an AuthResponse indicating success or error handling.
+   */
   async logout(options: LogoutOptions = { clearAll: true, force: false }): Promise<AuthResponse> {
     try {
       const { error } = await supabase.auth.signOut();
@@ -203,6 +237,11 @@ class AuthService {
     }
   }
 
+  /**
+   * Resets the password for the given email by sending a password reset link.
+   * @param email - The email address of the user requesting the password reset.
+   * @returns A promise that resolves to an AuthResponse indicating success or failure.
+   */
   async resetPassword(email: string): Promise<AuthResponse> {
     try {
       if (!validateEmail(email)) {
@@ -229,6 +268,11 @@ class AuthService {
     }
   }
 
+  /**
+   * Updates the user's password if it meets the validation requirements.
+   * @param newPassword - The new password string to set for the user.
+   * @returns A promise that resolves to an AuthResponse indicating success or containing error details.
+   */
   async updatePassword(newPassword: string): Promise<AuthResponse> {
     try {
       if (!validatePassword(newPassword)) {
@@ -255,6 +299,12 @@ class AuthService {
     }
   }
 
+  /**
+   * Handles authentication errors by converting them into a standardized AuthResponse.
+   * If the error is deemed suspicious, logs the activity via SecurityMonitor.
+   * @param error The error object to handle.
+   * @returns An AuthResponse indicating failure with error details.
+   */
   private handleAuthError(error: unknown): AuthResponse {
     const err = error as Record<string, unknown> | null;
     const authError: AuthError = {
@@ -278,11 +328,20 @@ class AuthService {
     };
   }
 
+  /**
+   * Checks if the given identifier has reached the maximum number of login attempts.
+   * @param identifier - The unique identifier (e.g., username or IP) to check rate limit for.
+   * @returns True if the number of attempts is greater than or equal to the maximum allowed; otherwise, false.
+   */
   private isRateLimited(identifier: string): boolean {
     const attempts = this.rateLimitAttempts.get(identifier) || 0;
     return attempts >= this.MAX_LOGIN_ATTEMPTS;
   }
 
+  /**
+   * Increments the login attempt count for the given identifier and triggers a lockout if the maximum is reached.
+   * @param identifier The unique identifier for the user (e.g., username or IP address).
+   */
   private incrementLoginAttempts(identifier: string): void {
     const attempts = (this.rateLimitAttempts.get(identifier) || 0) + 1;
     this.rateLimitAttempts.set(identifier, attempts);
@@ -292,10 +351,21 @@ class AuthService {
     }
   }
 
+  /**
+   * Resets the rate limiting attempts for a given identifier.
+   *
+   * @param identifier - The unique identifier for which to reset rate limiting.
+   * @returns void
+   */
   private resetRateLimiting(identifier: string): void {
     this.rateLimitAttempts.delete(identifier);
   }
 
+  /**
+   * Determines whether an error object is suspicious based on known error patterns.
+   * @param error - The error object to inspect, which may contain code or message properties.
+   * @returns True if the error's code or message includes any suspicious pattern; otherwise, false.
+   */
   private static isSuspiciousError(error: unknown): boolean {
     const err = error as Record<string, string | undefined> | null;
     const suspiciousPatterns = [
