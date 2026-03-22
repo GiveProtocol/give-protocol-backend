@@ -541,6 +541,9 @@ const AdminLogs: React.FC = () => {
     );
   }
 
+  /**
+   * Closes the view modal.
+   */
   const closeModal = () => setIsViewModalOpen(false);
 
   return (
@@ -566,7 +569,6 @@ const AdminLogs: React.FC = () => {
         tableFilter={tableFilter}
         onTableFilterChange={setTableFilter}
         uniqueTables={uniqueTables}
-        dateFilter={dateFilter}
         onDateFilterChange={setDateFilter}
       />
 

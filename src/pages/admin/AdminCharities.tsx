@@ -256,6 +256,13 @@ const CharityViewModal: React.FC<{
   </div>
 );
 
+/**
+ * Body content for the charity edit modal.
+ *
+ * @param {CharityDetails} charity - The current charity details.
+ * @param {(field: keyof CharityDetails, value: string) => void} onInputChange - Handler for input changes.
+ * @returns JSX.Element - The form for editing charity details.
+ */
 const CharityEditModalBody: React.FC<{
   charity: CharityDetails;
   onInputChange: (field: keyof CharityDetails, value: string) => void;
@@ -290,6 +297,16 @@ const CharityEditModalBody: React.FC<{
   </form>
 );
 
+/**
+ * Modal component for editing a charity.
+ *
+ * @param {CharityDetails} charity - The charity to edit.
+ * @param {boolean} loading - Indicates if saving is in progress.
+ * @param {() => void} onClose - Handler to close the modal.
+ * @param {(c: Partial<CharityDetails>) => void} onSave - Handler to save changes.
+ * @param {(field: keyof CharityDetails, value: string) => void} onInputChange - Handler for input changes.
+ * @returns JSX.Element - The charity edit modal UI.
+ */
 const CharityEditModal: React.FC<{
   charity: CharityDetails;
   loading: boolean;
@@ -323,6 +340,12 @@ const CharityEditModal: React.FC<{
   </div>
 );
 
+/**
+ * Content for delete confirmation, showing alert and message.
+ *
+ * @param {string} charityName - The name of the charity to delete.
+ * @returns JSX.Element - The content of the delete confirmation modal.
+ */
 const DeleteConfirmContent: React.FC<{ charityName: string }> = ({
   charityName,
 }) => (
@@ -339,6 +362,11 @@ const DeleteConfirmContent: React.FC<{ charityName: string }> = ({
   </>
 );
 
+/**
+ * Table head for the charities table, displaying column headers.
+ *
+ * @returns JSX.Element - The table head row.
+ */
 const CharitiesTableHead: React.FC = () => (
   <thead className="bg-gray-50">
     <tr>
@@ -352,6 +380,15 @@ const CharitiesTableHead: React.FC = () => (
   </thead>
 );
 
+/**
+ * Table component listing charities with actions.
+ *
+ * @param {CharityDetails[]} charities - The list of charities.
+ * @param {(c: CharityDetails) => void} onView - Handler for view action.
+ * @param {(c: CharityDetails) => void} onEdit - Handler for edit action.
+ * @param {(c: CharityDetails) => void} onDelete - Handler for delete action.
+ * @returns JSX.Element - The charities table.
+ */
 const CharitiesTable: React.FC<{
   charities: CharityDetails[];
   onView: (c: CharityDetails) => void;
@@ -368,6 +405,15 @@ const CharitiesTable: React.FC<{
   </table>
 );
 
+/**
+ * Card component wrapping the charities table for responsive display.
+ *
+ * @param {CharityDetails[]} charities - The list of charities.
+ * @param {(c: CharityDetails) => void} onView - Handler for view action.
+ * @param {(c: CharityDetails) => void} onEdit - Handler for edit action.
+ * @param {(c: CharityDetails) => void} onDelete - Handler for delete action.
+ * @returns JSX.Element - The card containing the charities table.
+ */
 const CharitiesTableCard: React.FC<{
   charities: CharityDetails[];
   onView: (c: CharityDetails) => void;
@@ -379,6 +425,15 @@ const CharitiesTableCard: React.FC<{
   </Card>
 );
 
+/**
+ * Modal for confirming deletion of a charity.
+ *
+ * @param {CharityDetails} charity - The charity selected for deletion.
+ * @param {boolean} loading - Indicates if deletion is in progress.
+ * @param {() => void} onClose - Handler to close the modal.
+ * @param {() => void} onConfirm - Handler to confirm deletion.
+ * @returns JSX.Element - The delete confirmation modal.
+ */
 const DeleteConfirmModal: React.FC<{
   charity: CharityDetails;
   loading: boolean;
