@@ -111,13 +111,6 @@ interface DocumentPreviewProps {
   documentUrl: string;
 }
 
-const DocumentPreview: React.FC<DocumentPreviewProps> = ({ documentUrl }) => (
-  <div className="border p-4 rounded-lg bg-gray-50">
-    <h3 className="text-lg font-medium text-gray-900 mb-2">Document Preview</h3>
-    <DocumentPreviewContent documentUrl={documentUrl} />
-  </div>
-);
-
 const DocumentPreviewContent: React.FC<DocumentPreviewProps> = ({ documentUrl }) => (
   <div className="flex items-center justify-center p-4 bg-white border border-gray-200 rounded">
     <div className="text-center">
@@ -133,6 +126,13 @@ const DocumentPreviewContent: React.FC<DocumentPreviewProps> = ({ documentUrl })
         View Document
       </a>
     </div>
+  </div>
+);
+
+const DocumentPreview: React.FC<DocumentPreviewProps> = ({ documentUrl }) => (
+  <div className="border p-4 rounded-lg bg-gray-50">
+    <h3 className="text-lg font-medium text-gray-900 mb-2">Document Preview</h3>
+    <DocumentPreviewContent documentUrl={documentUrl} />
   </div>
 );
 
@@ -186,6 +186,16 @@ const DocumentViewModalFooter: React.FC<DocumentViewModalProps> = ({ document, o
   </div>
 );
 
+const DocumentViewModalBody: React.FC<{ document: CharityDocument }> = ({ document }) => (
+  <div className="p-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <DocumentInfoColumn document={document} />
+      <CharityInfoColumn document={document} />
+    </div>
+    <DocumentPreview documentUrl={document.document_url} />
+  </div>
+);
+
 const DocumentViewModal: React.FC<DocumentViewModalProps> = (props) => {
   const { document, onClose, onVerify, onReject } = props;
 
@@ -200,16 +210,6 @@ const DocumentViewModal: React.FC<DocumentViewModalProps> = (props) => {
   );
 };
 
-const DocumentViewModalBody: React.FC<{ document: CharityDocument }> = ({ document }) => (
-  <div className="p-6">
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-      <DocumentInfoColumn document={document} />
-      <CharityInfoColumn document={document} />
-    </div>
-    <DocumentPreview documentUrl={document.document_url} />
-  </div>
-);
-
 /* ------------------------------------------------------------------ */
 /*  VerifyConfirmModal                                                 */
 /* ------------------------------------------------------------------ */
@@ -220,14 +220,6 @@ interface VerifyConfirmModalProps {
   onClose: () => void;
   onConfirm: () => void;
 }
-
-const VerifyConfirmModal: React.FC<VerifyConfirmModalProps> = ({ document, loading, onClose, onConfirm }) => (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-    <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
-      <VerifyConfirmModalContent document={document} loading={loading} onClose={onClose} onConfirm={onConfirm} />
-    </div>
-  </div>
-);
 
 const VerifyConfirmModalContent: React.FC<VerifyConfirmModalProps> = ({ document, loading, onClose, onConfirm }) => (
   <div className="p-6">
@@ -247,6 +239,14 @@ const VerifyConfirmModalContent: React.FC<VerifyConfirmModalProps> = ({ document
   </div>
 );
 
+const VerifyConfirmModal: React.FC<VerifyConfirmModalProps> = ({ document, loading, onClose, onConfirm }) => (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+      <VerifyConfirmModalContent document={document} loading={loading} onClose={onClose} onConfirm={onConfirm} />
+    </div>
+  </div>
+);
+
 /* ------------------------------------------------------------------ */
 /*  RejectConfirmModal                                                 */
 /* ------------------------------------------------------------------ */
@@ -260,11 +260,23 @@ interface RejectConfirmModalProps {
   onConfirm: () => void;
 }
 
-const RejectConfirmModal: React.FC<RejectConfirmModalProps> = (props) => (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-    <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
-      <RejectConfirmModalContent {...props} />
-    </div>
+interface RejectReasonFieldProps {
+  rejectReason: string;
+  onRejectReasonChange: (value: string) => void;
+}
+
+const RejectReasonField: React.FC<RejectReasonFieldProps> = ({ rejectReason, onRejectReasonChange }) => (
+  <div className="mb-4">
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      Reason for Rejection (Optional)
+    </label>
+    <textarea
+      value={rejectReason}
+      onChange={(e) => onRejectReasonChange(e.target.value)}
+      rows={3}
+      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+      placeholder="Enter reason for rejection..."
+    />
   </div>
 );
 
@@ -289,23 +301,11 @@ const RejectConfirmModalContent: React.FC<RejectConfirmModalProps> = ({
   </div>
 );
 
-interface RejectReasonFieldProps {
-  rejectReason: string;
-  onRejectReasonChange: (value: string) => void;
-}
-
-const RejectReasonField: React.FC<RejectReasonFieldProps> = ({ rejectReason, onRejectReasonChange }) => (
-  <div className="mb-4">
-    <label className="block text-sm font-medium text-gray-700 mb-1">
-      Reason for Rejection (Optional)
-    </label>
-    <textarea
-      value={rejectReason}
-      onChange={(e) => onRejectReasonChange(e.target.value)}
-      rows={3}
-      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-      placeholder="Enter reason for rejection..."
-    />
+const RejectConfirmModal: React.FC<RejectConfirmModalProps> = (props) => (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+      <RejectConfirmModalContent {...props} />
+    </div>
   </div>
 );
 
@@ -320,63 +320,12 @@ interface DocumentsTableCardProps {
   onReject: (document: CharityDocument) => void;
 }
 
-const DocumentsTableCard: React.FC<DocumentsTableCardProps> = ({ documents, onView, onVerify, onReject }) => (
-  <Card>
-    <div className="overflow-x-auto">
-      <DocumentsTable documents={documents} onView={onView} onVerify={onVerify} onReject={onReject} />
-    </div>
-  </Card>
-);
-
-const DocumentsTable: React.FC<DocumentsTableCardProps> = ({ documents, onView, onVerify, onReject }) => (
-  <table className="min-w-full divide-y divide-gray-200">
-    <DocumentsTableHeader />
-    <tbody className="bg-white divide-y divide-gray-200">
-      {documents.map((document) => (
-        <DocumentRow key={document.id} document={document} onView={onView} onVerify={onVerify} onReject={onReject} />
-      ))}
-    </tbody>
-  </table>
-);
-
-const DocumentsTableHeader: React.FC = () => (
-  <thead className="bg-gray-50">
-    <tr>
-      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Charity</th>
-      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Document Type</th>
-      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Uploaded</th>
-      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-      <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-    </tr>
-  </thead>
-);
-
 interface DocumentRowProps {
   document: CharityDocument;
   onView: (document: CharityDocument) => void;
   onVerify: (document: CharityDocument) => void;
   onReject: (document: CharityDocument) => void;
 }
-
-const DocumentRow: React.FC<DocumentRowProps> = ({ document, onView, onVerify, onReject }) => (
-  <tr>
-    <td className="px-6 py-4 whitespace-nowrap">
-      <div className="text-sm text-gray-900">{document.charity?.charity_details?.name || 'Unknown Charity'}</div>
-    </td>
-    <td className="px-6 py-4 whitespace-nowrap">
-      <div className="text-sm text-gray-900">{getDocumentTypeLabel(document.document_type)}</div>
-    </td>
-    <td className="px-6 py-4 whitespace-nowrap">
-      <div className="text-sm text-gray-900">{formatDate(document.uploaded_at)}</div>
-    </td>
-    <td className="px-6 py-4 whitespace-nowrap">
-      <DocumentStatusBadge verified={document.verified} />
-    </td>
-    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-      <DocumentActions document={document} onView={onView} onVerify={onVerify} onReject={onReject} />
-    </td>
-  </tr>
-);
 
 const DocumentStatusBadge: React.FC<{ verified: boolean }> = ({ verified }) => (
   <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
@@ -404,6 +353,57 @@ const DocumentActions: React.FC<DocumentRowProps> = ({ document, onView, onVerif
       </>
     )}
   </div>
+);
+
+const DocumentRow: React.FC<DocumentRowProps> = ({ document, onView, onVerify, onReject }) => (
+  <tr>
+    <td className="px-6 py-4 whitespace-nowrap">
+      <div className="text-sm text-gray-900">{document.charity?.charity_details?.name || 'Unknown Charity'}</div>
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap">
+      <div className="text-sm text-gray-900">{getDocumentTypeLabel(document.document_type)}</div>
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap">
+      <div className="text-sm text-gray-900">{formatDate(document.uploaded_at)}</div>
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap">
+      <DocumentStatusBadge verified={document.verified} />
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+      <DocumentActions document={document} onView={onView} onVerify={onVerify} onReject={onReject} />
+    </td>
+  </tr>
+);
+
+const DocumentsTableHeader: React.FC = () => (
+  <thead className="bg-gray-50">
+    <tr>
+      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Charity</th>
+      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Document Type</th>
+      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Uploaded</th>
+      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+      <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+    </tr>
+  </thead>
+);
+
+const DocumentsTable: React.FC<DocumentsTableCardProps> = ({ documents, onView, onVerify, onReject }) => (
+  <table className="min-w-full divide-y divide-gray-200">
+    <DocumentsTableHeader />
+    <tbody className="bg-white divide-y divide-gray-200">
+      {documents.map((document) => (
+        <DocumentRow key={document.id} document={document} onView={onView} onVerify={onVerify} onReject={onReject} />
+      ))}
+    </tbody>
+  </table>
+);
+
+const DocumentsTableCard: React.FC<DocumentsTableCardProps> = ({ documents, onView, onVerify, onReject }) => (
+  <Card>
+    <div className="overflow-x-auto">
+      <DocumentsTable documents={documents} onView={onView} onVerify={onVerify} onReject={onReject} />
+    </div>
+  </Card>
 );
 
 /* ------------------------------------------------------------------ */

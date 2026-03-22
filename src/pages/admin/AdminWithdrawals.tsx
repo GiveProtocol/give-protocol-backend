@@ -42,6 +42,7 @@ interface DetailFieldProps {
   children: React.ReactNode;
 }
 
+/** Labeled field displaying a label above its children content. */
 const DetailField: React.FC<DetailFieldProps> = ({ label, children }) => (
   <div>
     <p className="text-sm text-gray-500">{label}</p>
@@ -53,6 +54,7 @@ interface RequestInfoColumnProps {
   withdrawal: WithdrawalRequest;
 }
 
+/** Column displaying withdrawal request details: ID, date, amount, and status. */
 const RequestInfoColumn: React.FC<RequestInfoColumnProps> = ({ withdrawal }) => (
   <div>
     <h3 className="text-lg font-medium text-gray-900 mb-2">Request Information</h3>
@@ -79,6 +81,7 @@ interface CharityInfoColumnProps {
   withdrawal: WithdrawalRequest;
 }
 
+/** Column displaying charity details: name, ID, and processing date. */
 const CharityInfoColumn: React.FC<CharityInfoColumnProps> = ({ withdrawal }) => (
   <div>
     <h3 className="text-lg font-medium text-gray-900 mb-2">Charity Information</h3>
@@ -103,6 +106,7 @@ interface WithdrawalViewModalProps {
   onClose: () => void;
 }
 
+/** Modal showing full withdrawal request and charity details. */
 const WithdrawalViewModal: React.FC<WithdrawalViewModalProps> = ({ withdrawal, onClose }) => (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
     <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full">
@@ -135,6 +139,7 @@ interface ApproveConfirmModalProps {
   onConfirm: () => void;
 }
 
+/** Confirmation dialog for approving a withdrawal request with blockchain processing. */
 const ApproveConfirmModal: React.FC<ApproveConfirmModalProps> = ({
   withdrawal, processingTransaction, loading, onClose, onConfirm
 }) => (
@@ -176,6 +181,7 @@ interface RejectConfirmModalProps {
   onConfirm: () => void;
 }
 
+/** Confirmation dialog for rejecting a withdrawal request with optional reason. */
 const RejectConfirmModal: React.FC<RejectConfirmModalProps> = ({
   withdrawal, rejectReason, loading, onReasonChange, onClose, onConfirm
 }) => (
@@ -219,6 +225,7 @@ interface WithdrawalRowActionsProps {
   onReject: (w: WithdrawalRequest) => void;
 }
 
+/** Action buttons for viewing, approving, or rejecting a withdrawal row. */
 const WithdrawalRowActions: React.FC<WithdrawalRowActionsProps> = ({
   withdrawal, onView, onApprove, onReject
 }) => (
@@ -261,6 +268,7 @@ interface WithdrawalRowProps {
   onReject: (w: WithdrawalRequest) => void;
 }
 
+/** Table row displaying a single withdrawal request with status and actions. */
 const WithdrawalRow: React.FC<WithdrawalRowProps> = ({
   withdrawal, onView, onApprove, onReject
 }) => (
@@ -298,6 +306,7 @@ interface TableHeaderCellProps {
   align?: 'left' | 'right';
 }
 
+/** Styled table header cell with uppercase text and configurable alignment. */
 const TableHeaderCell: React.FC<TableHeaderCellProps> = ({ children, align = 'left' }) => (
   <th
     scope="col"
@@ -314,38 +323,38 @@ interface WithdrawalsTableCardProps {
   onReject: (w: WithdrawalRequest) => void;
 }
 
+/** Card containing the withdrawals data table with sortable columns. */
 const WithdrawalsTableCard: React.FC<WithdrawalsTableCardProps> = ({
   withdrawals, onView, onApprove, onReject
 }) => (
-  <Card>
-    <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            <TableHeaderCell>ID</TableHeaderCell>
-            <TableHeaderCell>Date</TableHeaderCell>
-            <TableHeaderCell>Charity</TableHeaderCell>
-            <TableHeaderCell>Amount</TableHeaderCell>
-            <TableHeaderCell>Status</TableHeaderCell>
-            <TableHeaderCell align="right">Actions</TableHeaderCell>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {withdrawals.map((withdrawal) => (
-            <WithdrawalRow
-              key={withdrawal.id}
-              withdrawal={withdrawal}
-              onView={onView}
-              onApprove={onApprove}
-              onReject={onReject}
-            />
-          ))}
-        </tbody>
-      </table>
-    </div>
+  <Card className="overflow-x-auto">
+    <table className="min-w-full divide-y divide-gray-200">
+      <thead className="bg-gray-50">
+        <tr>
+          <TableHeaderCell>ID</TableHeaderCell>
+          <TableHeaderCell>Date</TableHeaderCell>
+          <TableHeaderCell>Charity</TableHeaderCell>
+          <TableHeaderCell>Amount</TableHeaderCell>
+          <TableHeaderCell>Status</TableHeaderCell>
+          <TableHeaderCell align="right">Actions</TableHeaderCell>
+        </tr>
+      </thead>
+      <tbody className="bg-white divide-y divide-gray-200">
+        {withdrawals.map((withdrawal) => (
+          <WithdrawalRow
+            key={withdrawal.id}
+            withdrawal={withdrawal}
+            onView={onView}
+            onApprove={onApprove}
+            onReject={onReject}
+          />
+        ))}
+      </tbody>
+    </table>
   </Card>
 );
 
+/** Admin page for managing charity withdrawal requests. */
 const AdminWithdrawals: React.FC = () => {
   const [withdrawals, setWithdrawals] = useState<WithdrawalRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -359,6 +368,7 @@ const AdminWithdrawals: React.FC = () => {
   const [processingTransaction, setProcessingTransaction] = useState(false);
   const { withdraw } = useDonation();
 
+  /** Fetch all withdrawal requests from the database. */
   const fetchWithdrawals = async () => {
     try {
       setLoading(true);
@@ -395,6 +405,7 @@ const AdminWithdrawals: React.FC = () => {
     fetchWithdrawals();
   }, []);
 
+  /** Update the search filter term. */
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
