@@ -116,7 +116,7 @@ class AuthService {
    * and returns an AuthResponse indicating success or failure.
    * @returns {Promise<AuthResponse>} The authentication response object with success status, data or error details.
    */
-  async loginWithPolkadot(): Promise<AuthResponse> {
+  async loginWithPolkadot(): Promise<AuthResponse> => {
     try {
       const extensions = await web3Enable('Give Protocol');
       if (extensions.length === 0) {
