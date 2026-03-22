@@ -31,6 +31,11 @@ interface CharityDetails {
   };
 }
 
+/**
+ * PageHeader component renders the header for the Manage Charities page.
+ *
+ * @returns JSX.Element representing the page header.
+ */
 const PageHeader: React.FC = () => (
   <div className="flex justify-between items-center mb-6">
     <h1 className="text-2xl font-bold text-gray-900">Manage Charities</h1>
@@ -38,6 +43,13 @@ const PageHeader: React.FC = () => (
   </div>
 );
 
+/**
+ * SearchCard component displays a search input for filtering charities.
+ *
+ * @param {string} searchTerm - Current search term.
+ * @param {(e: React.ChangeEvent<HTMLInputElement>) => void} onSearch - Callback invoked when search input changes.
+ * @returns JSX.Element representing the search card.
+ */
 const SearchCard: React.FC<{
   searchTerm: string;
   onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -55,6 +67,13 @@ const SearchCard: React.FC<{
   </Card>
 );
 
+/**
+ * CharityAvatar component displays a charity's avatar image or a placeholder icon.
+ *
+ * @param {string | null} imageUrl - URL of the charity's image.
+ * @param {string} name - Name of the charity (used as alt text).
+ * @returns JSX.Element representing the charity avatar.
+ */
 const CharityAvatar: React.FC<{ imageUrl: string | null; name: string }> = ({
   imageUrl,
   name,
@@ -75,6 +94,15 @@ const CharityAvatar: React.FC<{ imageUrl: string | null; name: string }> = ({
   );
 };
 
+/**
+ * CharityRow component renders a table row with charity details and action buttons.
+ *
+ * @param {CharityDetails} charity - The charity details to display.
+ * @param {(c: CharityDetails) => void} onView - Callback invoked when view action is triggered.
+ * @param {(c: CharityDetails) => void} onEdit - Callback invoked when edit action is triggered.
+ * @param {(c: CharityDetails) => void} onDelete - Callback invoked when delete action is triggered.
+ * @returns JSX.Element representing the charity row.
+ */
 const CharityRow: React.FC<{
   charity: CharityDetails;
   onView: (c: CharityDetails) => void;
@@ -146,6 +174,13 @@ const CharityRow: React.FC<{
   </tr>
 );
 
+/**
+ * Renders the Basic Information column for a charity.
+ *
+ * @param {object} props - Component props.
+ * @param {CharityDetails} props.charity - The charity details object.
+ * @returns {JSX.Element} JSX element displaying basic charity info.
+ */
 const BasicInfoColumn: React.FC<{ charity: CharityDetails }> = ({
   charity,
 }) => (
@@ -170,6 +205,13 @@ const BasicInfoColumn: React.FC<{ charity: CharityDetails }> = ({
   </div>
 );
 
+/**
+ * Renders the Financial Information column for a charity.
+ *
+ * @param {object} props - Component props.
+ * @param {CharityDetails} props.charity - The charity details object.
+ * @returns {JSX.Element} JSX element displaying financial charity info.
+ */
 const FinancialInfoColumn: React.FC<{ charity: CharityDetails }> = ({
   charity,
 }) => (
@@ -194,6 +236,13 @@ const FinancialInfoColumn: React.FC<{ charity: CharityDetails }> = ({
   </div>
 );
 
+/**
+ * Renders the Profile Information section for a charity.
+ *
+ * @param {object} props - Component props.
+ * @param {CharityDetails} props.charity - The charity details object.
+ * @returns {JSX.Element} JSX element displaying profile charity info.
+ */
 const ProfileInfoSection: React.FC<{ charity: CharityDetails }> = ({
   charity,
 }) => (
@@ -222,6 +271,14 @@ const ProfileInfoSection: React.FC<{ charity: CharityDetails }> = ({
   </div>
 );
 
+/**
+ * Renders a modal to view detailed information of a charity.
+ *
+ * @param {object} props - Component props.
+ * @param {CharityDetails} props.charity - The charity details to display.
+ * @param {function} props.onClose - Callback invoked when closing the modal.
+ * @returns {JSX.Element} JSX element representing the view modal.
+ */
 const CharityViewModal: React.FC<{
   charity: CharityDetails;
   onClose: () => void;
@@ -229,9 +286,7 @@ const CharityViewModal: React.FC<{
   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
     <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full">
       <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Charity Details
-        </h2>
+        <h2 className="text-xl font-semibold text-gray-900">Charity Details</h2>
         <Button variant="ghost" size="sm" onClick={onClose}>
           <XCircle className="h-5 w-5" />
         </Button>
@@ -250,6 +305,14 @@ const CharityViewModal: React.FC<{
   </div>
 );
 
+/**
+ * Renders the body of the edit charity modal with input fields.
+ *
+ * @param {object} props - Component props.
+ * @param {CharityDetails} props.charity - The charity details to edit.
+ * @param {function} props.onInputChange - Callback when input changes, receives field and value.
+ * @returns {JSX.Element} JSX element containing edit form fields.
+ */
 const CharityEditModalBody: React.FC<{
   charity: CharityDetails;
   onInputChange: (field: keyof CharityDetails, value: string) => void;
@@ -284,6 +347,17 @@ const CharityEditModalBody: React.FC<{
   </form>
 );
 
+/**
+ * Renders a modal to edit the details of a charity.
+ *
+ * @param {object} props - Component props.
+ * @param {CharityDetails} props.charity - The charity details being edited.
+ * @param {boolean} props.loading - Indicates whether save operation is in progress.
+ * @param {function} props.onClose - Callback invoked when closing the modal.
+ * @param {function} props.onSave - Callback invoked when saving changes, receives updated charity partial.
+ * @param {function} props.onInputChange - Callback when input changes in the form.
+ * @returns {JSX.Element} JSX element representing the edit modal.
+ */
 const CharityEditModal: React.FC<{
   charity: CharityDetails;
   loading: boolean;
@@ -300,10 +374,7 @@ const CharityEditModal: React.FC<{
         </Button>
       </div>
       <div className="p-6">
-        <CharityEditModalBody
-          charity={charity}
-          onInputChange={onInputChange}
-        />
+        <CharityEditModalBody charity={charity} onInputChange={onInputChange} />
       </div>
       <div className="p-6 border-t border-gray-200 flex justify-end space-x-3">
         <Button variant="secondary" onClick={onClose}>
@@ -317,6 +388,13 @@ const CharityEditModal: React.FC<{
   </div>
 );
 
+/**
+ * Renders the content for deletion confirmation dialog.
+ *
+ * @param {object} props - Component props.
+ * @param {string} props.charityName - The name of the charity to confirm deletion.
+ * @returns {JSX.Element} JSX fragment for deletion confirmation.
+ */
 const DeleteConfirmContent: React.FC<{ charityName: string }> = ({
   charityName,
 }) => (
@@ -333,6 +411,16 @@ const DeleteConfirmContent: React.FC<{ charityName: string }> = ({
   </>
 );
 
+/**
+ * Renders a modal to confirm deletion of a charity.
+ *
+ * @param {object} props - Component props.
+ * @param {CharityDetails} props.charity - The charity details being deleted.
+ * @param {boolean} props.loading - Indicates whether delete operation is in progress.
+ * @param {function} props.onClose - Callback invoked when cancelling deletion.
+ * @param {function} props.onConfirm - Callback invoked when confirming deletion.
+ * @returns {JSX.Element} JSX element representing the confirm modal.
+ */
 const DeleteConfirmModal: React.FC<{
   charity: CharityDetails;
   loading: boolean;
@@ -617,10 +705,7 @@ const AdminCharities: React.FC = () => {
       </Card>
 
       {isViewModalOpen && selectedCharity && (
-        <CharityViewModal
-          charity={selectedCharity}
-          onClose={closeViewModal}
-        />
+        <CharityViewModal charity={selectedCharity} onClose={closeViewModal} />
       )}
 
       {isEditModalOpen && selectedCharity && (

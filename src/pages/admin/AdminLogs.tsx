@@ -96,9 +96,7 @@ const ModalDataGrid: React.FC<{ log: AuditLog }> = ({ log }) => (
       <h3 className="text-lg font-medium text-gray-900 mb-2">Old Data</h3>
       <div className="bg-gray-50 p-4 rounded-md overflow-auto max-h-60">
         <pre className="text-xs font-mono text-gray-800">
-          {log.old_data
-            ? JSON.stringify(log.old_data, null, 2)
-            : "No data"}
+          {log.old_data ? JSON.stringify(log.old_data, null, 2) : "No data"}
         </pre>
       </div>
     </div>
@@ -106,9 +104,7 @@ const ModalDataGrid: React.FC<{ log: AuditLog }> = ({ log }) => (
       <h3 className="text-lg font-medium text-gray-900 mb-2">New Data</h3>
       <div className="bg-gray-50 p-4 rounded-md overflow-auto max-h-60">
         <pre className="text-xs font-mono text-gray-800">
-          {log.new_data
-            ? JSON.stringify(log.new_data, null, 2)
-            : "No data"}
+          {log.new_data ? JSON.stringify(log.new_data, null, 2) : "No data"}
         </pre>
       </div>
     </div>
@@ -289,9 +285,7 @@ const LogTableRow: React.FC<{
       </div>
     </td>
     <td className="px-6 py-4 whitespace-nowrap">
-      <div className="text-sm text-gray-900">
-        {log.ip_address || "Unknown"}
-      </div>
+      <div className="text-sm text-gray-900">{log.ip_address || "Unknown"}</div>
     </td>
     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
       <Button
@@ -319,12 +313,24 @@ const LogsTable: React.FC<{
     <table className="min-w-full divide-y divide-gray-200">
       <thead className="bg-gray-50">
         <tr>
-          <th scope="col" className={thClass}>Date</th>
-          <th scope="col" className={thClass}>User</th>
-          <th scope="col" className={thClass}>Action</th>
-          <th scope="col" className={thClass}>Table</th>
-          <th scope="col" className={thClass}>IP Address</th>
-          <th scope="col" className={`${thClass} text-right`}>Actions</th>
+          <th scope="col" className={thClass}>
+            Date
+          </th>
+          <th scope="col" className={thClass}>
+            User
+          </th>
+          <th scope="col" className={thClass}>
+            Action
+          </th>
+          <th scope="col" className={thClass}>
+            Table
+          </th>
+          <th scope="col" className={thClass}>
+            IP Address
+          </th>
+          <th scope="col" className={`${thClass} text-right`}>
+            Actions
+          </th>
         </tr>
       </thead>
       <tbody className="bg-white divide-y divide-gray-200">
@@ -525,6 +531,9 @@ const AdminLogs: React.FC = () => {
     );
   }
 
+  /**
+   * Closes the view modal by setting its open state to false.
+   */
   const closeModal = () => setIsViewModalOpen(false);
 
   return (
