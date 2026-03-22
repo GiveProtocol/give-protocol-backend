@@ -100,6 +100,72 @@ const DangerAction: React.FC<DangerActionProps> = ({ title, description, buttonL
 );
 
 /** Grid of settings cards for security, cache, API, and analytics. */
+interface SettingsFieldsProps {
+  settings: SystemSettings;
+  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+/** Security settings fields: max login attempts and cooldown. */
+const SecurityFields: React.FC<SettingsFieldsProps> = ({ settings, handleChange }) => (
+  <div className="space-y-4">
+    <Input
+      label="Max Login Attempts"
+      name="maxLoginAttempts"
+      type="number"
+      min="1"
+      max="10"
+      value={settings.maxLoginAttempts}
+      onChange={handleChange}
+      helperText="Number of failed login attempts before account lockout"
+    />
+    <Input
+      label="Login Cooldown (minutes)"
+      name="loginCooldownMinutes"
+      type="number"
+      min="5"
+      max="60"
+      value={settings.loginCooldownMinutes}
+      onChange={handleChange}
+      helperText="Duration of account lockout after max failed attempts"
+    />
+  </div>
+);
+
+/** Analytics settings fields: enable toggle and sample rate. */
+const AnalyticsFields: React.FC<SettingsFieldsProps> = ({ settings, handleChange }) => (
+  <div className="space-y-4">
+    <div className="flex items-center">
+      <input
+        id="enableAnalytics"
+        name="enableAnalytics"
+        type="checkbox"
+        checked={settings.enableAnalytics}
+        onChange={handleChange}
+        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+      />
+      <label
+        htmlFor="enableAnalytics"
+        className="ml-2 block text-sm text-gray-900"
+      >
+        Enable Analytics
+      </label>
+    </div>
+    <Input
+      label="Analytics Sample Rate"
+      name="analyticsSampleRate"
+      type="number"
+      min="0.01"
+      max="1"
+      step="0.01"
+      value={settings.analyticsSampleRate}
+      onChange={handleChange}
+      helperText="Percentage of users to include in analytics (0.1 = 10%)"
+      disabled={!settings.enableAnalytics}
+    />
+  </div>
+);
+
+/** Grid of settings cards for security, cache, API, and analytics. */
 const SettingsGrid: React.FC<{
   settings: SystemSettings;
   analyticsIcon: React.ReactNode;
@@ -110,28 +176,7 @@ const SettingsGrid: React.FC<{
       icon={<Shield className="h-5 w-5 text-indigo-600 mr-2" />}
       title="Security Settings"
     >
-      <div className="space-y-4">
-        <Input
-          label="Max Login Attempts"
-          name="maxLoginAttempts"
-          type="number"
-          min="1"
-          max="10"
-          value={settings.maxLoginAttempts}
-          onChange={handleChange}
-          helperText="Number of failed login attempts before account lockout"
-        />
-        <Input
-          label="Login Cooldown (minutes)"
-          name="loginCooldownMinutes"
-          type="number"
-          min="5"
-          max="60"
-          value={settings.loginCooldownMinutes}
-          onChange={handleChange}
-          helperText="Duration of account lockout after max failed attempts"
-        />
-      </div>
+      <SecurityFields settings={settings} handleChange={handleChange} />
     </SettingsCard>
 
     <SettingsCard
@@ -168,36 +213,7 @@ const SettingsGrid: React.FC<{
     </SettingsCard>
 
     <SettingsCard icon={analyticsIcon} title="Analytics Settings">
-      <div className="space-y-4">
-        <div className="flex items-center">
-          <input
-            id="enableAnalytics"
-            name="enableAnalytics"
-            type="checkbox"
-            checked={settings.enableAnalytics}
-            onChange={handleChange}
-            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-          />
-          <label
-            htmlFor="enableAnalytics"
-            className="ml-2 block text-sm text-gray-900"
-          >
-            Enable Analytics
-          </label>
-        </div>
-        <Input
-          label="Analytics Sample Rate"
-          name="analyticsSampleRate"
-          type="number"
-          min="0.01"
-          max="1"
-          step="0.01"
-          value={settings.analyticsSampleRate}
-          onChange={handleChange}
-          helperText="Percentage of users to include in analytics (0.1 = 10%)"
-          disabled={!settings.enableAnalytics}
-        />
-      </div>
+      <AnalyticsFields settings={settings} handleChange={handleChange} />
     </SettingsCard>
   </div>
 );
