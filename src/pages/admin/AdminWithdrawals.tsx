@@ -35,13 +35,17 @@ interface WithdrawalRequest {
  */
 function getStatusBadgeClass(status: string): string {
   if (status === 'approved') return 'bg-green-100 text-green-800';
+  if (status === 'rejected') return 'bg-red-100 text-red-800';
+  return 'bg-yellow-100 text-yellow-800';
+}
+
 /**
  * Capitalizes the first character of a status string.
  *
  * @param {string} status - The status string to capitalize.
  * @returns {string} The status string with its first letter capitalized.
  */
-function capitalizeStatus(status: string) {
+function capitalizeStatus(status: string): string {
   if (!status) {
     return status;
   }
