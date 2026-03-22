@@ -27,6 +27,11 @@ interface WithdrawalRequest {
   };
 }
 
+/**
+ * AdminWithdrawals component renders and manages the admin interface for withdrawal requests.
+ * It fetches withdrawals, allows searching, and handles view, approve, and reject actions.
+ * @returns JSX.Element The rendered admin withdrawals component.
+ */
 const AdminWithdrawals: React.FC = () => {
   const [withdrawals, setWithdrawals] = useState<WithdrawalRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,6 +45,10 @@ const AdminWithdrawals: React.FC = () => {
   const [processingTransaction, setProcessingTransaction] = useState(false);
   const { withdraw } = useDonation();
 
+  /**
+   * fetchWithdrawals retrieves the list of withdrawal requests from the database.
+   * @returns Promise<void> A promise that resolves when the fetch operation is complete.
+   */
   const fetchWithdrawals = async () => {
     try {
       setLoading(true);
@@ -76,6 +85,10 @@ const AdminWithdrawals: React.FC = () => {
     fetchWithdrawals();
   }, []);
 
+  /**
+   * handleSearch updates the search term state based on user input.
+   * @param e React.ChangeEvent<HTMLInputElement> The input change event containing the new search term.
+   */
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };

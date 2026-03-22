@@ -26,6 +26,10 @@ interface CharityDocument {
   };
 }
 
+/**
+ * AdminVerifications component for managing charity document verifications in the admin panel.
+ * @returns React.ReactElement - The rendered component UI.
+ */
 const AdminVerifications: React.FC = () => {
   const [documents, setDocuments] = useState<CharityDocument[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,6 +41,11 @@ const AdminVerifications: React.FC = () => {
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
 
+  /**
+   * Fetches charity document records from the database.
+   * @async
+   * @returns Promise<void>
+   */
   const fetchDocuments = async () => {
     try {
       setLoading(true);
@@ -73,6 +82,10 @@ const AdminVerifications: React.FC = () => {
     fetchDocuments();
   }, []);
 
+  /**
+   * Updates the search term state based on user input.
+   * @param e - The change event from the search input.
+   */
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
@@ -91,22 +104,39 @@ const AdminVerifications: React.FC = () => {
     );
   });
 
+  /**
+   * Opens the view modal for a selected document.
+   * @param document - The charity document to view.
+   */
   const handleView = (document: CharityDocument) => {
     setSelectedDocument(document);
     setIsViewModalOpen(true);
   };
 
+  /**
+   * Opens the verify modal for a selected document.
+   * @param document - The charity document to verify.
+   */
   const handleVerify = (document: CharityDocument) => {
     setSelectedDocument(document);
     setIsVerifyModalOpen(true);
   };
 
+  /**
+   * Opens the reject modal for a selected document.
+   * @param document - The charity document to reject.
+   */
   const handleReject = (document: CharityDocument) => {
     setSelectedDocument(document);
     setRejectReason('');
     setIsRejectModalOpen(true);
   };
 
+  /**
+   * Confirms the verification of the selected document and updates the database.
+   * @async
+   * @returns Promise<void>
+   */
   const confirmVerify = async () => {
     if (!selectedDocument) return;
 
@@ -138,6 +168,11 @@ const AdminVerifications: React.FC = () => {
     }
   };
 
+  /**
+   * Confirms the rejection of the selected document and deletes it from the database.
+   * @async
+   * @returns Promise<void>
+   */
   const confirmReject = async () => {
     if (!selectedDocument) return;
 
@@ -169,6 +204,11 @@ const AdminVerifications: React.FC = () => {
     }
   };
 
+  /**
+   * Returns a human-readable label for a given document type key.
+   * @param type - The document type identifier.
+   * @returns The formatted label string.
+   */
   const getDocumentTypeLabel = (type: string): string => {
     switch (type) {
       case 'tax_certificate':

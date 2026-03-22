@@ -24,6 +24,10 @@ interface AuditLog {
   };
 }
 
+/**
+ * AdminLogs component fetches and displays audit logs with search and filter functionality.
+ * @returns JSX.Element - The admin logs interface.
+ */
 const AdminLogs: React.FC = () => {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
@@ -35,6 +39,10 @@ const AdminLogs: React.FC = () => {
   const [actionFilter, setActionFilter] = useState<string>('all');
   const [tableFilter, setTableFilter] = useState<string>('all');
 
+  /**
+   * Fetches audit logs from the database and updates the state.
+   * @returns Promise<void>
+   */
   const fetchLogs = async () => {
     try {
       setLoading(true);
@@ -67,10 +75,18 @@ const AdminLogs: React.FC = () => {
     fetchLogs();
   }, []);
 
+  /**
+   * Handles search input changes.
+   * @param e - The change event from the search input.
+   */
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
 
+  /**
+   * Determines the start date based on the selected date filter.
+   * @returns An object with the start date or null if no date filter is applied.
+   */
   const getDateRange = () => {
     const now = new Date();
     switch (dateFilter) {
@@ -120,6 +136,10 @@ const AdminLogs: React.FC = () => {
   const uniqueActions = Array.from(new Set(logs.map(log => log.action)));
   const uniqueTables = Array.from(new Set(logs.map(log => log.table_name)));
 
+  /**
+   * Opens the modal to view details of a selected audit log.
+   * @param log - The audit log entry to view.
+   */
   const handleView = (log: AuditLog) => {
     setSelectedLog(log);
     setIsViewModalOpen(true);

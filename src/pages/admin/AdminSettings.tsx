@@ -15,6 +15,10 @@ interface SystemSettings {
   analyticsSampleRate: number;
 }
 
+/**
+ * AdminSettings component displays and allows editing of system settings.
+ * @returns JSX.Element The rendered admin settings component.
+ */
 const AdminSettings: React.FC = () => {
   const [settings, setSettings] = useState<SystemSettings>({
     maxLoginAttempts: 5,
@@ -36,6 +40,11 @@ const AdminSettings: React.FC = () => {
     setLoading(false);
   }, []);
 
+  /**
+   * Handles changes to input fields and updates the settings state.
+   * @param e React.ChangeEvent<HTMLInputElement> The change event from the input field.
+   * @returns void
+   */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     
@@ -45,6 +54,10 @@ const AdminSettings: React.FC = () => {
     }));
   };
 
+  /**
+   * Saves the current settings, simulating a delay and logging the update.
+   * @returns Promise<void> A promise that resolves when save operation completes.
+   */
   const handleSave = async () => {
     try {
       setSaving(true);
@@ -69,6 +82,10 @@ const AdminSettings: React.FC = () => {
     }
   };
 
+  /**
+   * Resets settings to default values and clears error, sets success message.
+   * @returns void
+   */
   const handleReset = () => {
     setSettings({
       maxLoginAttempts: 5,

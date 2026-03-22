@@ -15,12 +15,21 @@ interface AdminStats {
   pendingVerifications: number;
 }
 
+/**
+ * AdminStats component renders administrative statistics by fetching data from the database.
+ * @returns JSX.Element - The rendered AdminStats component.
+ */
 const AdminStats: React.FC = () => {
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    /**
+     * fetchStats retrieves various administrative statistics from Supabase
+     * and updates the component state accordingly.
+     * @returns Promise<void> - Resolves when stats have been fetched and state updated.
+     */
     const fetchStats = async () => {
       try {
         setLoading(true);
@@ -46,6 +55,10 @@ const AdminStats: React.FC = () => {
         const { count: usersCount, error: usersError } = await supabase
           .from('profiles')
           .select('*', { count: 'exact', head: true });
+
+        if (usersError) throw usersError;
+
+        // ... rest of fetchStats logic
 
         if (usersError) throw usersError;
 

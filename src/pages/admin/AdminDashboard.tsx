@@ -28,6 +28,11 @@ import AdminLogs from './AdminLogs';
 
 type AdminTab = 'dashboard' | 'charities' | 'donations' | 'users' | 'withdrawals' | 'verifications' | 'settings' | 'logs';
 
+/**
+ * AdminDashboard component for rendering the admin panel UI and navigation.
+ *
+ * @returns JSX.Element representing the admin dashboard layout.
+ */
 const AdminDashboard: React.FC = () => {
   const { user } = useAuth();
   const { profile, loading: profileLoading } = useProfile();
@@ -71,6 +76,11 @@ const AdminDashboard: React.FC = () => {
     );
   }
 
+  /**
+   * Renders the content for the active admin tab.
+   *
+   * @returns JSX.Element corresponding to the selected admin tab content.
+   */
   const renderTabContent = () => {
     switch (activeTab) {
       case 'dashboard':

@@ -30,6 +30,10 @@ interface Donation {
   };
 }
 
+/**
+ * AdminDonations component displays and manages donation records for administrators.
+ * @returns JSX.Element - The rendered component.
+ */
 const AdminDonations: React.FC = () => {
   const [donations, setDonations] = useState<Donation[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,6 +42,11 @@ const AdminDonations: React.FC = () => {
   const [selectedDonation, setSelectedDonation] = useState<Donation | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
+  /**
+   * fetchDonations retrieves donations from the supabase database and updates the component state.
+   * @async
+   * @returns {Promise<void>} - A promise that resolves when the fetch operation completes.
+   */
   const fetchDonations = async () => {
     try {
       setLoading(true);
@@ -79,6 +88,11 @@ const AdminDonations: React.FC = () => {
     fetchDonations();
   }, []);
 
+  /**
+   * handleSearch updates the search term state based on user input.
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The change event from the search input.
+   * @returns {void}
+   */
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
@@ -97,6 +111,11 @@ const AdminDonations: React.FC = () => {
     );
   });
 
+  /**
+   * handleView opens the view modal for a selected donation.
+   * @param {Donation} donation - The donation to view.
+   * @returns {void}
+   */
   const handleView = (donation: Donation) => {
     setSelectedDonation(donation);
     setIsViewModalOpen(true);

@@ -19,6 +19,10 @@ interface UserProfile {
   };
 }
 
+/**
+ * AdminUsers component displays and manages user profiles.
+ * @returns JSX.Element The rendered AdminUsers component.
+ */
 const AdminUsers: React.FC = () => {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,6 +34,10 @@ const AdminUsers: React.FC = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [editUserType, setEditUserType] = useState<'donor' | 'charity' | 'admin'>('donor');
 
+  /**
+   * Fetches user profiles and merges with authentication user data.
+   * @returns Promise<void> Resolves when users are fetched and state is updated.
+   */
   const fetchUsers = async () => {
     try {
       setLoading(true);
@@ -79,6 +87,11 @@ const AdminUsers: React.FC = () => {
     fetchUsers();
   }, []);
 
+  /**
+   * Handles search input changes and updates the search term.
+   * @param e React.ChangeEvent<HTMLInputElement> The input change event.
+   * @returns void
+   */
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };

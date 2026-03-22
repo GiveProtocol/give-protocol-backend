@@ -23,6 +23,11 @@ interface CharityDetails {
   };
 }
 
+/**
+ * AdminCharities component retrieves and displays a list of charities for administrative actions such as view, edit, and delete.
+ *
+ * @returns JSX.Element - The admin charities component UI.
+ */
 const AdminCharities: React.FC = () => {
   const [charities, setCharities] = useState<CharityDetails[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,6 +38,11 @@ const AdminCharities: React.FC = () => {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
+  /**
+   * Fetches the charities from the database using Supabase and updates state.
+   *
+   * @returns Promise<void> - Resolves when fetch is complete.
+   */
   const fetchCharities = async () => {
     try {
       setLoading(true);
@@ -66,6 +76,12 @@ const AdminCharities: React.FC = () => {
     fetchCharities();
   }, []);
 
+  /**
+   * Updates the search term state based on user input.
+   *
+   * @param e - The input change event.
+   * @returns void
+   */
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };

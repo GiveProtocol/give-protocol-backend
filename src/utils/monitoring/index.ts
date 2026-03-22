@@ -17,6 +17,10 @@ interface MonitoringConfig {
   enabledMonitors: string[];
 }
 
+/**
+ * MonitoringService handles performance and error monitoring for the application.
+ * It follows a singleton pattern to ensure only one instance is created.
+ */
 export class MonitoringService {
   private static instance: MonitoringService;
   private metrics: PerformanceMetrics;
@@ -25,17 +29,23 @@ export class MonitoringService {
   private metricQueue: MetricEntry[] = [];
   private batchTimeout: NodeJS.Timeout | null = null;
 
-  private constructor(config: MonitoringConfig) {
-    this.config = config;
-    this.metrics = PerformanceMetrics.getInstance();
-    this.initializeMonitoring();
-  }
-
+  /**
+   * Returns the singleton instance of MonitoringService.
+   * If it does not exist and a config is provided, a new instance is created.
+   * @param config - Configuration object for monitoring service.
+   * @returns The singleton instance of MonitoringService.
+   */
   static getInstance(config?: MonitoringConfig): MonitoringService {
     if (!this.instance && config) {
       this.instance = new MonitoringService(config);
     }
     return this.instance;
+  }
+
+  private constructor(config: MonitoringConfig) {
+    this.config = config;
+    this.metrics = PerformanceMetrics.getInstance();
+    this.initializeMonitoring();
   }
 
   private initializeMonitoring(): void {
@@ -50,6 +60,10 @@ export class MonitoringService {
     this.initializeNetworkMonitoring();
   }
 
+  /**
+   * Handles an uncaught error event by logging details to the Logger and queuing an error metric.
+   * @param event - The ErrorEvent containing details about the error such as message, filename, line and column numbers, and stack trace.
+   */
   private handleError(event: ErrorEvent): void {
     Logger.error('Application error', {
       message: event.message,
@@ -68,6 +82,10 @@ export class MonitoringService {
     });
   }
 
+  /**
+   * Handles unhandled promise rejections by logging the error and queueing an error metric.
+   * @param event The PromiseRejectionEvent containing the rejection reason.
+   */
   private handleRejection(event: PromiseRejectionEvent): void {
     Logger.error('Unhandled promise rejection', {
       reason: event.reason
@@ -113,6 +131,11 @@ export class MonitoringService {
     }
   }
 
+  /**
+   * Initializes network monitoring by wrapping window.fetch to intercept network requests,
+   * measure request duration, and queue metrics for each request.
+   * @returns void
+   */
   private initializeNetworkMonitoring(): void {
     const originalFetch = window.fetch;
     window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
@@ -145,6 +168,13 @@ export class MonitoringService {
     };
   }
 
+  /**
+   * Queues a metric for later transmission. Checks if the metric type is enabled, then appends it to the internal queue.
+   * If the queue reaches the maximum batch size, it is flushed immediately; otherwise, a flush is scheduled after a timeout.
+   * @param type - The type of metric to queue.
+   * @param data - The metric data payload.
+   * @returns void
+   */
   private queueMetric(type: string, data: Record<string, unknown>): void {
     if (!this.config.enabledMonitors.includes(type)) {
       return;
@@ -170,6 +200,16 @@ export class MonitoringService {
     }
   }
 
+  /**
+   * Flushes the metric queue by sending batched metrics to the configured API endpoint.
+   *
+   * If the queue is empty, this method returns immediately.
+   * Clears any existing batch timeout and processes the queued metrics.
+   * Logs metrics in development mode, or sends them via HTTP POST in production.
+   * In case of failure, logs an error and re-queues metrics for retry.
+   *
+   * @returns {Promise<void>} A promise that resolves when the flush operation is complete.
+   */
   private async flushMetricQueue(): Promise<void> {
     if (this.metricQueue.length === 0) return;
 
@@ -207,6 +247,14 @@ export class MonitoringService {
     }
   }
 
+  /**
+   * Records a custom metric with the specified name, value, and optional tags.
+   * The metric is queued along with the current timestamp for processing.
+   *
+   * @param name The name of the custom metric.
+   * @param value The numeric value of the custom metric.
+   * @param tags Optional key-value pairs to associate with the metric.
+   */
   public recordCustomMetric(name: string, value: number, tags: Record<string, string> = {}): void {
     this.queueMetric('custom', {
       name,
@@ -216,6 +264,13 @@ export class MonitoringService {
     });
   }
 
+  /**
+   * Records a user action metric with specified details and a timestamp.
+   *
+   * @param action - The name of the user action to record.
+   * @param details - Additional information related to the user action.
+   * @returns void
+   */
   public recordUserAction(action: string, details: Record<string, unknown> = {}): void {
     this.queueMetric('userAction', {
       action,
@@ -224,6 +279,10 @@ export class MonitoringService {
     });
   }
 
+  /**
+   * Retrieves the current metrics.
+   * @returns A record mapping metric names to their values.
+   */
   public getMetrics(): Record<string, unknown> {
     return this.metrics.getMetrics();
   }
