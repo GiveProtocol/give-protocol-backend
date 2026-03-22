@@ -27,12 +27,24 @@ interface WithdrawalRequest {
   };
 }
 
+/**
+ * Returns the appropriate CSS badge class based on the withdrawal status.
+ *
+ * @param status - The current status of the withdrawal (e.g., 'approved', 'rejected').
+ * @returns A string containing the CSS classes for the badge corresponding to the status.
+ */
 function getStatusBadgeClass(status: string): string {
   if (status === 'approved') return 'bg-green-100 text-green-800';
   if (status === 'rejected') return 'bg-red-100 text-red-800';
   return 'bg-yellow-100 text-yellow-800';
 }
 
+/**
+ * Capitalizes the first letter of the given status string.
+ *
+ * @param status - The status string to capitalize.
+ * @returns The status string with the first letter capitalized.
+ */
 function capitalizeStatus(status: string): string {
   return status.charAt(0).toUpperCase() + status.slice(1);
 }
