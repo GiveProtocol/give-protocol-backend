@@ -1,5 +1,5 @@
-import { Logger } from '../logger';
-import { PerformanceMetrics } from '../performance/metrics';
+import { Logger } from "../logger";
+import { PerformanceMetrics } from "../performance/metrics";
 
 interface MetricEntry {
   type: string;
@@ -53,8 +53,11 @@ export class MonitoringService {
     this.initializePerformanceObserver();
 
     // Error monitoring
-    window.addEventListener('error', this.handleError.bind(this));
-    window.addEventListener('unhandledrejection', this.handleRejection.bind(this));
+    window.addEventListener("error", this.handleError.bind(this));
+    window.addEventListener(
+      "unhandledrejection",
+      this.handleRejection.bind(this),
+    );
 
     // Network monitoring
     this.initializeNetworkMonitoring();
@@ -65,20 +68,20 @@ export class MonitoringService {
    * @param event - The ErrorEvent containing details about the error such as message, filename, line and column numbers, and stack trace.
    */
   private handleError(event: ErrorEvent): void {
-    Logger.error('Application error', {
+    Logger.error("Application error", {
       message: event.message,
       filename: event.filename,
       lineNumber: event.lineno,
       columnNumber: event.colno,
-      stack: event.error?.stack
+      stack: event.error?.stack,
     });
 
-    this.queueMetric('error', {
-      type: 'error',
+    this.queueMetric("error", {
+      type: "error",
       message: event.message,
       stack: event.error?.stack,
       url: window.location.href,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
@@ -87,47 +90,47 @@ export class MonitoringService {
    * @param event The PromiseRejectionEvent containing the rejection reason.
    */
   private handleRejection(event: PromiseRejectionEvent): void {
-    Logger.error('Unhandled promise rejection', {
-      reason: event.reason
+    Logger.error("Unhandled promise rejection", {
+      reason: event.reason,
     });
 
-    this.queueMetric('error', {
-      type: 'rejection',
-      message: event.reason?.message || 'Promise rejection',
+    this.queueMetric("error", {
+      type: "rejection",
+      message: event.reason?.message || "Promise rejection",
       stack: event.reason?.stack,
       url: window.location.href,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
   private initializePerformanceObserver(): void {
     // Long tasks
-    if (PerformanceObserver.supportedEntryTypes.includes('longtask')) {
+    if (PerformanceObserver.supportedEntryTypes.includes("longtask")) {
       new PerformanceObserver((list) => {
         list.getEntries().forEach((entry) => {
-          this.queueMetric('longtask', {
+          this.queueMetric("longtask", {
             duration: entry.duration,
             startTime: entry.startTime,
-            name: entry.name
+            name: entry.name,
           });
         });
-      }).observe({ entryTypes: ['longtask'] });
+      }).observe({ entryTypes: ["longtask"] });
     }
 
     // Resource timing
-    if (PerformanceObserver.supportedEntryTypes.includes('resource')) {
+    if (PerformanceObserver.supportedEntryTypes.includes("resource")) {
       new PerformanceObserver((list) => {
         list.getEntries().forEach((entry) => {
           const resource = entry as PerformanceResourceTiming;
-          this.queueMetric('resource', {
+          this.queueMetric("resource", {
             name: resource.name,
             duration: resource.duration,
             transferSize: resource.transferSize,
             initiatorType: resource.initiatorType,
-            startTime: resource.startTime
+            startTime: resource.startTime,
           });
         });
-      }).observe({ entryTypes: ['resource'] });
+      }).observe({ entryTypes: ["resource"] });
     }
   }
 
@@ -143,25 +146,25 @@ export class MonitoringService {
       try {
         const response = await originalFetch(input, init);
         const duration = performance.now() - startTime;
-        
-        this.queueMetric('api', {
-          url: typeof input === 'string' ? input : input.url,
-          method: init?.method || 'GET',
+
+        this.queueMetric("api", {
+          url: typeof input === "string" ? input : input.url,
+          method: init?.method || "GET",
           status: response.status,
           duration,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         });
 
         return response;
       } catch (error) {
         const duration = performance.now() - startTime;
-        this.queueMetric('api', {
-          url: typeof input === 'string' ? input : input.url,
-          method: init?.method || 'GET',
+        this.queueMetric("api", {
+          url: typeof input === "string" ? input : input.url,
+          method: init?.method || "GET",
           status: 0,
-          error: error instanceof Error ? error.message : 'Network error',
+          error: error instanceof Error ? error.message : "Network error",
           duration,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         });
         throw error;
       }
@@ -186,7 +189,7 @@ export class MonitoringService {
       appId: this.config.appId,
       environment: this.config.environment,
       userAgent: navigator.userAgent,
-      url: window.location.href
+      url: window.location.href,
     };
 
     this.metricQueue.push(metricData);
@@ -223,25 +226,28 @@ export class MonitoringService {
 
     // Log metrics in development
     if (import.meta.env.DEV) {
-      Logger.info('Metrics batch', { metrics });
+      Logger.info("Metrics batch", { metrics });
       return;
     }
 
     try {
       const response = await fetch(`${this.config.apiKey}/metrics/batch`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'X-App-ID': this.config.appId
+          "Content-Type": "application/json",
+          "X-App-ID": this.config.appId,
         },
-        body: JSON.stringify({ metrics })
+        body: JSON.stringify({ metrics }),
       });
 
       if (!response.ok) {
         throw new Error(`Failed to send metrics: ${response.statusText}`);
       }
     } catch (error) {
-      Logger.error('Failed to send metrics batch', { error, metricsCount: metrics.length });
+      Logger.error("Failed to send metrics batch", {
+        error,
+        metricsCount: metrics.length,
+      });
       // Re-queue failed metrics
       this.metricQueue.unshift(...metrics);
     }
@@ -255,12 +261,16 @@ export class MonitoringService {
    * @param value The numeric value of the custom metric.
    * @param tags Optional key-value pairs to associate with the metric.
    */
-  public recordCustomMetric(name: string, value: number, tags: Record<string, string> = {}): void {
-    this.queueMetric('custom', {
+  public recordCustomMetric(
+    name: string,
+    value: number,
+    tags: Record<string, string> = {},
+  ): void {
+    this.queueMetric("custom", {
       name,
       value,
       tags,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
@@ -271,11 +281,14 @@ export class MonitoringService {
    * @param details - Additional information related to the user action.
    * @returns void
    */
-  public recordUserAction(action: string, details: Record<string, unknown> = {}): void {
-    this.queueMetric('userAction', {
+  public recordUserAction(
+    action: string,
+    details: Record<string, unknown> = {},
+  ): void {
+    this.queueMetric("userAction", {
       action,
       details,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
