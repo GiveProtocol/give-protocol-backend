@@ -27,12 +27,24 @@ interface WithdrawalRequest {
   };
 }
 
+/**
+ * Returns CSS classes for a status badge based on the given status.
+ *
+ * @param status - The status string ('approved', 'rejected', or others).
+ * @returns The CSS class string for the badge.
+ */
 function getStatusBadgeClass(status: string): string {
   if (status === 'approved') return 'bg-green-100 text-green-800';
   if (status === 'rejected') return 'bg-red-100 text-red-800';
   return 'bg-yellow-100 text-yellow-800';
 }
 
+/**
+ * Capitalizes the first letter of the status string.
+ *
+ * @param status - The status string to capitalize.
+ * @returns The status string with the first letter capitalized.
+ */
 function capitalizeStatus(status: string): string {
   return status.charAt(0).toUpperCase() + status.slice(1);
 }
@@ -42,6 +54,13 @@ interface DetailFieldProps {
   children: React.ReactNode;
 }
 
+/**
+ * Displays a label and its corresponding content.
+ *
+ * @param label - The text label for the field.
+ * @param children - The content to display under the label.
+ * @returns A React element rendering the label and content.
+ */
 const DetailField: React.FC<DetailFieldProps> = ({ label, children }) => (
   <div>
     <p className="text-sm text-gray-500">{label}</p>
@@ -53,6 +72,12 @@ interface RequestInfoColumnProps {
   withdrawal: WithdrawalRequest;
 }
 
+/**
+ * Displays detailed information about a withdrawal request.
+ *
+ * @param withdrawal - The withdrawal request data.
+ * @returns A React element showing the request details.
+ */
 const RequestInfoColumn: React.FC<RequestInfoColumnProps> = ({ withdrawal }) => (
   <div>
     <h3 className="text-lg font-medium text-gray-900 mb-2">Request Information</h3>
@@ -79,6 +104,12 @@ interface CharityInfoColumnProps {
   withdrawal: WithdrawalRequest;
 }
 
+/**
+ * Displays charity-related information for a withdrawal request.
+ *
+ * @param withdrawal - The withdrawal request data.
+ * @returns A React element showing the charity information.
+ */
 const CharityInfoColumn: React.FC<CharityInfoColumnProps> = ({ withdrawal }) => (
   <div>
     <h3 className="text-lg font-medium text-gray-900 mb-2">Charity Information</h3>
@@ -103,6 +134,13 @@ interface WithdrawalViewModalProps {
   onClose: () => void;
 }
 
+/**
+ * Modal component to view details of a withdrawal request.
+ *
+ * @param withdrawal - The withdrawal request data to display.
+ * @param onClose - Function to call when closing the modal.
+ * @returns A React element for the view details modal.
+ */
 const WithdrawalViewModal: React.FC<WithdrawalViewModalProps> = ({ withdrawal, onClose }) => (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
     <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full">
@@ -135,6 +173,16 @@ interface ApproveConfirmModalProps {
   onConfirm: () => void;
 }
 
+/**
+ * Modal component to confirm approval of a withdrawal request.
+ *
+ * @param withdrawal - The withdrawal request data being approved.
+ * @param processingTransaction - Whether a blockchain transaction is in process.
+ * @param loading - Whether the approve action is loading.
+ * @param onClose - Function to call when closing the modal.
+ * @param onConfirm - Function to call to confirm approval.
+ * @returns A React element for the approval confirmation modal.
+ */
 const ApproveConfirmModal: React.FC<ApproveConfirmModalProps> = ({
   withdrawal, processingTransaction, loading, onClose, onConfirm
 }) => (
@@ -176,6 +224,17 @@ interface RejectConfirmModalProps {
   onConfirm: () => void;
 }
 
+/**
+ * Modal component to confirm rejection of a withdrawal request.
+ *
+ * @param withdrawal - The withdrawal request data being rejected.
+ * @param rejectReason - The reason for rejection.
+ * @param loading - Whether the reject action is loading.
+ * @param onReasonChange - Function to call when the rejection reason changes.
+ * @param onClose - Function to call when closing the modal.
+ * @param onConfirm - Function to call to confirm rejection.
+ * @returns A React element for the rejection confirmation modal.
+ */
 const RejectConfirmModal: React.FC<RejectConfirmModalProps> = ({
   withdrawal, rejectReason, loading, onReasonChange, onClose, onConfirm
 }) => (
@@ -219,6 +278,15 @@ interface WithdrawalRowActionsProps {
   onReject: (w: WithdrawalRequest) => void;
 }
 
+/**
+ * Renders action buttons (view, approve, reject) for a withdrawal row.
+ *
+ * @param withdrawal - The withdrawal request data.
+ * @param onView - Function to call when viewing the request.
+ * @param onApprove - Function to call when approving the request.
+ * @param onReject - Function to call when rejecting the request.
+ * @returns A React element with action buttons.
+ */
 const WithdrawalRowActions: React.FC<WithdrawalRowActionsProps> = ({
   withdrawal, onView, onApprove, onReject
 }) => (
@@ -261,6 +329,15 @@ interface WithdrawalRowProps {
   onReject: (w: WithdrawalRequest) => void;
 }
 
+/**
+ * Renders a table row for a withdrawal request.
+ *
+ * @param withdrawal - The withdrawal request data.
+ * @param onView - Function to call when viewing the request.
+ * @param onApprove - Function to call when approving the request.
+ * @param onReject - Function to call when rejecting the request.
+ * @returns A React element representing a table row.
+ */
 const WithdrawalRow: React.FC<WithdrawalRowProps> = ({
   withdrawal, onView, onApprove, onReject
 }) => (
@@ -298,6 +375,13 @@ interface TableHeaderCellProps {
   align?: 'left' | 'right';
 }
 
+/**
+ * Renders a table header cell with optional alignment.
+ *
+ * @param children - The header content.
+ * @param align - Alignment of the header content ('left' or 'right').
+ * @returns A React element for the table header cell.
+ */
 const TableHeaderCell: React.FC<TableHeaderCellProps> = ({ children, align = 'left' }) => (
   <th
     scope="col"
@@ -314,6 +398,15 @@ interface WithdrawalsTableCardProps {
   onReject: (w: WithdrawalRequest) => void;
 }
 
+/**
+ * Card component displaying a table of withdrawal requests with actions.
+ *
+ * @param withdrawals - The list of withdrawal requests to display.
+ * @param onView - Function to call when viewing a request.
+ * @param onApprove - Function to call when approving a request.
+ * @param onReject - Function to call when rejecting a request.
+ * @returns A React element with the withdrawals table card.
+ */
 const WithdrawalsTableCard: React.FC<WithdrawalsTableCardProps> = ({
   withdrawals, onView, onApprove, onReject
 }) => (
@@ -346,6 +439,13 @@ const WithdrawalsTableCard: React.FC<WithdrawalsTableCardProps> = ({
   </Card>
 );
 
+/**
+ * Main component for admin to manage global withdrawal requests.
+ *
+ * Fetches and displays withdrawal requests, provides search and actions.
+ *
+ * @returns A React element for the admin withdrawals page.
+ */
 const AdminWithdrawals: React.FC = () => {
   const [withdrawals, setWithdrawals] = useState<WithdrawalRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -359,6 +459,12 @@ const AdminWithdrawals: React.FC = () => {
   const [processingTransaction, setProcessingTransaction] = useState(false);
   const { withdraw } = useDonation();
 
+  /**
+   * Fetches withdrawal requests from the backend.
+   *
+   * @async
+   * @returns void
+   */
   const fetchWithdrawals = async () => {
     try {
       setLoading(true);
@@ -395,6 +501,12 @@ const AdminWithdrawals: React.FC = () => {
     fetchWithdrawals();
   }, []);
 
+  /**
+   * Handles search input changes to filter withdrawal requests.
+   *
+   * @param e - The input change event.
+   * @returns void
+   */
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };

@@ -1,6 +1,3 @@
-import React, { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
-import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
@@ -26,6 +23,11 @@ interface CharityDocument {
   };
 }
 
+/**
+ * Returns a human-readable label for a document type.
+ * @param type - The type of the document.
+ * @returns The label corresponding to the document type.
+ */
 const getDocumentTypeLabel = (type: string): string => {
   switch (type) {
     case 'tax_certificate':
@@ -47,6 +49,10 @@ interface DocumentInfoColumnProps {
   document: CharityDocument;
 }
 
+/**
+ * Displays information details for a charity document.
+ * @param document - The charity document to display information for.
+ */
 const DocumentInfoColumn: React.FC<DocumentInfoColumnProps> = ({ document }) => (
   <div>
     <h3 className="text-lg font-medium text-gray-900 mb-2">Document Information</h3>
@@ -87,6 +93,10 @@ interface CharityInfoColumnProps {
   document: CharityDocument;
 }
 
+/**
+ * Displays charity-related information for a document.
+ * @param document - The charity document containing charity information.
+ */
 const CharityInfoColumn: React.FC<CharityInfoColumnProps> = ({ document }) => (
   <div>
     <h3 className="text-lg font-medium text-gray-900 mb-2">Charity Information</h3>
@@ -111,6 +121,10 @@ interface DocumentPreviewProps {
   documentUrl: string;
 }
 
+/**
+ * Wrapper component to display a document preview section.
+ * @param documentUrl - The URL of the document to preview.
+ */
 const DocumentPreview: React.FC<DocumentPreviewProps> = ({ documentUrl }) => (
   <div className="border p-4 rounded-lg bg-gray-50">
     <h3 className="text-lg font-medium text-gray-900 mb-2">Document Preview</h3>
@@ -118,6 +132,10 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ documentUrl }) => (
   </div>
 );
 
+/**
+ * Content component to render document preview details and actions.
+ * @param documentUrl - The URL of the document to preview.
+ */
 const DocumentPreviewContent: React.FC<DocumentPreviewProps> = ({ documentUrl }) => (
   <div className="flex items-center justify-center p-4 bg-white border border-gray-200 rounded">
     <div className="text-center">
@@ -147,6 +165,10 @@ interface DocumentViewModalProps {
   onReject: (document: CharityDocument) => void;
 }
 
+/**
+ * Header component for the document view modal.
+ * @param onClose - Function to close the modal.
+ */
 const DocumentViewModalHeader: React.FC<{ onClose: () => void }> = ({ onClose }) => (
   <div className="p-6 border-b border-gray-200">
     <div className="flex justify-between items-center">
@@ -158,6 +180,13 @@ const DocumentViewModalHeader: React.FC<{ onClose: () => void }> = ({ onClose })
   </div>
 );
 
+/**
+ * Footer component for the document view modal with action buttons.
+ * @param document - The document being viewed.
+ * @param onClose - Function to close the modal.
+ * @param onVerify - Function to initiate verification.
+ * @param onReject - Function to initiate rejection.
+ */
 const DocumentViewModalFooter: React.FC<DocumentViewModalProps> = ({ document, onClose, onVerify, onReject }) => (
   <div className="p-6 border-t border-gray-200 flex justify-end space-x-3">
     <Button onClick={onClose}>Close</Button>
@@ -186,6 +215,10 @@ const DocumentViewModalFooter: React.FC<DocumentViewModalProps> = ({ document, o
   </div>
 );
 
+/**
+ * Main component for the document view modal container.
+ * @param props - Props including document and action handlers.
+ */
 const DocumentViewModal: React.FC<DocumentViewModalProps> = (props) => {
   const { document, onClose, onVerify, onReject } = props;
 
@@ -200,6 +233,10 @@ const DocumentViewModal: React.FC<DocumentViewModalProps> = (props) => {
   );
 };
 
+/**
+ * Body component for the document view modal displaying info and preview.
+ * @param document - The charity document to display.
+ */
 const DocumentViewModalBody: React.FC<{ document: CharityDocument }> = ({ document }) => (
   <div className="p-6">
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -221,6 +258,13 @@ interface VerifyConfirmModalProps {
   onConfirm: () => void;
 }
 
+/**
+ * Modal component to confirm document verification.
+ * @param document - The charity document to verify.
+ * @param loading - Whether the verification is in progress.
+ * @param onClose - Function to close the modal.
+ * @param onConfirm - Function to confirm verification.
+ */
 const VerifyConfirmModal: React.FC<VerifyConfirmModalProps> = ({ document, loading, onClose, onConfirm }) => (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
     <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
@@ -229,6 +273,13 @@ const VerifyConfirmModal: React.FC<VerifyConfirmModalProps> = ({ document, loadi
   </div>
 );
 
+/**
+ * Content component displaying verification confirmation details.
+ * @param document - The charity document to verify.
+ * @param loading - Whether the verification is in progress.
+ * @param onClose - Function to cancel verification.
+ * @param onConfirm - Function to proceed with verification.
+ */
 const VerifyConfirmModalContent: React.FC<VerifyConfirmModalProps> = ({ document, loading, onClose, onConfirm }) => (
   <div className="p-6">
     <div className="bg-green-100 rounded-full p-3 mx-auto mb-4 w-fit">
@@ -260,6 +311,10 @@ interface RejectConfirmModalProps {
   onConfirm: () => void;
 }
 
+/**
+ * Modal component to confirm document rejection.
+ * @param props - Props including document, loading state, and handlers.
+ */
 const RejectConfirmModal: React.FC<RejectConfirmModalProps> = (props) => (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
     <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
@@ -268,6 +323,15 @@ const RejectConfirmModal: React.FC<RejectConfirmModalProps> = (props) => (
   </div>
 );
 
+/**
+ * Content component displaying rejection confirmation details and reason.
+ * @param document - The charity document to reject.
+ * @param loading - Whether the rejection is in progress.
+ * @param rejectReason - The reason for rejection.
+ * @param onRejectReasonChange - Handler for reason input changes.
+ * @param onClose - Function to cancel rejection.
+ * @param onConfirm - Function to proceed with rejection.
+ */
 const RejectConfirmModalContent: React.FC<RejectConfirmModalProps> = ({
   document, loading, rejectReason, onRejectReasonChange, onClose, onConfirm,
 }) => (
@@ -294,6 +358,11 @@ interface RejectReasonFieldProps {
   onRejectReasonChange: (value: string) => void;
 }
 
+/**
+ * Text area field for entering a reason for rejection.
+ * @param rejectReason - Current value of the rejection reason.
+ * @param onRejectReasonChange - Handler for text changes.
+ */
 const RejectReasonField: React.FC<RejectReasonFieldProps> = ({ rejectReason, onRejectReasonChange }) => (
   <div className="mb-4">
     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -320,6 +389,13 @@ interface DocumentsTableCardProps {
   onReject: (document: CharityDocument) => void;
 }
 
+/**
+ * Card component wrapping the documents table for responsive display.
+ * @param documents - Array of charity documents.
+ * @param onView - Handler for viewing a document.
+ * @param onVerify - Handler for verifying a document.
+ * @param onReject - Handler for rejecting a document.
+ */
 const DocumentsTableCard: React.FC<DocumentsTableCardProps> = ({ documents, onView, onVerify, onReject }) => (
   <Card>
     <div className="overflow-x-auto">
@@ -328,6 +404,13 @@ const DocumentsTableCard: React.FC<DocumentsTableCardProps> = ({ documents, onVi
   </Card>
 );
 
+/**
+ * Table component listing all charity documents with actions.
+ * @param documents - Array of charity documents.
+ * @param onView - Handler for viewing a document.
+ * @param onVerify - Handler for verifying a document.
+ * @param onReject - Handler for rejecting a document.
+ */
 const DocumentsTable: React.FC<DocumentsTableCardProps> = ({ documents, onView, onVerify, onReject }) => (
   <table className="min-w-full divide-y divide-gray-200">
     <DocumentsTableHeader />
@@ -339,6 +422,9 @@ const DocumentsTable: React.FC<DocumentsTableCardProps> = ({ documents, onView, 
   </table>
 );
 
+/**
+ * Header component for the documents table.
+ */
 const DocumentsTableHeader: React.FC = () => (
   <thead className="bg-gray-50">
     <tr>
@@ -358,6 +444,13 @@ interface DocumentRowProps {
   onReject: (document: CharityDocument) => void;
 }
 
+/**
+ * Row component for an individual charity document entry in the table.
+ * @param document - The charity document to display.
+ * @param onView - Handler for viewing the document.
+ * @param onVerify - Handler for verifying the document.
+ * @param onReject - Handler for rejecting the document.
+ */
 const DocumentRow: React.FC<DocumentRowProps> = ({ document, onView, onVerify, onReject }) => (
   <tr>
     <td className="px-6 py-4 whitespace-nowrap">
@@ -378,6 +471,10 @@ const DocumentRow: React.FC<DocumentRowProps> = ({ document, onView, onVerify, o
   </tr>
 );
 
+/**
+ * Badge component indicating verification status.
+ * @param verified - Whether the document is verified.
+ */
 const DocumentStatusBadge: React.FC<{ verified: boolean }> = ({ verified }) => (
   <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
     verified
@@ -388,6 +485,13 @@ const DocumentStatusBadge: React.FC<{ verified: boolean }> = ({ verified }) => (
   </span>
 );
 
+/**
+ * Component rendering action buttons for a document row.
+ * @param document - The charity document.
+ * @param onView - Handler for viewing the document.
+ * @param onVerify - Handler for verifying the document.
+ * @param onReject - Handler for rejecting the document.
+ */
 const DocumentActions: React.FC<DocumentRowProps> = ({ document, onView, onVerify, onReject }) => (
   <div className="flex justify-end space-x-2">
     <Button variant="ghost" size="sm" onClick={() => onView(document)} className="text-indigo-600 hover:text-indigo-900">
@@ -406,10 +510,9 @@ const DocumentActions: React.FC<DocumentRowProps> = ({ document, onView, onVerif
   </div>
 );
 
-/* ------------------------------------------------------------------ */
-/*  AdminVerifications (main component)                                */
-/* ------------------------------------------------------------------ */
-
+/**
+ * Main component for admin verifications page managing state and actions.
+ */
 const AdminVerifications: React.FC = () => {
   const [documents, setDocuments] = useState<CharityDocument[]>([]);
   const [loading, setLoading] = useState(true);
@@ -421,6 +524,9 @@ const AdminVerifications: React.FC = () => {
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
 
+  /**
+   * Fetches documents from the database and updates state.
+   */
   const fetchDocuments = async () => {
     try {
       setLoading(true);
@@ -457,6 +563,10 @@ const AdminVerifications: React.FC = () => {
     fetchDocuments();
   }, []);
 
+  /**
+   * Handler for search input changes updating the search term state.
+   * @param e - The input change event.
+   */
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
@@ -475,22 +585,37 @@ const AdminVerifications: React.FC = () => {
     );
   });
 
+  /**
+   * Opens the view modal for a selected document.
+   * @param document - The charity document to view.
+   */
   const handleView = (document: CharityDocument) => {
     setSelectedDocument(document);
     setIsViewModalOpen(true);
   };
 
+  /**
+   * Opens the verify modal for a selected document.
+   * @param document - The charity document to verify.
+   */
   const handleVerify = (document: CharityDocument) => {
     setSelectedDocument(document);
     setIsVerifyModalOpen(true);
   };
 
+  /**
+   * Opens the reject modal for a selected document and resets reason.
+   * @param document - The charity document to reject.
+   */
   const handleReject = (document: CharityDocument) => {
     setSelectedDocument(document);
     setRejectReason('');
     setIsRejectModalOpen(true);
   };
 
+  /**
+   * Confirms the verification of the selected document.
+   */
   const confirmVerify = async () => {
     if (!selectedDocument) return;
 
@@ -522,6 +647,9 @@ const AdminVerifications: React.FC = () => {
     }
   };
 
+  /**
+   * Confirms the rejection of the selected document.
+   */
   const confirmReject = async () => {
     if (!selectedDocument) return;
 
