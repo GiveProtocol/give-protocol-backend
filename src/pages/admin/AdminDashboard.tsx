@@ -36,6 +36,78 @@ type AdminTab =
   | "settings"
   | "logs";
 
+interface NavItem {
+  tab: AdminTab;
+  icon: React.ReactNode;
+  label: string;
+}
+
+const navItems: NavItem[] = [
+  { tab: "dashboard", icon: <BarChart className="h-5 w-5 mr-3" />, label: "Dashboard" },
+  { tab: "charities", icon: <Building className="h-5 w-5 mr-3" />, label: "Charities" },
+  { tab: "donations", icon: <DollarSign className="h-5 w-5 mr-3" />, label: "Donations" },
+  { tab: "users", icon: <Users className="h-5 w-5 mr-3" />, label: "Users" },
+  { tab: "withdrawals", icon: <Clock className="h-5 w-5 mr-3" />, label: "Withdrawals" },
+  { tab: "verifications", icon: <Shield className="h-5 w-5 mr-3" />, label: "Verifications" },
+  { tab: "logs", icon: <FileText className="h-5 w-5 mr-3" />, label: "Audit Logs" },
+  { tab: "settings", icon: <Settings className="h-5 w-5 mr-3" />, label: "Settings" },
+];
+
+interface SidebarNavProps {
+  activeTab: AdminTab;
+  onTabChange: (tab: AdminTab) => void;
+}
+
+/**
+ * SidebarNav renders navigation items for the admin sidebar.
+ * @param props SidebarNavProps containing activeTab and onTabChange handler.
+ * @returns JSX.Element The rendered sidebar navigation.
+ */
+const SidebarNav: React.FC<SidebarNavProps> = ({ activeTab, onTabChange }) => (
+  <nav className="mt-6 overflow-y-auto h-[calc(100vh-88px)]">
+    <ul className="space-y-2 px-4">
+      {navItems.map(({ tab, icon, label }) => (
+        <li key={tab}>
+          <button
+            onClick={() => onTabChange(tab)}
+            className={`flex items-center w-full px-4 py-2 text-sm font-medium rounded-md ${
+              activeTab === tab
+                ? "bg-indigo-50 text-indigo-700"
+                : "text-gray-600 hover:bg-gray-50"
+            }`}
+          >
+            {icon}
+            {label}
+          </button>
+        </li>
+      ))}
+    </ul>
+  </nav>
+);
+
+interface MobileToggleProps {
+  sidebarOpen: boolean;
+  onToggle: () => void;
+}
+
+/**
+ * MobileToggle renders the mobile sidebar toggle button.
+ * @param props MobileToggleProps containing sidebar state and toggle handler.
+ * @returns JSX.Element The rendered mobile toggle button.
+ */
+const MobileToggle: React.FC<MobileToggleProps> = ({ sidebarOpen, onToggle }) => (
+  <div className="md:hidden fixed top-4 left-4 z-20">
+    <Button
+      variant="secondary"
+      size="sm"
+      onClick={onToggle}
+      className="rounded-full p-2 shadow-md"
+    >
+      {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+    </Button>
+  </div>
+);
+
 /**
  * AdminDashboard component for rendering the admin panel UI and navigation.
  *
@@ -118,21 +190,7 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      {/* Mobile sidebar toggle */}
-      <div className="md:hidden fixed top-4 left-4 z-20">
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={toggleSidebar}
-          className="rounded-full p-2 shadow-md"
-        >
-          {sidebarOpen ? (
-            <X className="h-5 w-5" />
-          ) : (
-            <Menu className="h-5 w-5" />
-          )}
-        </Button>
-      </div>
+      <MobileToggle sidebarOpen={sidebarOpen} onToggle={toggleSidebar} />
 
       {/* Sidebar */}
       <div
@@ -142,114 +200,7 @@ const AdminDashboard: React.FC = () => {
           <h1 className="text-xl font-semibold text-gray-900">Admin Panel</h1>
           <p className="text-sm text-gray-500">Dev3 Back-End</p>
         </div>
-        <nav className="mt-6 overflow-y-auto h-[calc(100vh-88px)]">
-          <ul className="space-y-2 px-4">
-            <li>
-              <button
-                onClick={() => handleTabChange("dashboard")}
-                className={`flex items-center w-full px-4 py-2 text-sm font-medium rounded-md ${
-                  activeTab === "dashboard"
-                    ? "bg-indigo-50 text-indigo-700"
-                    : "text-gray-600 hover:bg-gray-50"
-                }`}
-              >
-                <BarChart className="h-5 w-5 mr-3" />
-                Dashboard
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => handleTabChange("charities")}
-                className={`flex items-center w-full px-4 py-2 text-sm font-medium rounded-md ${
-                  activeTab === "charities"
-                    ? "bg-indigo-50 text-indigo-700"
-                    : "text-gray-600 hover:bg-gray-50"
-                }`}
-              >
-                <Building className="h-5 w-5 mr-3" />
-                Charities
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => handleTabChange("donations")}
-                className={`flex items-center w-full px-4 py-2 text-sm font-medium rounded-md ${
-                  activeTab === "donations"
-                    ? "bg-indigo-50 text-indigo-700"
-                    : "text-gray-600 hover:bg-gray-50"
-                }`}
-              >
-                <DollarSign className="h-5 w-5 mr-3" />
-                Donations
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => handleTabChange("users")}
-                className={`flex items-center w-full px-4 py-2 text-sm font-medium rounded-md ${
-                  activeTab === "users"
-                    ? "bg-indigo-50 text-indigo-700"
-                    : "text-gray-600 hover:bg-gray-50"
-                }`}
-              >
-                <Users className="h-5 w-5 mr-3" />
-                Users
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => handleTabChange("withdrawals")}
-                className={`flex items-center w-full px-4 py-2 text-sm font-medium rounded-md ${
-                  activeTab === "withdrawals"
-                    ? "bg-indigo-50 text-indigo-700"
-                    : "text-gray-600 hover:bg-gray-50"
-                }`}
-              >
-                <Clock className="h-5 w-5 mr-3" />
-                Withdrawals
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => handleTabChange("verifications")}
-                className={`flex items-center w-full px-4 py-2 text-sm font-medium rounded-md ${
-                  activeTab === "verifications"
-                    ? "bg-indigo-50 text-indigo-700"
-                    : "text-gray-600 hover:bg-gray-50"
-                }`}
-              >
-                <Shield className="h-5 w-5 mr-3" />
-                Verifications
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => handleTabChange("logs")}
-                className={`flex items-center w-full px-4 py-2 text-sm font-medium rounded-md ${
-                  activeTab === "logs"
-                    ? "bg-indigo-50 text-indigo-700"
-                    : "text-gray-600 hover:bg-gray-50"
-                }`}
-              >
-                <FileText className="h-5 w-5 mr-3" />
-                Audit Logs
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => handleTabChange("settings")}
-                className={`flex items-center w-full px-4 py-2 text-sm font-medium rounded-md ${
-                  activeTab === "settings"
-                    ? "bg-indigo-50 text-indigo-700"
-                    : "text-gray-600 hover:bg-gray-50"
-                }`}
-              >
-                <Settings className="h-5 w-5 mr-3" />
-                Settings
-              </button>
-            </li>
-          </ul>
-        </nav>
+        <SidebarNav activeTab={activeTab} onTabChange={handleTabChange} />
       </div>
 
       {/* Main Content */}

@@ -118,52 +118,47 @@ const TransactionInfo: React.FC<{ donation: Donation }> = ({ donation }) => (
   </div>
 );
 
-/**
- * Renders information about the parties involved in the donation.
- * @param {Donation} donation - The donation object containing donor and charity info.
- * @returns JSX.Element - The rendered parties information.
- */
+const PartyField: React.FC<{
+  label: string;
+  value: string;
+  href: string;
+  valueClassName?: string;
+}> = ({ label, value, href, valueClassName = "font-mono text-sm" }) => (
+  <div>
+    <p className="text-sm text-gray-500">{label}</p>
+    <p className={valueClassName}>
+      {value}
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-indigo-600 hover:text-indigo-900 ml-2 inline-block align-middle"
+      >
+        <ExternalLink className="h-3 w-3" />
+      </a>
+    </p>
+  </div>
+);
+
 const PartiesInfo: React.FC<{ donation: Donation }> = ({ donation }) => (
   <div>
     <h3 className="text-lg font-medium text-gray-900 mb-2">Parties</h3>
     <div className="space-y-3">
-      <div>
-        <p className="text-sm text-gray-500">Donor ID</p>
-        <p className="font-mono text-sm">
-          {donation.donor_id}
-          <a
-            href={`https://app.supabase.com/project/etqbojasfmpieigeefdj/editor/table/profiles/row/${donation.donor_id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-indigo-600 hover:text-indigo-900 ml-2 inline-block align-middle"
-          >
-            <ExternalLink className="h-3 w-3" />
-          </a>
-        </p>
-      </div>
-      <div>
-        <p className="text-sm text-gray-500">Charity</p>
-        <p className="font-medium">
-          {donation.charity?.charity_details?.name || "Unknown Charity"}
-          <a
-            href={`https://app.supabase.com/project/etqbojasfmpieigeefdj/editor/table/charity_details/row/${donation.charity_id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-indigo-600 hover:text-indigo-900 ml-2 inline-block align-middle"
-          >
-            <ExternalLink className="h-3 w-3" />
-          </a>
-        </p>
-      </div>
+      <PartyField
+        label="Donor ID"
+        value={donation.donor_id}
+        href={`https://app.supabase.com/project/etqbojasfmpieigeefdj/editor/table/profiles/row/${donation.donor_id}`}
+      />
+      <PartyField
+        label="Charity"
+        value={donation.charity?.charity_details?.name || "Unknown Charity"}
+        href={`https://app.supabase.com/project/etqbojasfmpieigeefdj/editor/table/charity_details/row/${donation.charity_id}`}
+        valueClassName="font-medium"
+      />
     </div>
   </div>
 );
 
-/**
- * Renders the header section of the donation details modal, including the title and a close button.
- * @param {() => void} onClose - Callback function triggered when the close button is clicked.
- * @returns JSX.Element - The rendered modal header.
- */
 const ModalHeader: React.FC<{ onClose: () => void }> = ({ onClose }) => (
   <div className="p-6 border-b border-gray-200 flex justify-between items-center">
     <h2 className="text-xl font-semibold text-gray-900">Donation Details</h2>
@@ -173,12 +168,6 @@ const ModalHeader: React.FC<{ onClose: () => void }> = ({ onClose }) => (
   </div>
 );
 
-/**
- * Renders a modal view displaying details of a specific donation.
- * @param {Donation} donation - The donation object to display.
- * @param {() => void} onClose - Callback function to close the modal.
- * @returns JSX.Element - The rendered donation view modal.
- */
 const DonationViewModal: React.FC<{
   donation: Donation;
   onClose: () => void;
@@ -195,6 +184,61 @@ const DonationViewModal: React.FC<{
       </div>
     </div>
   </div>
+);
+
+const DonationsTableCard: React.FC<{
+  donations: Donation[];
+  onView: (d: Donation) => void;
+}> = ({ donations, onView }) => (
+  <Card>
+    <div className="overflow-x-auto">
+      <table className="min-w-full divide-y divide-gray-200">
+        <thead className="bg-gray-50">
+          <tr>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              ID
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Date
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Charity
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Amount
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {donations.map((donation) => (
+            <DonationRow
+              key={donation.id}
+              donation={donation}
+              onView={onView}
+            />
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </Card>
 );
 
 /* ── Main component ─────────────────────────────────────────────── */
@@ -315,55 +359,10 @@ const AdminDonations: React.FC = () => {
 
       <SearchCard searchTerm={searchTerm} onChange={handleSearch} />
 
-      <Card>
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  ID
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Date
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Charity
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Amount
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredDonations.map((donation) => (
-                <DonationRow
-                  key={donation.id}
-                  donation={donation}
-                  onView={handleView}
-                />
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Card>
+      <DonationsTableCard
+        donations={filteredDonations}
+        onView={handleView}
+      />
 
       {isViewModalOpen && selectedDonation && (
         <DonationViewModal

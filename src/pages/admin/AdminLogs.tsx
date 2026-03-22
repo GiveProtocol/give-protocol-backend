@@ -45,47 +45,57 @@ const ModalHeader: React.FC<{ onClose: () => void }> = ({ onClose }) => (
   </div>
 );
 
+/** Basic information column of the modal info grid. */
+const BasicInfo: React.FC<{ log: AuditLog }> = ({ log }) => (
+  <div>
+    <h3 className="text-lg font-medium text-gray-900 mb-2">
+      Basic Information
+    </h3>
+    <div className="space-y-3">
+      <LabeledField label="Log ID">
+        <p className="font-mono text-sm">{log.id}</p>
+      </LabeledField>
+      <LabeledField label="Timestamp">
+        <p className="font-medium">{formatDate(log.created_at, true)}</p>
+      </LabeledField>
+      <LabeledField label="User">
+        <p className="font-medium">{log.user?.email || "Anonymous"}</p>
+      </LabeledField>
+      <LabeledField label="User ID">
+        <p className="font-mono text-sm">{log.user_id || "N/A"}</p>
+      </LabeledField>
+    </div>
+  </div>
+);
+
+/** Action information column of the modal info grid. */
+const ActionInfo: React.FC<{ log: AuditLog }> = ({ log }) => (
+  <div>
+    <h3 className="text-lg font-medium text-gray-900 mb-2">
+      Action Information
+    </h3>
+    <div className="space-y-3">
+      <LabeledField label="Action">
+        <p className="font-medium">{log.action}</p>
+      </LabeledField>
+      <LabeledField label="Table">
+        <p className="font-medium">{log.table_name}</p>
+      </LabeledField>
+      <LabeledField label="Record ID">
+        <p className="font-mono text-sm">{log.record_id}</p>
+      </LabeledField>
+      <LabeledField label="IP Address">
+        <p className="font-medium">{log.ip_address || "Unknown"}</p>
+      </LabeledField>
+    </div>
+  </div>
+);
+
 /** Basic and action information sections of the modal body. */
 const ModalInfoGrid: React.FC<{ log: AuditLog }> = ({ log }) => (
   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-    <div>
-      <h3 className="text-lg font-medium text-gray-900 mb-2">
-        Basic Information
-      </h3>
-      <div className="space-y-3">
-        <LabeledField label="Log ID">
-          <p className="font-mono text-sm">{log.id}</p>
-        </LabeledField>
-        <LabeledField label="Timestamp">
-          <p className="font-medium">{formatDate(log.created_at, true)}</p>
-        </LabeledField>
-        <LabeledField label="User">
-          <p className="font-medium">{log.user?.email || "Anonymous"}</p>
-        </LabeledField>
-        <LabeledField label="User ID">
-          <p className="font-mono text-sm">{log.user_id || "N/A"}</p>
-        </LabeledField>
-      </div>
-    </div>
-    <div>
-      <h3 className="text-lg font-medium text-gray-900 mb-2">
-        Action Information
-      </h3>
-      <div className="space-y-3">
-        <LabeledField label="Action">
-          <p className="font-medium">{log.action}</p>
-        </LabeledField>
-        <LabeledField label="Table">
-          <p className="font-medium">{log.table_name}</p>
-        </LabeledField>
-        <LabeledField label="Record ID">
-          <p className="font-mono text-sm">{log.record_id}</p>
-        </LabeledField>
-        <LabeledField label="IP Address">
-          <p className="font-medium">{log.ip_address || "Unknown"}</p>
-        </LabeledField>
-      </div>
-    </div>
+    <BasicInfo log={log} />
+    <ActionInfo log={log} />
   </div>
 );
 
@@ -96,7 +106,9 @@ const ModalDataGrid: React.FC<{ log: AuditLog }> = ({ log }) => (
       <h3 className="text-lg font-medium text-gray-900 mb-2">Old Data</h3>
       <div className="bg-gray-50 p-4 rounded-md overflow-auto max-h-60">
         <pre className="text-xs font-mono text-gray-800">
-          {log.old_data ? JSON.stringify(log.old_data, null, 2) : "No data"}
+          {log.old_data
+            ? JSON.stringify(log.old_data, null, 2)
+            : "No data"}
         </pre>
       </div>
     </div>
@@ -104,7 +116,9 @@ const ModalDataGrid: React.FC<{ log: AuditLog }> = ({ log }) => (
       <h3 className="text-lg font-medium text-gray-900 mb-2">New Data</h3>
       <div className="bg-gray-50 p-4 rounded-md overflow-auto max-h-60">
         <pre className="text-xs font-mono text-gray-800">
-          {log.new_data ? JSON.stringify(log.new_data, null, 2) : "No data"}
+          {log.new_data
+            ? JSON.stringify(log.new_data, null, 2)
+            : "No data"}
         </pre>
       </div>
     </div>
@@ -178,8 +192,7 @@ const FilterControls: React.FC<{
   dateFilter,
   onDateFilterChange,
 }) => (
-  <Card className="mb-6 p-4">
-    <div className="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-4">
+  <Card className="mb-6 p-4 flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-4">
       <div className="relative flex-grow">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
         <Input
@@ -239,7 +252,6 @@ const FilterControls: React.FC<{
           <option value="month">Last 30 Days</option>
         </select>
       </div>
-    </div>
   </Card>
 );
 
@@ -285,7 +297,9 @@ const LogTableRow: React.FC<{
       </div>
     </td>
     <td className="px-6 py-4 whitespace-nowrap">
-      <div className="text-sm text-gray-900">{log.ip_address || "Unknown"}</div>
+      <div className="text-sm text-gray-900">
+        {log.ip_address || "Unknown"}
+      </div>
     </td>
     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
       <Button
@@ -304,41 +318,37 @@ const LogTableRow: React.FC<{
 const thClass =
   "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider";
 
+/** Inner table content for the logs table. */
+const LogsTableInner: React.FC<{
+  logs: AuditLog[];
+  onView: (log: AuditLog) => void;
+}> = ({ logs, onView }) => (
+  <table className="min-w-full divide-y divide-gray-200">
+    <thead className="bg-gray-50">
+      <tr>
+        <th scope="col" className={thClass}>Date</th>
+        <th scope="col" className={thClass}>User</th>
+        <th scope="col" className={thClass}>Action</th>
+        <th scope="col" className={thClass}>Table</th>
+        <th scope="col" className={thClass}>IP Address</th>
+        <th scope="col" className={`${thClass} text-right`}>Actions</th>
+      </tr>
+    </thead>
+    <tbody className="bg-white divide-y divide-gray-200">
+      {logs.map((log) => (
+        <LogTableRow key={log.id} log={log} onView={onView} />
+      ))}
+    </tbody>
+  </table>
+);
+
 /** Table displaying filtered audit log entries. */
 const LogsTable: React.FC<{
   logs: AuditLog[];
   onView: (log: AuditLog) => void;
 }> = ({ logs, onView }) => (
   <Card className="overflow-x-auto">
-    <table className="min-w-full divide-y divide-gray-200">
-      <thead className="bg-gray-50">
-        <tr>
-          <th scope="col" className={thClass}>
-            Date
-          </th>
-          <th scope="col" className={thClass}>
-            User
-          </th>
-          <th scope="col" className={thClass}>
-            Action
-          </th>
-          <th scope="col" className={thClass}>
-            Table
-          </th>
-          <th scope="col" className={thClass}>
-            IP Address
-          </th>
-          <th scope="col" className={`${thClass} text-right`}>
-            Actions
-          </th>
-        </tr>
-      </thead>
-      <tbody className="bg-white divide-y divide-gray-200">
-        {logs.map((log) => (
-          <LogTableRow key={log.id} log={log} onView={onView} />
-        ))}
-      </tbody>
-    </table>
+    <LogsTableInner logs={logs} onView={onView} />
   </Card>
 );
 
@@ -531,9 +541,6 @@ const AdminLogs: React.FC = () => {
     );
   }
 
-  /**
-   * Closes the view modal by setting its open state to false.
-   */
   const closeModal = () => setIsViewModalOpen(false);
 
   return (

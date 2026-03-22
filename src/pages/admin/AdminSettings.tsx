@@ -22,6 +22,83 @@ interface SystemSettings {
   analyticsSampleRate: number;
 }
 
+interface SettingsCardProps {
+  icon: React.ReactNode;
+  title: string;
+  children: React.ReactNode;
+}
+
+/**
+ * SettingsCard renders a card with an icon header and content section.
+ * @param props SettingsCardProps containing icon, title, and children.
+ * @returns JSX.Element The rendered settings card.
+ */
+const SettingsCard: React.FC<SettingsCardProps> = ({ icon, title, children }) => (
+  <Card className="p-6">
+    <div className="flex items-center mb-4">
+      {icon}
+      <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+    </div>
+    {children}
+  </Card>
+);
+
+interface PageHeaderProps {
+  saving: boolean;
+  onReset: () => void;
+  onSave: () => void;
+}
+
+/**
+ * PageHeader renders the settings page title and action buttons.
+ * @param props PageHeaderProps containing saving state and handlers.
+ * @returns JSX.Element The rendered page header.
+ */
+const PageHeader: React.FC<PageHeaderProps> = ({ saving, onReset, onSave }) => (
+  <div className="flex justify-between items-center mb-6">
+    <h1 className="text-2xl font-bold text-gray-900">System Settings</h1>
+    <div className="flex space-x-3">
+      <Button
+        variant="secondary"
+        onClick={onReset}
+        className="flex items-center"
+      >
+        <RefreshCw className="h-4 w-4 mr-2" />
+        Reset to Defaults
+      </Button>
+      <Button
+        onClick={onSave}
+        disabled={saving}
+        className="flex items-center"
+      >
+        <Save className="h-4 w-4 mr-2" />
+        {saving ? "Saving..." : "Save Settings"}
+      </Button>
+    </div>
+  </div>
+);
+
+interface DangerActionProps {
+  title: string;
+  description: string;
+  buttonLabel: string;
+}
+
+/**
+ * DangerAction renders a bordered danger zone action item.
+ * @param props DangerActionProps containing title, description, and button label.
+ * @returns JSX.Element The rendered danger action.
+ */
+const DangerAction: React.FC<DangerActionProps> = ({ title, description, buttonLabel }) => (
+  <div className="border border-red-200 rounded-md p-4">
+    <h3 className="text-md font-medium text-red-800 mb-2">{title}</h3>
+    <p className="text-sm text-gray-600 mb-4">{description}</p>
+    <Button variant="danger" size="sm">
+      {buttonLabel}
+    </Button>
+  </div>
+);
+
 /**
  * AdminSettings component displays and allows editing of system settings.
  * @returns JSX.Element The rendered admin settings component.
@@ -119,29 +196,25 @@ const AdminSettings: React.FC = () => {
     );
   }
 
+  const analyticsIcon = (
+    <svg
+      className="h-5 w-5 text-indigo-600 mr-2"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+      />
+    </svg>
+  );
+
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">System Settings</h1>
-        <div className="flex space-x-3">
-          <Button
-            variant="secondary"
-            onClick={handleReset}
-            className="flex items-center"
-          >
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Reset to Defaults
-          </Button>
-          <Button
-            onClick={handleSave}
-            disabled={saving}
-            className="flex items-center"
-          >
-            <Save className="h-4 w-4 mr-2" />
-            {saving ? "Saving..." : "Save Settings"}
-          </Button>
-        </div>
-      </div>
+      <PageHeader saving={saving} onReset={handleReset} onSave={handleSave} />
 
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
@@ -156,14 +229,10 @@ const AdminSettings: React.FC = () => {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="p-6">
-          <div className="flex items-center mb-4">
-            <Shield className="h-5 w-5 text-indigo-600 mr-2" />
-            <h2 className="text-lg font-semibold text-gray-900">
-              Security Settings
-            </h2>
-          </div>
-
+        <SettingsCard
+          icon={<Shield className="h-5 w-5 text-indigo-600 mr-2" />}
+          title="Security Settings"
+        >
           <div className="space-y-4">
             <Input
               label="Max Login Attempts"
@@ -175,7 +244,6 @@ const AdminSettings: React.FC = () => {
               onChange={handleChange}
               helperText="Number of failed login attempts before account lockout"
             />
-
             <Input
               label="Login Cooldown (minutes)"
               name="loginCooldownMinutes"
@@ -187,73 +255,42 @@ const AdminSettings: React.FC = () => {
               helperText="Duration of account lockout after max failed attempts"
             />
           </div>
-        </Card>
+        </SettingsCard>
 
-        <Card className="p-6">
-          <div className="flex items-center mb-4">
-            <Database className="h-5 w-5 text-indigo-600 mr-2" />
-            <h2 className="text-lg font-semibold text-gray-900">
-              Cache Settings
-            </h2>
-          </div>
+        <SettingsCard
+          icon={<Database className="h-5 w-5 text-indigo-600 mr-2" />}
+          title="Cache Settings"
+        >
+          <Input
+            label="Cache TTL (minutes)"
+            name="cacheTtlMinutes"
+            type="number"
+            min="1"
+            max="60"
+            value={settings.cacheTtlMinutes}
+            onChange={handleChange}
+            helperText="Time-to-live for cached data"
+          />
+        </SettingsCard>
 
-          <div className="space-y-4">
-            <Input
-              label="Cache TTL (minutes)"
-              name="cacheTtlMinutes"
-              type="number"
-              min="1"
-              max="60"
-              value={settings.cacheTtlMinutes}
-              onChange={handleChange}
-              helperText="Time-to-live for cached data"
-            />
-          </div>
-        </Card>
+        <SettingsCard
+          icon={<Server className="h-5 w-5 text-indigo-600 mr-2" />}
+          title="API Settings"
+        >
+          <Input
+            label="API Timeout (ms)"
+            name="apiTimeoutMs"
+            type="number"
+            min="1000"
+            max="30000"
+            step="1000"
+            value={settings.apiTimeoutMs}
+            onChange={handleChange}
+            helperText="Timeout for API requests in milliseconds"
+          />
+        </SettingsCard>
 
-        <Card className="p-6">
-          <div className="flex items-center mb-4">
-            <Server className="h-5 w-5 text-indigo-600 mr-2" />
-            <h2 className="text-lg font-semibold text-gray-900">
-              API Settings
-            </h2>
-          </div>
-
-          <div className="space-y-4">
-            <Input
-              label="API Timeout (ms)"
-              name="apiTimeoutMs"
-              type="number"
-              min="1000"
-              max="30000"
-              step="1000"
-              value={settings.apiTimeoutMs}
-              onChange={handleChange}
-              helperText="Timeout for API requests in milliseconds"
-            />
-          </div>
-        </Card>
-
-        <Card className="p-6">
-          <div className="flex items-center mb-4">
-            <svg
-              className="h-5 w-5 text-indigo-600 mr-2"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-              />
-            </svg>
-            <h2 className="text-lg font-semibold text-gray-900">
-              Analytics Settings
-            </h2>
-          </div>
-
+        <SettingsCard icon={analyticsIcon} title="Analytics Settings">
           <div className="space-y-4">
             <div className="flex items-center">
               <input
@@ -271,7 +308,6 @@ const AdminSettings: React.FC = () => {
                 Enable Analytics
               </label>
             </div>
-
             <Input
               label="Analytics Sample Rate"
               name="analyticsSampleRate"
@@ -285,43 +321,27 @@ const AdminSettings: React.FC = () => {
               disabled={!settings.enableAnalytics}
             />
           </div>
-        </Card>
+        </SettingsCard>
       </div>
 
       <div className="mt-6">
-        <Card className="p-6">
-          <div className="flex items-center mb-4">
-            <AlertTriangle className="h-5 w-5 text-yellow-500 mr-2" />
-            <h2 className="text-lg font-semibold text-gray-900">Danger Zone</h2>
-          </div>
-
+        <SettingsCard
+          icon={<AlertTriangle className="h-5 w-5 text-yellow-500 mr-2" />}
+          title="Danger Zone"
+        >
           <div className="space-y-4">
-            <div className="border border-red-200 rounded-md p-4">
-              <h3 className="text-md font-medium text-red-800 mb-2">
-                Reset Database
-              </h3>
-              <p className="text-sm text-gray-600 mb-4">
-                This will reset all data in the database to its initial state.
-                This action cannot be undone.
-              </p>
-              <Button variant="danger" size="sm">
-                Reset Database
-              </Button>
-            </div>
-
-            <div className="border border-red-200 rounded-md p-4">
-              <h3 className="text-md font-medium text-red-800 mb-2">
-                Clear All Logs
-              </h3>
-              <p className="text-sm text-gray-600 mb-4">
-                This will delete all system logs. This action cannot be undone.
-              </p>
-              <Button variant="danger" size="sm">
-                Clear Logs
-              </Button>
-            </div>
+            <DangerAction
+              title="Reset Database"
+              description="This will reset all data in the database to its initial state. This action cannot be undone."
+              buttonLabel="Reset Database"
+            />
+            <DangerAction
+              title="Clear All Logs"
+              description="This will delete all system logs. This action cannot be undone."
+              buttonLabel="Clear Logs"
+            />
           </div>
-        </Card>
+        </SettingsCard>
       </div>
     </div>
   );

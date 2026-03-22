@@ -12,6 +12,49 @@ import {
 import { formatCurrency } from "@/utils/money";
 import { Logger } from "@/utils/logger";
 
+interface StatCardProps {
+  icon: React.ReactNode;
+  bgColor: string;
+  label: string;
+  value: string;
+}
+
+/**
+ * StatCard renders a single statistic with an icon and value.
+ * @param props StatCardProps containing icon, background color, label, and value.
+ * @returns JSX.Element The rendered stat card.
+ */
+const StatCard: React.FC<StatCardProps> = ({ icon, bgColor, label, value }) => (
+  <Card className="p-6">
+    <div className="flex items-center">
+      <div className={`p-3 rounded-full ${bgColor}`}>{icon}</div>
+      <div className="ml-4">
+        <p className="text-sm font-medium text-gray-600">{label}</p>
+        <p className="text-2xl font-semibold text-gray-900">{value}</p>
+      </div>
+    </div>
+  </Card>
+);
+
+interface StatusRowProps {
+  label: string;
+  status: string;
+}
+
+/**
+ * StatusRow renders a single system status indicator row.
+ * @param props StatusRowProps containing label and status text.
+ * @returns JSX.Element The rendered status row.
+ */
+const StatusRow: React.FC<StatusRowProps> = ({ label, status }) => (
+  <div className="flex justify-between items-center">
+    <span className="text-gray-600">{label}</span>
+    <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
+      {status}
+    </span>
+  </div>
+);
+
 interface AdminStats {
   totalDonations: number;
   totalDonationAmount: number;
@@ -144,97 +187,42 @@ const AdminStats: React.FC = () => {
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Admin Dashboard</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        <Card className="p-6">
-          <div className="flex items-center">
-            <div className="p-3 rounded-full bg-indigo-100 text-indigo-600">
-              <DollarSign className="h-6 w-6" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">
-                Total Donations
-              </p>
-              <p className="text-2xl font-semibold text-gray-900">
-                {stats?.totalDonations.toLocaleString()}
-              </p>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-6">
-          <div className="flex items-center">
-            <div className="p-3 rounded-full bg-green-100 text-green-600">
-              <DollarSign className="h-6 w-6" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Amount</p>
-              <p className="text-2xl font-semibold text-gray-900">
-                {formatCurrency(stats?.totalDonationAmount || 0)}
-              </p>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-6">
-          <div className="flex items-center">
-            <div className="p-3 rounded-full bg-blue-100 text-blue-600">
-              <Users className="h-6 w-6" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Users</p>
-              <p className="text-2xl font-semibold text-gray-900">
-                {stats?.totalUsers.toLocaleString()}
-              </p>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-6">
-          <div className="flex items-center">
-            <div className="p-3 rounded-full bg-purple-100 text-purple-600">
-              <Building className="h-6 w-6" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">
-                Total Charities
-              </p>
-              <p className="text-2xl font-semibold text-gray-900">
-                {stats?.totalCharities.toLocaleString()}
-              </p>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-6">
-          <div className="flex items-center">
-            <div className="p-3 rounded-full bg-yellow-100 text-yellow-600">
-              <Clock className="h-6 w-6" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">
-                Pending Withdrawals
-              </p>
-              <p className="text-2xl font-semibold text-gray-900">
-                {stats?.pendingWithdrawals.toLocaleString()}
-              </p>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-6">
-          <div className="flex items-center">
-            <div className="p-3 rounded-full bg-red-100 text-red-600">
-              <AlertTriangle className="h-6 w-6" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">
-                Pending Verifications
-              </p>
-              <p className="text-2xl font-semibold text-gray-900">
-                {stats?.pendingVerifications.toLocaleString()}
-              </p>
-            </div>
-          </div>
-        </Card>
+        <StatCard
+          icon={<DollarSign className="h-6 w-6" />}
+          bgColor="bg-indigo-100 text-indigo-600"
+          label="Total Donations"
+          value={stats?.totalDonations.toLocaleString() ?? "0"}
+        />
+        <StatCard
+          icon={<DollarSign className="h-6 w-6" />}
+          bgColor="bg-green-100 text-green-600"
+          label="Total Amount"
+          value={formatCurrency(stats?.totalDonationAmount || 0)}
+        />
+        <StatCard
+          icon={<Users className="h-6 w-6" />}
+          bgColor="bg-blue-100 text-blue-600"
+          label="Total Users"
+          value={stats?.totalUsers.toLocaleString() ?? "0"}
+        />
+        <StatCard
+          icon={<Building className="h-6 w-6" />}
+          bgColor="bg-purple-100 text-purple-600"
+          label="Total Charities"
+          value={stats?.totalCharities.toLocaleString() ?? "0"}
+        />
+        <StatCard
+          icon={<Clock className="h-6 w-6" />}
+          bgColor="bg-yellow-100 text-yellow-600"
+          label="Pending Withdrawals"
+          value={stats?.pendingWithdrawals.toLocaleString() ?? "0"}
+        />
+        <StatCard
+          icon={<AlertTriangle className="h-6 w-6" />}
+          bgColor="bg-red-100 text-red-600"
+          label="Pending Verifications"
+          value={stats?.pendingVerifications.toLocaleString() ?? "0"}
+        />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -252,30 +240,10 @@ const AdminStats: React.FC = () => {
             System Status
           </h2>
           <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Database</span>
-              <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
-                Healthy
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">API Services</span>
-              <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
-                Operational
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Storage</span>
-              <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
-                Online
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Authentication</span>
-              <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
-                Active
-              </span>
-            </div>
+            <StatusRow label="Database" status="Healthy" />
+            <StatusRow label="API Services" status="Operational" />
+            <StatusRow label="Storage" status="Online" />
+            <StatusRow label="Authentication" status="Active" />
           </div>
         </Card>
       </div>
