@@ -93,7 +93,7 @@ const DonationRow: React.FC<{
       </Button>
     </td>
   </tr>
- );
+);
 
 /** Column displaying transaction details: ID, date, and amount. */
 const TransactionInfo: React.FC<{ donation: Donation }> = ({ donation }) => (

@@ -31,94 +31,94 @@ interface UserProfile {
 /*  Sub-components extracted to fix JS-0415 (max 4 levels JSX nesting) */
 /* ------------------------------------------------------------------ */
 
-  /**
-   * PageHeader component displays the header with a title and a refresh button.
-   * @param {{ loading: boolean; onRefresh: () => void; }} props - Component props.
-   * @param {boolean} props.loading - Indicates if data is loading.
-   * @param {() => void} props.onRefresh - Callback to refresh data.
-   * @returns {JSX.Element} The page header component.
-   */
-  const PageHeader: React.FC<{
-    loading: boolean;
-    onRefresh: () => void;
-  }> = ({ loading, onRefresh }) => (
-    <div className="flex justify-between items-center mb-6">
-      <h1 className="text-2xl font-bold text-gray-900">Manage Users</h1>
-      <Button onClick={onRefresh} disabled={loading}>
-        {loading ? "Refreshing..." : "Refresh"}
-      </Button>
+/**
+ * PageHeader component displays the header with a title and a refresh button.
+ * @param {{ loading: boolean; onRefresh: () => void; }} props - Component props.
+ * @param {boolean} props.loading - Indicates if data is loading.
+ * @param {() => void} props.onRefresh - Callback to refresh data.
+ * @returns {JSX.Element} The page header component.
+ */
+const PageHeader: React.FC<{
+  loading: boolean;
+  onRefresh: () => void;
+}> = ({ loading, onRefresh }) => (
+  <div className="flex justify-between items-center mb-6">
+    <h1 className="text-2xl font-bold text-gray-900">Manage Users</h1>
+    <Button onClick={onRefresh} disabled={loading}>
+      {loading ? "Refreshing..." : "Refresh"}
+    </Button>
+  </div>
+);
+
+/**
+ * SearchBar component renders a search input inside a card.
+ * @param {{ value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; }} props - Component props.
+ * @param {string} props.value - The current search value.
+ * @param {(e: React.ChangeEvent<HTMLInputElement>) => void} props.onChange - Handler called when input changes.
+ * @returns {JSX.Element} The search bar component.
+ */
+const SearchBar: React.FC<{
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}> = ({ value, onChange }) => (
+  <Card className="mb-6">
+    <div className="p-4 relative">
+      <Search className="absolute left-7 top-1/2 transform -translate-y-1/2 text-gray-400" />
+      <Input
+        placeholder="Search users..."
+        value={value}
+        onChange={onChange}
+        className="pl-10"
+      />
     </div>
-  );
+  </Card>
+);
 
-  /**
-   * SearchBar component renders a search input inside a card.
-   * @param {{ value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; }} props - Component props.
-   * @param {string} props.value - The current search value.
-   * @param {(e: React.ChangeEvent<HTMLInputElement>) => void} props.onChange - Handler called when input changes.
-   * @returns {JSX.Element} The search bar component.
-   */
-  const SearchBar: React.FC<{
-    value: string;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  }> = ({ value, onChange }) => (
-    <Card className="mb-6">
-      <div className="p-4 relative">
-        <Search className="absolute left-7 top-1/2 transform -translate-y-1/2 text-gray-400" />
-        <Input
-          placeholder="Search users..."
-          value={value}
-          onChange={onChange}
-          className="pl-10"
-        />
-      </div>
-    </Card>
-  );
+/**
+ * UserAvatar component renders a placeholder avatar icon.
+ * @returns {JSX.Element} The user avatar component.
+ */
+const UserAvatar: React.FC = () => (
+  <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+    <User className="h-6 w-6 text-gray-500" />
+  </div>
+);
 
-  /**
-   * UserAvatar component renders a placeholder avatar icon.
-   * @returns {JSX.Element} The user avatar component.
-   */
-  const UserAvatar: React.FC = () => (
-    <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-      <User className="h-6 w-6 text-gray-500" />
-    </div>
-  );
-
-  /**
-   * UserRow component renders a table row for a user with actions.
-   * @param {{ user: UserProfile; onView: (user: UserProfile) => void; onEdit: (user: UserProfile) => void; onDelete: (user: UserProfile) => void; }} props - Component props.
-   * @param {UserProfile} props.user - The user profile data.
-   * @param {(user: UserProfile) => void} props.onView - Handler for view action.
-   * @param {(user: UserProfile) => void} props.onEdit - Handler for edit action.
-   * @param {(user: UserProfile) => void} props.onDelete - Handler for delete action.
-   * @returns {JSX.Element} The user row component.
-   */
-  const UserRow: React.FC<{
-    user: UserProfile;
-    onView: (user: UserProfile) => void;
-    onEdit: (user: UserProfile) => void;
-    onDelete: (user: UserProfile) => void;
-  }> = ({ user, onView, onEdit, onDelete }) => (
-    <tr>
-      <td className="px-6 py-4 whitespace-nowrap">
-        <div className="flex items-center">
-          <UserAvatar />
-          <div className="ml-4">
-            <div className="text-sm font-medium text-gray-900">
-              {user.user?.email || "Unknown Email"}
-            </div>
-            <div className="text-sm text-gray-500 font-mono">
-              {user.user_id.substring(0, 8)}...
-            </div>
+/**
+ * UserRow component renders a table row for a user with actions.
+ * @param {{ user: UserProfile; onView: (user: UserProfile) => void; onEdit: (user: UserProfile) => void; onDelete: (user: UserProfile) => void; }} props - Component props.
+ * @param {UserProfile} props.user - The user profile data.
+ * @param {(user: UserProfile) => void} props.onView - Handler for view action.
+ * @param {(user: UserProfile) => void} props.onEdit - Handler for edit action.
+ * @param {(user: UserProfile) => void} props.onDelete - Handler for delete action.
+ * @returns {JSX.Element} The user row component.
+ */
+const UserRow: React.FC<{
+  user: UserProfile;
+  onView: (user: UserProfile) => void;
+  onEdit: (user: UserProfile) => void;
+  onDelete: (user: UserProfile) => void;
+}> = ({ user, onView, onEdit, onDelete }) => (
+  <tr>
+    <td className="px-6 py-4 whitespace-nowrap">
+      <div className="flex items-center">
+        <UserAvatar />
+        <div className="ml-4">
+          <div className="text-sm font-medium text-gray-900">
+            {user.user?.email || "Unknown Email"}
+          </div>
+          <div className="text-sm text-gray-500 font-mono">
+            {user.user_id.substring(0, 8)}...
           </div>
         </div>
-      </td>
-      <td className="px-6 py-4 whitespace-nowrap">
-        <span
-          className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-            user.type === "admin"
-              ? "bg-purple-100 text-purple-800"
-              : user.type === "charity"
+      </div>
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap">
+      <span
+        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+          user.type === "admin"
+            ? "bg-purple-100 text-purple-800"
+            : user.type === "charity"
               ? "bg-blue-100 text-blue-800"
               : "bg-green-100 text-green-800"
         }`}
@@ -127,9 +127,7 @@ interface UserProfile {
       </span>
     </td>
     <td className="px-6 py-4 whitespace-nowrap">
-      <div className="text-sm text-gray-900">
-        {formatDate(user.created_at)}
-      </div>
+      <div className="text-sm text-gray-900">{formatDate(user.created_at)}</div>
     </td>
     <td className="px-6 py-4 whitespace-nowrap">
       <div className="text-sm text-gray-900">
@@ -198,9 +196,7 @@ const ViewModalBasicInfo: React.FC<{ user: UserProfile }> = ({ user }) => (
     <div className="space-y-3">
       <div>
         <p className="text-sm text-gray-500">Email</p>
-        <p className="font-medium">
-          {user.user?.email || "Unknown Email"}
-        </p>
+        <p className="font-medium">{user.user?.email || "Unknown Email"}</p>
       </div>
       <div>
         <p className="text-sm text-gray-500">Type</p>
@@ -210,9 +206,7 @@ const ViewModalBasicInfo: React.FC<{ user: UserProfile }> = ({ user }) => (
       </div>
       <div>
         <p className="text-sm text-gray-500">Created At</p>
-        <p className="font-medium">
-          {formatDate(user.created_at, true)}
-        </p>
+        <p className="font-medium">{formatDate(user.created_at, true)}</p>
       </div>
       <div>
         <p className="text-sm text-gray-500">Last Login</p>
@@ -288,9 +282,8 @@ const AdminWarning: React.FC = () => (
     <div className="ml-3">
       <h3 className="text-sm font-medium text-yellow-800">Caution</h3>
       <p className="mt-2 text-sm text-yellow-700">
-        You are about to grant admin privileges to this user.
-        Admins have full access to the platform, including
-        sensitive data and operations.
+        You are about to grant admin privileges to this user. Admins have full
+        access to the platform, including sensitive data and operations.
       </p>
     </div>
   </div>
@@ -336,9 +329,7 @@ const UserEditModal: React.FC<{
       <div className="p-6">
         <div className="mb-4">
           <p className="text-sm text-gray-500">Email</p>
-          <p className="font-medium">
-            {user.user?.email || "Unknown Email"}
-          </p>
+          <p className="font-medium">{user.user?.email || "Unknown Email"}</p>
         </div>
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -405,11 +396,7 @@ const DeleteConfirmModal: React.FC<{
           <Button variant="secondary" onClick={onClose}>
             Cancel
           </Button>
-          <Button
-            variant="danger"
-            onClick={onConfirm}
-            disabled={loading}
-          >
+          <Button variant="danger" onClick={onConfirm} disabled={loading}>
             {loading ? "Deleting..." : "Delete User"}
           </Button>
         </div>

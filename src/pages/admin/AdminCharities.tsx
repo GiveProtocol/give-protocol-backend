@@ -286,9 +286,7 @@ const CharityViewModal: React.FC<{
   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
     <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full">
       <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Charity Details
-        </h2>
+        <h2 className="text-xl font-semibold text-gray-900">Charity Details</h2>
         <Button variant="ghost" size="sm" onClick={onClose}>
           <XCircle className="h-5 w-5" />
         </Button>
@@ -376,10 +374,7 @@ const CharityEditModal: React.FC<{
         </Button>
       </div>
       <div className="p-6">
-        <CharityEditModalBody
-          charity={charity}
-          onInputChange={onInputChange}
-        />
+        <CharityEditModalBody charity={charity} onInputChange={onInputChange} />
       </div>
       <div className="p-6 border-t border-gray-200 flex justify-end space-x-3">
         <Button variant="secondary" onClick={onClose}>
@@ -710,10 +705,7 @@ const AdminCharities: React.FC = () => {
       </Card>
 
       {isViewModalOpen && selectedCharity && (
-        <CharityViewModal
-          charity={selectedCharity}
-          onClose={closeViewModal}
-        />
+        <CharityViewModal charity={selectedCharity} onClose={closeViewModal} />
       )}
 
       {isEditModalOpen && selectedCharity && (
