@@ -525,6 +525,9 @@ const AdminLogs: React.FC = () => {
     );
   }
 
+  /**
+   * Closes the view modal by setting its open state to false.
+   */
   const closeModal = () => setIsViewModalOpen(false);
 
   return (

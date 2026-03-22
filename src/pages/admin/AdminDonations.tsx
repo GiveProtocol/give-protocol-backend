@@ -93,7 +93,7 @@ const DonationRow: React.FC<{
       </Button>
     </td>
   </tr>
-);
+ );
 
 /** Column displaying transaction details: ID, date, and amount. */
 const TransactionInfo: React.FC<{ donation: Donation }> = ({ donation }) => (
@@ -118,6 +118,11 @@ const TransactionInfo: React.FC<{ donation: Donation }> = ({ donation }) => (
   </div>
 );
 
+/**
+ * Renders information about the parties involved in the donation.
+ * @param {Donation} donation - The donation object containing donor and charity info.
+ * @returns JSX.Element - The rendered parties information.
+ */
 const PartiesInfo: React.FC<{ donation: Donation }> = ({ donation }) => (
   <div>
     <h3 className="text-lg font-medium text-gray-900 mb-2">Parties</h3>
@@ -154,6 +159,11 @@ const PartiesInfo: React.FC<{ donation: Donation }> = ({ donation }) => (
   </div>
 );
 
+/**
+ * Renders the header section of the donation details modal, including the title and a close button.
+ * @param {() => void} onClose - Callback function triggered when the close button is clicked.
+ * @returns JSX.Element - The rendered modal header.
+ */
 const ModalHeader: React.FC<{ onClose: () => void }> = ({ onClose }) => (
   <div className="p-6 border-b border-gray-200 flex justify-between items-center">
     <h2 className="text-xl font-semibold text-gray-900">Donation Details</h2>
@@ -163,6 +173,12 @@ const ModalHeader: React.FC<{ onClose: () => void }> = ({ onClose }) => (
   </div>
 );
 
+/**
+ * Renders a modal view displaying details of a specific donation.
+ * @param {Donation} donation - The donation object to display.
+ * @param {() => void} onClose - Callback function to close the modal.
+ * @returns JSX.Element - The rendered donation view modal.
+ */
 const DonationViewModal: React.FC<{
   donation: Donation;
   onClose: () => void;
