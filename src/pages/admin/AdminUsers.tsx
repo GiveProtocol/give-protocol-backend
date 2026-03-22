@@ -304,6 +304,37 @@ const UserEditModal: React.FC<{
   </div>
 );
 
+const DeleteConfirmContent: React.FC<{
+  user: UserProfile;
+  loading: boolean;
+  onConfirm: () => void;
+  onClose: () => void;
+}> = ({ user, loading, onConfirm, onClose }) => (
+  <div className="p-6">
+    <div className="bg-red-100 rounded-full p-3 mx-auto mb-4 w-fit">
+      <AlertTriangle className="h-6 w-6 text-red-600" />
+    </div>
+    <h3 className="text-lg font-medium text-gray-900 text-center mb-2">
+      Confirm Deletion
+    </h3>
+    <p className="text-sm text-gray-500 text-center mb-6">
+      Are you sure you want to delete user{" "}
+      <span className="font-semibold">
+        {user.user?.email || user.user_id}
+      </span>
+      ? This action cannot be undone.
+    </p>
+    <div className="flex justify-center space-x-3">
+      <Button variant="secondary" onClick={onClose}>
+        Cancel
+      </Button>
+      <Button variant="danger" onClick={onConfirm} disabled={loading}>
+        {loading ? "Deleting..." : "Delete User"}
+      </Button>
+    </div>
+  </div>
+);
+
 const DeleteConfirmModal: React.FC<{
   user: UserProfile;
   loading: boolean;
@@ -312,33 +343,7 @@ const DeleteConfirmModal: React.FC<{
 }> = ({ user, loading, onConfirm, onClose }) => (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
     <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
-      <div className="p-6">
-        <div className="bg-red-100 rounded-full p-3 mx-auto mb-4 w-fit">
-          <AlertTriangle className="h-6 w-6 text-red-600" />
-        </div>
-        <h3 className="text-lg font-medium text-gray-900 text-center mb-2">
-          Confirm Deletion
-        </h3>
-        <p className="text-sm text-gray-500 text-center mb-6">
-          Are you sure you want to delete user{" "}
-          <span className="font-semibold">
-            {user.user?.email || user.user_id}
-          </span>
-          ? This action cannot be undone.
-        </p>
-        <div className="flex justify-center space-x-3">
-          <Button variant="secondary" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button
-            variant="danger"
-            onClick={onConfirm}
-            disabled={loading}
-          >
-            {loading ? "Deleting..." : "Delete User"}
-          </Button>
-        </div>
-      </div>
+      <DeleteConfirmContent user={user} loading={loading} onConfirm={onConfirm} onClose={onClose} />
     </div>
   </div>
 );

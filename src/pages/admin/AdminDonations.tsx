@@ -186,58 +186,41 @@ const DonationViewModal: React.FC<{
   </div>
 );
 
+/** Table header for the donations table. */
+const DonationsTableHead: React.FC = () => (
+  <thead className="bg-gray-50">
+    <tr>
+      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Charity</th>
+      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+      <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+    </tr>
+  </thead>
+);
+
+/** Table displaying donation records. */
+const DonationsTable: React.FC<{
+  donations: Donation[];
+  onView: (d: Donation) => void;
+}> = ({ donations, onView }) => (
+  <table className="min-w-full divide-y divide-gray-200">
+    <DonationsTableHead />
+    <tbody className="bg-white divide-y divide-gray-200">
+      {donations.map((donation) => (
+        <DonationRow key={donation.id} donation={donation} onView={onView} />
+      ))}
+    </tbody>
+  </table>
+);
+
+/** Card wrapping the donations table with overflow handling. */
 const DonationsTableCard: React.FC<{
   donations: Donation[];
   onView: (d: Donation) => void;
 }> = ({ donations, onView }) => (
-  <Card>
-    <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              ID
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Date
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Charity
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Amount
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {donations.map((donation) => (
-            <DonationRow
-              key={donation.id}
-              donation={donation}
-              onView={onView}
-            />
-          ))}
-        </tbody>
-      </table>
-    </div>
+  <Card className="overflow-x-auto">
+    <DonationsTable donations={donations} onView={onView} />
   </Card>
 );
 

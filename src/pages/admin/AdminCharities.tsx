@@ -331,68 +331,43 @@ const DeleteConfirmContent: React.FC<{ charityName: string }> = ({
   </>
 );
 
+const CharitiesTableHead: React.FC = () => (
+  <thead className="bg-gray-50">
+    <tr>
+      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Received</th>
+      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Available Balance</th>
+      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+      <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+    </tr>
+  </thead>
+);
+
+const CharitiesTable: React.FC<{
+  charities: CharityDetails[];
+  onView: (c: CharityDetails) => void;
+  onEdit: (c: CharityDetails) => void;
+  onDelete: (c: CharityDetails) => void;
+}> = ({ charities, onView, onEdit, onDelete }) => (
+  <table className="min-w-full divide-y divide-gray-200">
+    <CharitiesTableHead />
+    <tbody className="bg-white divide-y divide-gray-200">
+      {charities.map((charity) => (
+        <CharityRow key={charity.id} charity={charity} onView={onView} onEdit={onEdit} onDelete={onDelete} />
+      ))}
+    </tbody>
+  </table>
+);
+
 const CharitiesTableCard: React.FC<{
   charities: CharityDetails[];
   onView: (c: CharityDetails) => void;
   onEdit: (c: CharityDetails) => void;
   onDelete: (c: CharityDetails) => void;
 }> = ({ charities, onView, onEdit, onDelete }) => (
-  <Card>
-    <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Name
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Category
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Total Received
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Available Balance
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Status
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {charities.map((charity) => (
-            <CharityRow
-              key={charity.id}
-              charity={charity}
-              onView={onView}
-              onEdit={onEdit}
-              onDelete={onDelete}
-            />
-          ))}
-        </tbody>
-      </table>
-    </div>
+  <Card className="overflow-x-auto">
+    <CharitiesTable charities={charities} onView={onView} onEdit={onEdit} onDelete={onDelete} />
   </Card>
 );
 

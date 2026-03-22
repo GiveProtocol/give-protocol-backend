@@ -99,6 +99,132 @@ const DangerAction: React.FC<DangerActionProps> = ({ title, description, buttonL
   </div>
 );
 
+/** Grid of settings cards for security, cache, API, and analytics. */
+const SettingsGrid: React.FC<{
+  settings: SystemSettings;
+  analyticsIcon: React.ReactNode;
+  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}> = ({ settings, analyticsIcon, handleChange }) => (
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <SettingsCard
+      icon={<Shield className="h-5 w-5 text-indigo-600 mr-2" />}
+      title="Security Settings"
+    >
+      <div className="space-y-4">
+        <Input
+          label="Max Login Attempts"
+          name="maxLoginAttempts"
+          type="number"
+          min="1"
+          max="10"
+          value={settings.maxLoginAttempts}
+          onChange={handleChange}
+          helperText="Number of failed login attempts before account lockout"
+        />
+        <Input
+          label="Login Cooldown (minutes)"
+          name="loginCooldownMinutes"
+          type="number"
+          min="5"
+          max="60"
+          value={settings.loginCooldownMinutes}
+          onChange={handleChange}
+          helperText="Duration of account lockout after max failed attempts"
+        />
+      </div>
+    </SettingsCard>
+
+    <SettingsCard
+      icon={<Database className="h-5 w-5 text-indigo-600 mr-2" />}
+      title="Cache Settings"
+    >
+      <Input
+        label="Cache TTL (minutes)"
+        name="cacheTtlMinutes"
+        type="number"
+        min="1"
+        max="60"
+        value={settings.cacheTtlMinutes}
+        onChange={handleChange}
+        helperText="Time-to-live for cached data"
+      />
+    </SettingsCard>
+
+    <SettingsCard
+      icon={<Server className="h-5 w-5 text-indigo-600 mr-2" />}
+      title="API Settings"
+    >
+      <Input
+        label="API Timeout (ms)"
+        name="apiTimeoutMs"
+        type="number"
+        min="1000"
+        max="30000"
+        step="1000"
+        value={settings.apiTimeoutMs}
+        onChange={handleChange}
+        helperText="Timeout for API requests in milliseconds"
+      />
+    </SettingsCard>
+
+    <SettingsCard icon={analyticsIcon} title="Analytics Settings">
+      <div className="space-y-4">
+        <div className="flex items-center">
+          <input
+            id="enableAnalytics"
+            name="enableAnalytics"
+            type="checkbox"
+            checked={settings.enableAnalytics}
+            onChange={handleChange}
+            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+          />
+          <label
+            htmlFor="enableAnalytics"
+            className="ml-2 block text-sm text-gray-900"
+          >
+            Enable Analytics
+          </label>
+        </div>
+        <Input
+          label="Analytics Sample Rate"
+          name="analyticsSampleRate"
+          type="number"
+          min="0.01"
+          max="1"
+          step="0.01"
+          value={settings.analyticsSampleRate}
+          onChange={handleChange}
+          helperText="Percentage of users to include in analytics (0.1 = 10%)"
+          disabled={!settings.enableAnalytics}
+        />
+      </div>
+    </SettingsCard>
+  </div>
+);
+
+/** Danger zone section with destructive actions. */
+const DangerZoneSection: React.FC = () => (
+  <div className="mt-6">
+    <SettingsCard
+      icon={<AlertTriangle className="h-5 w-5 text-yellow-500 mr-2" />}
+      title="Danger Zone"
+    >
+      <div className="space-y-4">
+        <DangerAction
+          title="Reset Database"
+          description="This will reset all data in the database to its initial state. This action cannot be undone."
+          buttonLabel="Reset Database"
+        />
+        <DangerAction
+          title="Clear All Logs"
+          description="This will delete all system logs. This action cannot be undone."
+          buttonLabel="Clear Logs"
+        />
+      </div>
+    </SettingsCard>
+  </div>
+);
+
 /**
  * AdminSettings component displays and allows editing of system settings.
  * @returns JSX.Element The rendered admin settings component.
@@ -213,7 +339,7 @@ const AdminSettings: React.FC = () => {
   );
 
   return (
-    <div>
+    <>
       <PageHeader saving={saving} onReset={handleReset} onSave={handleSave} />
 
       {error && (
@@ -228,122 +354,14 @@ const AdminSettings: React.FC = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <SettingsCard
-          icon={<Shield className="h-5 w-5 text-indigo-600 mr-2" />}
-          title="Security Settings"
-        >
-          <div className="space-y-4">
-            <Input
-              label="Max Login Attempts"
-              name="maxLoginAttempts"
-              type="number"
-              min="1"
-              max="10"
-              value={settings.maxLoginAttempts}
-              onChange={handleChange}
-              helperText="Number of failed login attempts before account lockout"
-            />
-            <Input
-              label="Login Cooldown (minutes)"
-              name="loginCooldownMinutes"
-              type="number"
-              min="5"
-              max="60"
-              value={settings.loginCooldownMinutes}
-              onChange={handleChange}
-              helperText="Duration of account lockout after max failed attempts"
-            />
-          </div>
-        </SettingsCard>
+      <SettingsGrid
+        settings={settings}
+        analyticsIcon={analyticsIcon}
+        handleChange={handleChange}
+      />
 
-        <SettingsCard
-          icon={<Database className="h-5 w-5 text-indigo-600 mr-2" />}
-          title="Cache Settings"
-        >
-          <Input
-            label="Cache TTL (minutes)"
-            name="cacheTtlMinutes"
-            type="number"
-            min="1"
-            max="60"
-            value={settings.cacheTtlMinutes}
-            onChange={handleChange}
-            helperText="Time-to-live for cached data"
-          />
-        </SettingsCard>
-
-        <SettingsCard
-          icon={<Server className="h-5 w-5 text-indigo-600 mr-2" />}
-          title="API Settings"
-        >
-          <Input
-            label="API Timeout (ms)"
-            name="apiTimeoutMs"
-            type="number"
-            min="1000"
-            max="30000"
-            step="1000"
-            value={settings.apiTimeoutMs}
-            onChange={handleChange}
-            helperText="Timeout for API requests in milliseconds"
-          />
-        </SettingsCard>
-
-        <SettingsCard icon={analyticsIcon} title="Analytics Settings">
-          <div className="space-y-4">
-            <div className="flex items-center">
-              <input
-                id="enableAnalytics"
-                name="enableAnalytics"
-                type="checkbox"
-                checked={settings.enableAnalytics}
-                onChange={handleChange}
-                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-              />
-              <label
-                htmlFor="enableAnalytics"
-                className="ml-2 block text-sm text-gray-900"
-              >
-                Enable Analytics
-              </label>
-            </div>
-            <Input
-              label="Analytics Sample Rate"
-              name="analyticsSampleRate"
-              type="number"
-              min="0.01"
-              max="1"
-              step="0.01"
-              value={settings.analyticsSampleRate}
-              onChange={handleChange}
-              helperText="Percentage of users to include in analytics (0.1 = 10%)"
-              disabled={!settings.enableAnalytics}
-            />
-          </div>
-        </SettingsCard>
-      </div>
-
-      <div className="mt-6">
-        <SettingsCard
-          icon={<AlertTriangle className="h-5 w-5 text-yellow-500 mr-2" />}
-          title="Danger Zone"
-        >
-          <div className="space-y-4">
-            <DangerAction
-              title="Reset Database"
-              description="This will reset all data in the database to its initial state. This action cannot be undone."
-              buttonLabel="Reset Database"
-            />
-            <DangerAction
-              title="Clear All Logs"
-              description="This will delete all system logs. This action cannot be undone."
-              buttonLabel="Clear Logs"
-            />
-          </div>
-        </SettingsCard>
-      </div>
-    </div>
+      <DangerZoneSection />
+    </>
   );
 };
 
