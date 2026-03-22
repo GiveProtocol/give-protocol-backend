@@ -31,6 +31,7 @@ interface CharityDetails {
   };
 }
 
+/** Page header with title and add charity button. */
 const PageHeader: React.FC = () => (
   <div className="flex justify-between items-center mb-6">
     <h1 className="text-2xl font-bold text-gray-900">Manage Charities</h1>
@@ -38,6 +39,7 @@ const PageHeader: React.FC = () => (
   </div>
 );
 
+/** Search input card for filtering charities. */
 const SearchCard: React.FC<{
   searchTerm: string;
   onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -55,6 +57,7 @@ const SearchCard: React.FC<{
   </Card>
 );
 
+/** Avatar displaying a charity image or placeholder icon. */
 const CharityAvatar: React.FC<{ imageUrl: string | null; name: string }> = ({
   imageUrl,
   name,
@@ -75,6 +78,7 @@ const CharityAvatar: React.FC<{ imageUrl: string | null; name: string }> = ({
   );
 };
 
+/** Table row displaying a single charity with actions. */
 const CharityRow: React.FC<{
   charity: CharityDetails;
   onView: (c: CharityDetails) => void;
@@ -144,6 +148,7 @@ const CharityRow: React.FC<{
   </tr>
 );
 
+/** Column displaying charity name, category, and description. */
 const BasicInfoColumn: React.FC<{ charity: CharityDetails }> = ({
   charity,
 }) => (
@@ -168,6 +173,7 @@ const BasicInfoColumn: React.FC<{ charity: CharityDetails }> = ({
   </div>
 );
 
+/** Column displaying total received, available balance, and charity ID. */
 const FinancialInfoColumn: React.FC<{ charity: CharityDetails }> = ({
   charity,
 }) => (
@@ -192,6 +198,7 @@ const FinancialInfoColumn: React.FC<{ charity: CharityDetails }> = ({
   </div>
 );
 
+/** Section displaying associated profile details for a charity. */
 const ProfileInfoSection: React.FC<{ charity: CharityDetails }> = ({
   charity,
 }) => (
@@ -220,6 +227,7 @@ const ProfileInfoSection: React.FC<{ charity: CharityDetails }> = ({
   </div>
 );
 
+/** Modal showing full charity details with info columns and profile section. */
 const CharityViewModal: React.FC<{
   charity: CharityDetails;
   onClose: () => void;
