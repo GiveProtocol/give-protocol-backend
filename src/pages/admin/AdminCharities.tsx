@@ -89,9 +89,7 @@ const CharityRow: React.FC<{
     <td className="px-6 py-4 whitespace-nowrap flex items-center">
       <CharityAvatar imageUrl={charity.image_url} name={charity.name} />
       <div className="ml-4">
-        <div className="text-sm font-medium text-gray-900">
-          {charity.name}
-        </div>
+        <div className="text-sm font-medium text-gray-900">{charity.name}</div>
         <div className="text-sm text-gray-500">
           {charity.profile?.created_at
             ? new Date(charity.profile.created_at).toLocaleDateString()
@@ -235,9 +233,7 @@ const CharityViewModal: React.FC<{
   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
     <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full">
       <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Charity Details
-        </h2>
+        <h2 className="text-xl font-semibold text-gray-900">Charity Details</h2>
         <Button variant="ghost" size="sm" onClick={onClose}>
           <XCircle className="h-5 w-5" />
         </Button>
@@ -256,6 +252,13 @@ const CharityViewModal: React.FC<{
   </div>
 );
 
+/**
+ * Body content for the charity edit modal.
+ *
+ * @param {CharityDetails} charity - The current charity details.
+ * @param {(field: keyof CharityDetails, value: string) => void} onInputChange - Handler for input changes.
+ * @returns JSX.Element - The form for editing charity details.
+ */
 const CharityEditModalBody: React.FC<{
   charity: CharityDetails;
   onInputChange: (field: keyof CharityDetails, value: string) => void;
@@ -290,6 +293,16 @@ const CharityEditModalBody: React.FC<{
   </form>
 );
 
+/**
+ * Modal component for editing a charity.
+ *
+ * @param {CharityDetails} charity - The charity to edit.
+ * @param {boolean} loading - Indicates if saving is in progress.
+ * @param {() => void} onClose - Handler to close the modal.
+ * @param {(c: Partial<CharityDetails>) => void} onSave - Handler to save changes.
+ * @param {(field: keyof CharityDetails, value: string) => void} onInputChange - Handler for input changes.
+ * @returns JSX.Element - The charity edit modal UI.
+ */
 const CharityEditModal: React.FC<{
   charity: CharityDetails;
   loading: boolean;
@@ -306,10 +319,7 @@ const CharityEditModal: React.FC<{
         </Button>
       </div>
       <div className="p-6">
-        <CharityEditModalBody
-          charity={charity}
-          onInputChange={onInputChange}
-        />
+        <CharityEditModalBody charity={charity} onInputChange={onInputChange} />
       </div>
       <div className="p-6 border-t border-gray-200 flex justify-end space-x-3">
         <Button variant="secondary" onClick={onClose}>
@@ -323,6 +333,12 @@ const CharityEditModal: React.FC<{
   </div>
 );
 
+/**
+ * Content for delete confirmation, showing alert and message.
+ *
+ * @param {string} charityName - The name of the charity to delete.
+ * @returns JSX.Element - The content of the delete confirmation modal.
+ */
 const DeleteConfirmContent: React.FC<{ charityName: string }> = ({
   charityName,
 }) => (
@@ -339,19 +355,63 @@ const DeleteConfirmContent: React.FC<{ charityName: string }> = ({
   </>
 );
 
+/**
+ * Table head for the charities table, displaying column headers.
+ *
+ * @returns JSX.Element - The table head row.
+ */
 const CharitiesTableHead: React.FC = () => (
   <thead className="bg-gray-50">
     <tr>
-      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Received</th>
-      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Available Balance</th>
-      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-      <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+      <th
+        scope="col"
+        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+      >
+        Name
+      </th>
+      <th
+        scope="col"
+        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+      >
+        Category
+      </th>
+      <th
+        scope="col"
+        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+      >
+        Total Received
+      </th>
+      <th
+        scope="col"
+        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+      >
+        Available Balance
+      </th>
+      <th
+        scope="col"
+        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+      >
+        Status
+      </th>
+      <th
+        scope="col"
+        className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+      >
+        Actions
+      </th>
     </tr>
   </thead>
 );
 
+/**
+ * Table component listing charities with actions.
+ *
+ * @param {CharityDetails[]} charities - The list of charities.
+ * @param {(c: CharityDetails) => void} onView - Handler for view action.
+ * @param {(c: CharityDetails) => void} onEdit - Handler for edit action.
+ * @param {(c: CharityDetails) => void} onDelete - Handler for delete action.
+ * @returns JSX.Element - The charities table.
+ */
 const CharitiesTable: React.FC<{
   charities: CharityDetails[];
   onView: (c: CharityDetails) => void;
@@ -362,12 +422,27 @@ const CharitiesTable: React.FC<{
     <CharitiesTableHead />
     <tbody className="bg-white divide-y divide-gray-200">
       {charities.map((charity) => (
-        <CharityRow key={charity.id} charity={charity} onView={onView} onEdit={onEdit} onDelete={onDelete} />
+        <CharityRow
+          key={charity.id}
+          charity={charity}
+          onView={onView}
+          onEdit={onEdit}
+          onDelete={onDelete}
+        />
       ))}
     </tbody>
   </table>
 );
 
+/**
+ * Card component wrapping the charities table for responsive display.
+ *
+ * @param {CharityDetails[]} charities - The list of charities.
+ * @param {(c: CharityDetails) => void} onView - Handler for view action.
+ * @param {(c: CharityDetails) => void} onEdit - Handler for edit action.
+ * @param {(c: CharityDetails) => void} onDelete - Handler for delete action.
+ * @returns JSX.Element - The card containing the charities table.
+ */
 const CharitiesTableCard: React.FC<{
   charities: CharityDetails[];
   onView: (c: CharityDetails) => void;
@@ -375,10 +450,24 @@ const CharitiesTableCard: React.FC<{
   onDelete: (c: CharityDetails) => void;
 }> = ({ charities, onView, onEdit, onDelete }) => (
   <Card className="overflow-x-auto">
-    <CharitiesTable charities={charities} onView={onView} onEdit={onEdit} onDelete={onDelete} />
+    <CharitiesTable
+      charities={charities}
+      onView={onView}
+      onEdit={onEdit}
+      onDelete={onDelete}
+    />
   </Card>
 );
 
+/**
+ * Modal for confirming deletion of a charity.
+ *
+ * @param {CharityDetails} charity - The charity selected for deletion.
+ * @param {boolean} loading - Indicates if deletion is in progress.
+ * @param {() => void} onClose - Handler to close the modal.
+ * @param {() => void} onConfirm - Handler to confirm deletion.
+ * @returns JSX.Element - The delete confirmation modal.
+ */
 const DeleteConfirmModal: React.FC<{
   charity: CharityDetails;
   loading: boolean;
@@ -612,10 +701,7 @@ const AdminCharities: React.FC = () => {
       />
 
       {isViewModalOpen && selectedCharity && (
-        <CharityViewModal
-          charity={selectedCharity}
-          onClose={closeViewModal}
-        />
+        <CharityViewModal charity={selectedCharity} onClose={closeViewModal} />
       )}
 
       {isEditModalOpen && selectedCharity && (

@@ -118,6 +118,14 @@ const TransactionInfo: React.FC<{ donation: Donation }> = ({ donation }) => (
   </div>
 );
 
+/**
+ * Renders a labeled field with a value and an external link icon.
+ * @param {object} props - Component props.
+ * @param {string} props.label - Label for the field.
+ * @param {string} props.value - Value to display.
+ * @param {string} props.href - URL for the external link.
+ * @param {string} [props.valueClassName] - Optional CSS classes for the value element.
+ */
 const PartyField: React.FC<{
   label: string;
   value: string;
@@ -140,6 +148,11 @@ const PartyField: React.FC<{
   </div>
 );
 
+/**
+ * Displays information about the donor and charity for a donation.
+ * @param {object} props - Component props.
+ * @param {Donation} props.donation - Donation data.
+ */
 const PartiesInfo: React.FC<{ donation: Donation }> = ({ donation }) => (
   <div>
     <h3 className="text-lg font-medium text-gray-900 mb-2">Parties</h3>
@@ -159,6 +172,11 @@ const PartiesInfo: React.FC<{ donation: Donation }> = ({ donation }) => (
   </div>
 );
 
+/**
+ * Renders the header section of the modal with a title and close button.
+ * @param {object} props - Component props.
+ * @param {() => void} props.onClose - Callback to close the modal.
+ */
 const ModalHeader: React.FC<{ onClose: () => void }> = ({ onClose }) => (
   <div className="p-6 border-b border-gray-200 flex justify-between items-center">
     <h2 className="text-xl font-semibold text-gray-900">Donation Details</h2>
@@ -168,6 +186,12 @@ const ModalHeader: React.FC<{ onClose: () => void }> = ({ onClose }) => (
   </div>
 );
 
+/**
+ * Renders a modal view displaying detailed donation information.
+ * @param {object} props - Component props.
+ * @param {Donation} props.donation - Donation data to display.
+ * @param {() => void} props.onClose - Callback to close the modal.
+ */
 const DonationViewModal: React.FC<{
   donation: Donation;
   onClose: () => void;
@@ -190,11 +214,36 @@ const DonationViewModal: React.FC<{
 const DonationsTableHead: React.FC = () => (
   <thead className="bg-gray-50">
     <tr>
-      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Charity</th>
-      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-      <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+      <th
+        scope="col"
+        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+      >
+        ID
+      </th>
+      <th
+        scope="col"
+        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+      >
+        Date
+      </th>
+      <th
+        scope="col"
+        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+      >
+        Charity
+      </th>
+      <th
+        scope="col"
+        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+      >
+        Amount
+      </th>
+      <th
+        scope="col"
+        className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+      >
+        Actions
+      </th>
     </tr>
   </thead>
 );
@@ -342,10 +391,7 @@ const AdminDonations: React.FC = () => {
 
       <SearchCard searchTerm={searchTerm} onChange={handleSearch} />
 
-      <DonationsTableCard
-        donations={filteredDonations}
-        onView={handleView}
-      />
+      <DonationsTableCard donations={filteredDonations} onView={handleView} />
 
       {isViewModalOpen && selectedDonation && (
         <DonationViewModal

@@ -31,67 +31,88 @@ interface UserProfile {
 /*  Sub-components extracted to fix JS-0415 (max 4 levels JSX nesting) */
 /* ------------------------------------------------------------------ */
 
-const PageHeader: React.FC<{
-  loading: boolean;
-  onRefresh: () => void;
-}> = ({ loading, onRefresh }) => (
-  <div className="flex justify-between items-center mb-6">
-    <h1 className="text-2xl font-bold text-gray-900">Manage Users</h1>
-    <Button onClick={onRefresh} disabled={loading}>
-      {loading ? "Refreshing..." : "Refresh"}
-    </Button>
-  </div>
-);
-
-const SearchBar: React.FC<{
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}> = ({ value, onChange }) => (
-  <Card className="mb-6">
-    <div className="p-4 relative">
-      <Search className="absolute left-7 top-1/2 transform -translate-y-1/2 text-gray-400" />
-      <Input
-        placeholder="Search users..."
-        value={value}
-        onChange={onChange}
-        className="pl-10"
-      />
+  const PageHeader: React.FC<{
+    loading: boolean;
+    onRefresh: () => void;
+  }> = ({ loading, onRefresh }) => (
+    <div className="flex justify-between items-center mb-6">
+      <h1 className="text-2xl font-bold text-gray-900">Manage Users</h1>
+      <Button onClick={onRefresh} disabled={loading}>
+        {loading ? "Refreshing..." : "Refresh"}
+      </Button>
     </div>
-  </Card>
-);
+  );
 
-const UserAvatar: React.FC = () => (
-  <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-    <User className="h-6 w-6 text-gray-500" />
-  </div>
-);
+  /**
+   * Renders a search bar for filtering users.
+   *
+   * @param value - current search input value.
+   * @param onChange - callback invoked when search input changes.
+   * @returns JSX element representing the search bar.
+   */
+  const SearchBar: React.FC<{
+    value: string;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  }> = ({ value, onChange }) => (
+    <Card className="mb-6">
+      <div className="p-4 relative">
+        <Search className="absolute left-7 top-1/2 transform -translate-y-1/2 text-gray-400" />
+        <Input
+          placeholder="Search users..."
+          value={value}
+          onChange={onChange}
+          className="pl-10"
+        />
+      </div>
+    </Card>
+  );
 
-const UserRow: React.FC<{
-  user: UserProfile;
-  onView: (user: UserProfile) => void;
-  onEdit: (user: UserProfile) => void;
-  onDelete: (user: UserProfile) => void;
-}> = ({ user, onView, onEdit, onDelete }) => (
-  <tr>
-    <td className="px-6 py-4 whitespace-nowrap flex items-center">
-      <UserAvatar />
-      <div className="ml-4">
-          <div className="text-sm font-medium text-gray-900">
-            {user.user?.email || "Unknown Email"}
+  /**
+   * Renders a user's avatar placeholder icon.
+   *
+   * @returns JSX element representing the user avatar.
+   */
+  const UserAvatar: React.FC = () => (
+    <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+      <User className="h-6 w-6 text-gray-500" />
+    </div>
+  );
+
+  /**
+   * Renders a table row displaying user information and action handlers.
+   *
+   * @param user - the user profile to display.
+   * @param onView - callback when view action is triggered.
+   * @param onEdit - callback when edit action is triggered.
+   * @param onDelete - callback when delete action is triggered.
+   * @returns JSX element representing the user row.
+   */
+  const UserRow: React.FC<{
+    user: UserProfile;
+    onView: (user: UserProfile) => void;
+    onEdit: (user: UserProfile) => void;
+    onDelete: (user: UserProfile) => void;
+  }> = ({ user, onView, onEdit, onDelete }) => (
+    <tr>
+      <td className="px-6 py-4 whitespace-nowrap flex items-center">
+        <UserAvatar />
+        <div className="ml-4">
+            <div className="text-sm font-medium text-gray-900">
+              {user.user?.email || "Unknown Email"}
+            </div>
+            <div className="text-sm text-gray-500 font-mono">
+              {user.user_id.substring(0, 8)}...
+            </div>
           </div>
-          <div className="text-sm text-gray-500 font-mono">
-            {user.user_id.substring(0, 8)}...
-          </div>
-        </div>
-    </td>
-    <td className="px-6 py-4 whitespace-nowrap">
-      <span
-        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-          user.type === "admin"
-            ? "bg-purple-100 text-purple-800"
-            : user.type === "charity"
-              ? "bg-blue-100 text-blue-800"
-              : "bg-green-100 text-green-800"
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        <span
+          className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+            user.type === "admin"
+              ? "bg-purple-100 text-purple-800"
+              : user.type === "charity"
+                ? "bg-blue-100 text-blue-800"
+                : "bg-green-100 text-green-800"`
         }`}
       >
         {user.type.charAt(0).toUpperCase() + user.type.slice(1)}
@@ -140,6 +161,12 @@ const UserRow: React.FC<{
   </tr>
 );
 
+/**
+ * Renders the header section of the user view modal with title and close button.
+ * @param {Object} props - Component props.
+ * @param {Function} props.onClose - Function to call when closing the modal.
+ * @returns {JSX.Element} The view modal header element.
+ */
 const ViewModalHeader: React.FC<{ onClose: () => void }> = ({ onClose }) => (
   <div className="p-6 border-b border-gray-200 flex justify-between items-center">
     <h2 className="text-xl font-semibold text-gray-900">User Details</h2>
@@ -149,6 +176,12 @@ const ViewModalHeader: React.FC<{ onClose: () => void }> = ({ onClose }) => (
   </div>
 );
 
+/**
+ * Displays basic information of a user in the view modal.
+ * @param {Object} props - Component props.
+ * @param {UserProfile} props.user - The user profile details.
+ * @returns {JSX.Element} The basic info section.
+ */
 const ViewModalBasicInfo: React.FC<{ user: UserProfile }> = ({ user }) => (
   <div>
     <h3 className="text-lg font-medium text-gray-900 mb-2">
@@ -185,6 +218,12 @@ const ViewModalBasicInfo: React.FC<{ user: UserProfile }> = ({ user }) => (
   </div>
 );
 
+/**
+ * Displays technical information of a user in the view modal.
+ * @param {Object} props - Component props.
+ * @param {UserProfile} props.user - The user profile details.
+ * @returns {JSX.Element} The technical info section.
+ */
 const ViewModalTechnicalInfo: React.FC<{ user: UserProfile }> = ({ user }) => (
   <div>
     <h3 className="text-lg font-medium text-gray-900 mb-2">
@@ -203,6 +242,13 @@ const ViewModalTechnicalInfo: React.FC<{ user: UserProfile }> = ({ user }) => (
   </div>
 );
 
+/**
+ * Renders the complete user view modal including header, basic and technical info sections.
+ * @param {Object} props - Component props.
+ * @param {UserProfile} props.user - The user profile details.
+ * @param {Function} props.onClose - Function to call when closing the modal.
+ * @returns {JSX.Element} The user view modal component.
+ */
 const UserViewModal: React.FC<{
   user: UserProfile;
   onClose: () => void;
@@ -223,6 +269,10 @@ const UserViewModal: React.FC<{
   </div>
 );
 
+/**
+ * Displays an admin privilege warning message.
+ * @returns {JSX.Element} The admin warning component.
+ */
 const AdminWarning: React.FC = () => (
   <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4 mb-4 flex">
     <AlertTriangle className="h-5 w-5 text-yellow-400 flex-shrink-0" />
@@ -237,6 +287,12 @@ const AdminWarning: React.FC = () => (
   </div>
 );
 
+/**
+ * Renders header of the edit user type modal with title and close button.
+ * @param {Object} props - Component props.
+ * @param {Function} props.onClose - Function to call when closing the modal.
+ * @returns {JSX.Element} The edit modal header element.
+ */
 const EditModalHeader: React.FC<{ onClose: () => void }> = ({ onClose }) => (
   <div className="p-6 border-b border-gray-200 flex justify-between items-center">
     <h2 className="text-xl font-semibold text-gray-900">Edit User Type</h2>
@@ -246,6 +302,14 @@ const EditModalHeader: React.FC<{ onClose: () => void }> = ({ onClose }) => (
   </div>
 );
 
+/**
+ * Renders the body content of the edit user type modal including email and type selector.
+ * @param {Object} props - Component props.
+ * @param {UserProfile} props.user - The user profile details.
+ * @param {"donor"|"charity"|"admin"} props.editUserType - Current selected user type.
+ * @param {Function} props.onUserTypeChange - Change handler for user type select.
+ * @returns {JSX.Element} The edit modal body element.
+ */
 const EditModalBody: React.FC<{
   user: UserProfile;
   editUserType: "donor" | "charity" | "admin";
@@ -276,6 +340,17 @@ const EditModalBody: React.FC<{
   </div>
 );
 
+/**
+ * Renders a modal for editing a user's type, including header, body, and action buttons.
+ * @param {Object} props - Component props.
+ * @param {UserProfile} props.user - The user profile details.
+ * @param {"donor"|"charity"|"admin"} props.editUserType - Current selected user type.
+ * @param {boolean} props.loading - Loading state of the save operation.
+ * @param {Function} props.onUserTypeChange - Change handler for user type select.
+ * @param {Function} props.onSave - Callback to save changes.
+ * @param {Function} props.onClose - Callback to close the modal.
+ * @returns {JSX.Element} The user edit modal component.
+ */
 const UserEditModal: React.FC<{
   user: UserProfile;
   editUserType: "donor" | "charity" | "admin";
@@ -304,6 +379,15 @@ const UserEditModal: React.FC<{
   </div>
 );
 
+/**
+ * Renders the content of the delete confirmation dialog for a user.
+ * @param {Object} props - Component props.
+ * @param {UserProfile} props.user - The user profile to delete.
+ * @param {boolean} props.loading - Loading state of the deletion.
+ * @param {Function} props.onConfirm - Callback to confirm deletion.
+ * @param {Function} props.onClose - Callback to cancel and close the dialog.
+ * @returns {JSX.Element} The delete confirmation content.
+ */
 const DeleteConfirmContent: React.FC<{
   user: UserProfile;
   loading: boolean;
@@ -335,6 +419,15 @@ const DeleteConfirmContent: React.FC<{
   </div>
 );
 
+/**
+ * Renders a modal wrapper for the delete confirmation dialog.
+ * @param {Object} props - Component props.
+ * @param {UserProfile} props.user - The user profile to delete.
+ * @param {boolean} props.loading - Loading state of the deletion.
+ * @param {Function} props.onConfirm - Callback to confirm deletion.
+ * @param {Function} props.onClose - Callback to close the modal.
+ * @returns {JSX.Element} The delete confirmation modal component.
+ */
 const DeleteConfirmModal: React.FC<{
   user: UserProfile;
   loading: boolean;
@@ -348,6 +441,10 @@ const DeleteConfirmModal: React.FC<{
   </div>
 );
 
+/**
+ * Renders the header row of the users table with column labels.
+ * @returns {JSX.Element} The table head element.
+ */
 const UsersTableHead: React.FC = () => (
   <thead className="bg-gray-50">
     <tr>
@@ -385,6 +482,15 @@ const UsersTableHead: React.FC = () => (
   </thead>
 );
 
+/**
+ * Renders a table of users with actions for view, edit, and delete.
+ * @param {Object} props - Component props.
+ * @param {UserProfile[]} props.users - Array of user profiles to display.
+ * @param {Function} props.onView - Callback to view user details.
+ * @param {Function} props.onEdit - Callback to edit a user.
+ * @param {Function} props.onDelete - Callback to delete a user.
+ * @returns {JSX.Element} The users table component.
+ */
 const UsersTable: React.FC<{
   users: UserProfile[];
   onView: (user: UserProfile) => void;

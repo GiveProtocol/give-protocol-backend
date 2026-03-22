@@ -106,9 +106,7 @@ const ModalDataGrid: React.FC<{ log: AuditLog }> = ({ log }) => (
       <h3 className="text-lg font-medium text-gray-900 mb-2">Old Data</h3>
       <div className="bg-gray-50 p-4 rounded-md overflow-auto max-h-60">
         <pre className="text-xs font-mono text-gray-800">
-          {log.old_data
-            ? JSON.stringify(log.old_data, null, 2)
-            : "No data"}
+          {log.old_data ? JSON.stringify(log.old_data, null, 2) : "No data"}
         </pre>
       </div>
     </div>
@@ -116,9 +114,7 @@ const ModalDataGrid: React.FC<{ log: AuditLog }> = ({ log }) => (
       <h3 className="text-lg font-medium text-gray-900 mb-2">New Data</h3>
       <div className="bg-gray-50 p-4 rounded-md overflow-auto max-h-60">
         <pre className="text-xs font-mono text-gray-800">
-          {log.new_data
-            ? JSON.stringify(log.new_data, null, 2)
-            : "No data"}
+          {log.new_data ? JSON.stringify(log.new_data, null, 2) : "No data"}
         </pre>
       </div>
     </div>
@@ -193,65 +189,65 @@ const FilterControls: React.FC<{
   onDateFilterChange,
 }) => (
   <Card className="mb-6 p-4 flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-4">
-      <div className="relative flex-grow">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-        <Input
-          placeholder="Search logs..."
-          value={searchTerm}
-          onChange={onSearch}
-          className="pl-10"
-        />
-      </div>
+    <div className="relative flex-grow">
+      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+      <Input
+        placeholder="Search logs..."
+        value={searchTerm}
+        onChange={onSearch}
+        className="pl-10"
+      />
+    </div>
 
-      <div className="flex items-center space-x-2">
-        <Filter className="h-5 w-5 text-gray-400" />
-        <select
-          value={actionFilter}
-          onChange={(e) => onActionFilterChange(e.target.value)}
-          className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-        >
-          <option value="all">All Actions</option>
-          {uniqueActions.map((action) => (
-            <option key={action} value={action}>
-              {action}
-            </option>
-          ))}
-        </select>
-      </div>
+    <div className="flex items-center space-x-2">
+      <Filter className="h-5 w-5 text-gray-400" />
+      <select
+        value={actionFilter}
+        onChange={(e) => onActionFilterChange(e.target.value)}
+        className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+      >
+        <option value="all">All Actions</option>
+        {uniqueActions.map((action) => (
+          <option key={action} value={action}>
+            {action}
+          </option>
+        ))}
+      </select>
+    </div>
 
-      <div className="flex items-center space-x-2">
-        <Filter className="h-5 w-5 text-gray-400" />
-        <select
-          value={tableFilter}
-          onChange={(e) => onTableFilterChange(e.target.value)}
-          className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-        >
-          <option value="all">All Tables</option>
-          {uniqueTables.map((table) => (
-            <option key={table} value={table}>
-              {table}
-            </option>
-          ))}
-        </select>
-      </div>
+    <div className="flex items-center space-x-2">
+      <Filter className="h-5 w-5 text-gray-400" />
+      <select
+        value={tableFilter}
+        onChange={(e) => onTableFilterChange(e.target.value)}
+        className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+      >
+        <option value="all">All Tables</option>
+        {uniqueTables.map((table) => (
+          <option key={table} value={table}>
+            {table}
+          </option>
+        ))}
+      </select>
+    </div>
 
-      <div className="flex items-center space-x-2">
-        <Calendar className="h-5 w-5 text-gray-400" />
-        <select
-          value={dateFilter}
-          onChange={(e) =>
-            onDateFilterChange(
-              e.target.value as "all" | "today" | "week" | "month",
-            )
-          }
-          className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-        >
-          <option value="all">All Time</option>
-          <option value="today">Today</option>
-          <option value="week">Last 7 Days</option>
-          <option value="month">Last 30 Days</option>
-        </select>
-      </div>
+    <div className="flex items-center space-x-2">
+      <Calendar className="h-5 w-5 text-gray-400" />
+      <select
+        value={dateFilter}
+        onChange={(e) =>
+          onDateFilterChange(
+            e.target.value as "all" | "today" | "week" | "month",
+          )
+        }
+        className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+      >
+        <option value="all">All Time</option>
+        <option value="today">Today</option>
+        <option value="week">Last 7 Days</option>
+        <option value="month">Last 30 Days</option>
+      </select>
+    </div>
   </Card>
 );
 
@@ -297,9 +293,7 @@ const LogTableRow: React.FC<{
       </div>
     </td>
     <td className="px-6 py-4 whitespace-nowrap">
-      <div className="text-sm text-gray-900">
-        {log.ip_address || "Unknown"}
-      </div>
+      <div className="text-sm text-gray-900">{log.ip_address || "Unknown"}</div>
     </td>
     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
       <Button
@@ -326,12 +320,24 @@ const LogsTableInner: React.FC<{
   <table className="min-w-full divide-y divide-gray-200">
     <thead className="bg-gray-50">
       <tr>
-        <th scope="col" className={thClass}>Date</th>
-        <th scope="col" className={thClass}>User</th>
-        <th scope="col" className={thClass}>Action</th>
-        <th scope="col" className={thClass}>Table</th>
-        <th scope="col" className={thClass}>IP Address</th>
-        <th scope="col" className={`${thClass} text-right`}>Actions</th>
+        <th scope="col" className={thClass}>
+          Date
+        </th>
+        <th scope="col" className={thClass}>
+          User
+        </th>
+        <th scope="col" className={thClass}>
+          Action
+        </th>
+        <th scope="col" className={thClass}>
+          Table
+        </th>
+        <th scope="col" className={thClass}>
+          IP Address
+        </th>
+        <th scope="col" className={`${thClass} text-right`}>
+          Actions
+        </th>
       </tr>
     </thead>
     <tbody className="bg-white divide-y divide-gray-200">
@@ -541,6 +547,9 @@ const AdminLogs: React.FC = () => {
     );
   }
 
+  /**
+   * Closes the view modal.
+   */
   const closeModal = () => setIsViewModalOpen(false);
 
   return (
@@ -566,7 +575,6 @@ const AdminLogs: React.FC = () => {
         tableFilter={tableFilter}
         onTableFilterChange={setTableFilter}
         uniqueTables={uniqueTables}
-        dateFilter={dateFilter}
         onDateFilterChange={setDateFilter}
       />
 
